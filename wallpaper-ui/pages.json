@@ -5,8 +5,73 @@
 			"style": {
 				"navigationBarTitleText": "uni-app"
 			}
+		},
+		{
+			"path" : "pages/sort/sort",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/author/author",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/share/share",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/my/my",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
 		}
 	],
+	"tabBar": {
+		"color": "#7b7b7f",
+		"selectedColor": "#007aff",
+		"backgroundColor": "#353962",
+		"list": [
+			{
+				"text": "首页",
+				"pagePath": "pages/index/index",
+				"iconPath": "/static/images/home.png",
+				"selectedIconPath": "/static/images/s-home.png"
+			},
+			{
+				"text": "分类",
+				"pagePath": "pages/sort/sort",
+				"iconPath": "/static/images/sort.png",
+				"selectedIconPath": "/static/images/s-sort.png"
+			},
+			{
+				"text": "创作者",
+				"pagePath": "pages/author/author",
+				"iconPath": "/static/images/author.png",
+				"selectedIconPath": "/static/images/s-author.png"
+			},
+			{
+				"text": "广场",
+				"pagePath": "pages/share/share",
+				"iconPath": "/static/images/share.png",
+				"selectedIconPath": "/static/images/s-share.png"
+			},
+			{
+				"text": "我的",
+				"pagePath": "pages/my/my",
+				"iconPath": "/static/images/my.png",
+				"selectedIconPath": "/static/images/s-my.png"
+			}
+		]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
