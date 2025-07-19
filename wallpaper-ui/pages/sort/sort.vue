@@ -192,7 +192,7 @@
 			width: 31%;
 			height: 100%;
 			padding: 12rpx 0;
-			background-color: #373737;
+			background-color: #262a50;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
