@@ -26,7 +26,7 @@
 		<view class="home-author">
 			<view class="author-title">
 				<view class="title">推荐创作者</view>
-				<view class="more">More+</view>
+				<navigator url="/pages/author/author" open-type="reLaunch" class="more">More+</navigator>
 			</view>
 			<view class="author-list">
 				<image src="https://img2.baidu.com/it/u=93036002,4253821634&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
@@ -113,11 +113,11 @@
 		<view class="home-sort">
 			<view class="sort-title">
 				<view class="title">分类精选</view>
-				<view class="more">More+</view>
+				<navigator url="/pages/sort/sort" open-type="reLaunch" class="more">More+</navigator>
 			</view>
 			<view class="sort-list">
 				<scroll-view scroll-x>
-					<view class="list-item">
+					<navigator url="/pages/sortList/sortList" class="list-item">
 						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
@@ -125,8 +125,8 @@
 						<view class="item-title">
 							<text>可爱萌宠</text>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/sortList/sortList" class="list-item">
 						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
@@ -134,8 +134,8 @@
 						<view class="item-title">
 							<text>可爱萌宠</text>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/sortList/sortList" class="list-item">
 						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
@@ -143,8 +143,8 @@
 						<view class="item-title">
 							<text>可爱萌宠</text>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/sortList/sortList" class="list-item">
 						<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
@@ -152,8 +152,8 @@
 						<view class="item-title">
 							<text>可爱萌宠</text>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/sortList/sortList" class="list-item">
 						<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
@@ -161,7 +161,7 @@
 						<view class="item-title">
 							<text>可爱萌宠</text>
 						</view>
-					</view>
+					</navigator>
 				</scroll-view>
 			</view>
 		</view>
