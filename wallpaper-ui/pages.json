@@ -40,7 +40,14 @@
 			{
 				"navigationBarTitleText" : ""
 			}
-		}
+		},
+		{
+			"path" : "pages/preview/preview",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
 	],
 	"tabBar": {
 		"color": "#7b7b7f",
