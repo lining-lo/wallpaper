@@ -212,19 +212,17 @@
 	.sort-list {
 		width: 100%;
 		margin: 60rpx 0;
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
 		.list-item {
-			width: 26vw;
-			height: 42vw;
-			margin-right: 52rpx;
-			margin-bottom: 20rpx;
-			display: inline-block;
+			width: 28vw;
+			height: 44vw;
+			margin-bottom: 30rpx;
 			border-radius: 30rpx;
 			border: 1px solid #fff;
 			position: relative;
 			overflow: hidden;
-			&:nth-child(3n) {
-				margin-right: 0;
-			}
 			image {
 				width: 100%;
 				height: 100%;
