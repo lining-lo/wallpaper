@@ -48,6 +48,13 @@
 				"navigationBarTitleText" : ""
 			}
 		},
+		{
+			"path" : "pages/detail/detail",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		}
 	],
 	"tabBar": {
 		"color": "#7b7b7f",

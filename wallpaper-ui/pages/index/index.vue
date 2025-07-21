@@ -172,51 +172,51 @@
 				<view class="more">More+</view>
 			</view>
 			<view class="recommend-list">
-				<view class="list-item">
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-				</view>
-				<view class="list-item">
+				</navigator>
+				<navigator url="/pages/preview/preview" class="list-item">
 					<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				</view>
+				</navigator>
 			</view>
 		</view>
 	</view>

@@ -37,17 +37,17 @@
 			</view>
 		</view>
 		<!-- 底部功能按钮 -->
-		<view class="preview-bottom"  v-if="isShow">
-			<view class="bottom-detail btn">
+		<view class="preview-bottom"  v-if="isShow" @click.stop="">
+			<view class="bottom-detail btn" @click="toDetail($event)">
 				<uni-icons type="info-filled" color="#fff" size="22"></uni-icons>
 				<text>详情</text>
 			</view>
 			<view class="bottom-favorites btn">
-				<uni-icons type="heart-filled" color="#fff" size="22"></uni-icons>
+				<uni-icons type="star-filled" color="#fff" size="24"></uni-icons>
 				<text>343</text>
 			</view>
 			<view class="bottom-like btn">
-				<uni-icons type="hand-up-filled" color="#fff" size="22"></uni-icons>
+				<uni-icons type="heart-filled" color="#fff" size="22"></uni-icons>
 				<text>454</text>
 			</view>
 			<view class="bottom-download btn">
@@ -67,6 +67,14 @@ const isShow = ref(true);
 const changeShow = () => {
 	isShow.value = !isShow.value;
 };
+// 跳转到详情页
+const toDetail = (e) =>{
+	e.stopPropagation()
+	uni.navigateTo({
+		url:`/pages/detail/detail`
+	})
+}
+
 </script>
 
 <style lang="scss">

@@ -20,9 +20,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -34,9 +40,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -48,9 +60,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -62,9 +80,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -76,9 +100,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -90,9 +120,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -104,9 +140,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -118,9 +160,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -132,9 +180,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -146,9 +200,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -160,9 +220,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -174,9 +240,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
@@ -188,9 +260,15 @@
 					<view class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+					</navigator>
+					<navigator url="/pages/preview/preview" class="works-item">
+						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+					</navigator>
 				</view>
 			</view>
 		</view>
@@ -307,11 +385,17 @@
 				height: 43vw;
 				display: flex;
 				justify-content: space-between;
-				image {
+				.works-item{
 					width: 32%;
 					height: 100%;
 					border-radius: 10rpx;
 					border: 1px solid #fff;
+					image {
+						width: 100%;
+						height: 100%;
+						border-radius: 10rpx;
+						// border: 1px solid #fff;
+					}
 				}
 			}
 		}
