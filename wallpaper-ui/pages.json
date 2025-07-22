@@ -3,56 +3,57 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/sort/sort",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/sort/sort",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/author/author",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/author/author",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/share/share",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/share/share",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/my/my",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/my/my",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/sortList/sortList",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/sortList/sortList",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/preview/preview",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/preview/preview",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/detail/detail",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
+			"path": "pages/detail/detail",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom"
 			}
 		}
 	],
@@ -60,8 +61,7 @@
 		"color": "#7b7b7f",
 		"selectedColor": "#007aff",
 		"backgroundColor": "#353962",
-		"list": [
-			{
+		"list": [{
 				"text": "首页",
 				"pagePath": "pages/index/index",
 				"iconPath": "/static/images/home.png",

@@ -1,4 +1,5 @@
 <template>
+	<navbar />
 	<view class="home">
 		<!-- 毛玻璃背景 -->
 		<view class="home-background"></view>
@@ -6,19 +7,19 @@
 		<view class="home-banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
 				<swiper-item>
-					<image src="/static/images/banner1.webp" mode="aspectFill"></image>
+					<image src="/static/images/banner1.jpg" mode="aspectFill"></image>
 				</swiper-item>
 				<swiper-item>
-					<image src="/static/images/banner2.webp" mode="aspectFill"></image>
+					<image src="/static/images/banner2.jpg" mode="aspectFill"></image>
 				</swiper-item>
 				<swiper-item>
-					<image src="/static/images/banner3.webp" mode="aspectFill"></image>
+					<image src="/static/images/banner3.jpg" mode="aspectFill"></image>
 				</swiper-item>
 				<swiper-item>
-					<image src="/static/images/banner4.webp" mode="aspectFill"></image>
+					<image src="/static/images/banner4.jpg" mode="aspectFill"></image>
 				</swiper-item>
 				<swiper-item>
-					<image src="/static/images/banner5.webp" mode="aspectFill"></image>
+					<image src="/static/images/banner5.jpg" mode="aspectFill"></image>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -222,10 +223,14 @@
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+	import navbar from '../../components/navbar.vue';
+	
+</script>
 
 <style lang="scss">
 .home {
+	margin-top: 192rpx;
 	width: 100%;
 	height: 100%;
 	padding: 30rpx;

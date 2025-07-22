@@ -1,4 +1,5 @@
 <template>
+	<navbar />
 	<view class="share">
 		<!-- 毛玻璃背景 -->
 		<view class="share-background"></view>
@@ -148,10 +149,13 @@
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+	import navbar from '../../components/navbar.vue';
+</script>
 
 <style lang="scss">
 .share {
+	margin-top: 192rpx;
 	width: 100%;
 	height: 1200px;
 	background-color: #2c333e;

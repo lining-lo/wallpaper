@@ -114,7 +114,7 @@ const toDetail = (e) =>{
 	/* 当前图片信息 */
 	.preview-info {
 		position: absolute;
-		top: 0;
+		top: 120rpx;
 		width: 100%;
 		height: 54vw;
 		display: flex;

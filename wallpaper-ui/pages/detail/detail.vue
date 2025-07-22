@@ -1,4 +1,5 @@
 <template>
+	<navbar />
 	<view class="detail">
 		<!-- 毛玻璃背景 -->
 		<view class="detail-background"></view>
@@ -210,6 +211,7 @@
 </template>
 
 <script setup>
+import navbar from '../../components/navbar.vue';
 import { ref } from 'vue';
 
 // 显示|隐藏时间
@@ -222,6 +224,7 @@ const changeShow = () => {
 
 <style lang="scss">
 .detail {
+	margin-top: 192rpx;
 	width: 100%;
 	height: 100%;
 	position: relative;

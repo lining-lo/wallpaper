@@ -1,4 +1,5 @@
 <template>
+	<navbar />
 	<view class="author">
 		<!-- 毛玻璃背景 -->
 		<view class="author-background"></view>
@@ -279,10 +280,13 @@
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+import navbar from '../../components/navbar.vue';
+</script>
 
 <style lang="scss">
 .author {
+	margin-top: 192rpx;
 	width: 100%;
 	height: 100%;
 	padding: 30rpx;
@@ -385,7 +389,7 @@
 				height: 43vw;
 				display: flex;
 				justify-content: space-between;
-				.works-item{
+				.works-item {
 					width: 32%;
 					height: 100%;
 					border-radius: 10rpx;

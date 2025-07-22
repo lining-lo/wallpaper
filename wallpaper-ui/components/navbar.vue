@@ -1,0 +1,48 @@
+<template>
+	<view class="navbar">
+		<view class="navbar-logo">
+			<image src="/static/images/logo.png" mode="aspectFill"></image>
+		</view>
+		<view class="navbar-search">
+			<uni-icons type="search" color="#a9a6a6" size="16"></uni-icons>
+			<text>搜索</text>
+		</view>
+	</view>
+</template>
+
+<script setup></script>
+
+<style lang="scss">
+.navbar {
+	width: 100%;
+	height: 192rpx;
+	background-color: #353962;
+	position: fixed;
+	z-index: 10;
+	top: 0;
+	padding: 30rpx 20rpx;
+	display: flex;
+	align-items: flex-end;
+	.navbar-logo {
+		height: 60rpx;
+		width: 240rpx;
+		image {
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	.navbar-search {
+		width: 204rpx;
+		margin-left: 19rpx;
+		padding: 10rpx 18rpx;
+		border-radius: 40rpx;
+		display: flex;
+		background-color: rgba(255, 255, 255, 0.1);
+		text {
+			color: #a9a6a6;
+			margin-left: 10rpx;
+		}
+	}
+}
+</style>

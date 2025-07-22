@@ -1,4 +1,5 @@
 <template>
+	<navbar />
 	<view class="sort">
 		<!-- 毛玻璃背景 -->
 		<view class="sort-background"></view>
@@ -158,10 +159,13 @@
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+	import navbar from '../../components/navbar.vue';
+</script>
 
 <style lang="scss">
 .sort {
+	margin-top: 192rpx;
 	width: 100%;
 	height: 100%;
 	padding: 30rpx;
