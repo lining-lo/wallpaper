@@ -2,6 +2,10 @@
 	<view class="preview" @click="changeShow">
 		<!-- 毛玻璃背景 -->
 		<view class="preview-background"></view>
+		<!-- 返回按钮 -->
+		<view class="preview-back" @click="goBack">
+			<uni-icons type="left" size="20" color="#fff"></uni-icons>
+		</view>
 		<!-- 图片轮播图 -->
 		<swiper circular>
 			<swiper-item>
@@ -37,7 +41,7 @@
 			</view>
 		</view>
 		<!-- 底部功能按钮 -->
-		<view class="preview-bottom"  v-if="isShow" @click.stop="">
+		<view class="preview-bottom" v-if="isShow" @click.stop="">
 			<view class="bottom-detail btn" @click="toDetail($event)">
 				<uni-icons type="info-filled" color="#fff" size="22"></uni-icons>
 				<text>详情</text>
@@ -61,6 +65,7 @@
 <script setup>
 import { ref } from 'vue';
 
+
 // 显示|隐藏图片以外的信息
 const isShow = ref(true);
 // 切换信息状态
@@ -68,13 +73,16 @@ const changeShow = () => {
 	isShow.value = !isShow.value;
 };
 // 跳转到详情页
-const toDetail = (e) =>{
-	e.stopPropagation()
+const toDetail = (e) => {
+	e.stopPropagation();
 	uni.navigateTo({
-		url:`/pages/detail/detail`
-	})
+		url: `/pages/detail/detail`
+	});
+};
+// 返回上一页
+const goBack = ()=>{
+	uni.navigateBack()
 }
-
 </script>
 
 <style lang="scss">
@@ -96,6 +104,20 @@ const toDetail = (e) =>{
 		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
 		background-size: cover;
 		background-position: center;
+	}
+	/* 返回按钮 */
+	.preview-back {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background-color: rgba(40, 40, 40, 0.8);
+		position: fixed;
+		z-index: 1;
+		top: 92rpx;
+		left: 20rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	/* 轮播图 */
 	swiper {

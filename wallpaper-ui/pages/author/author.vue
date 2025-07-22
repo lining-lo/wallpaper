@@ -18,7 +18,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -38,7 +38,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -58,7 +58,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -78,7 +78,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -98,7 +98,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -118,7 +118,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -138,7 +138,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -158,7 +158,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -178,7 +178,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -198,7 +198,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -218,7 +218,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -238,7 +238,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
@@ -258,7 +258,7 @@
 						<view class="avator"></view>
 						<view class="name">巴曙松</view>
 					</view>
-					<view class="info-right">查看全部</view>
+					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">

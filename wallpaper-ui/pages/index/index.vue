@@ -30,11 +30,21 @@
 				<navigator url="/pages/author/author" open-type="reLaunch" class="more">More+</navigator>
 			</view>
 			<view class="author-list">
-				<image src="https://img2.baidu.com/it/u=93036002,4253821634&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-				<image src="https://img2.baidu.com/it/u=3177417376,516182796&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-				<image src="https://img2.baidu.com/it/u=2201786265,1996910509&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-				<image src="https://img2.baidu.com/it/u=3928639842,338040314&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-				<image src="https://img1.baidu.com/it/u=4105985255,4254704125&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
+					<image src="https://img2.baidu.com/it/u=93036002,4253821634&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+				</navigator>
+				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
+					<image src="https://img2.baidu.com/it/u=3177417376,516182796&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+				</navigator>
+				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
+					<image src="https://img2.baidu.com/it/u=2201786265,1996910509&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+				</navigator>
+				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
+					<image src="https://img2.baidu.com/it/u=3928639842,338040314&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+				</navigator>
+				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
+					<image src="https://img1.baidu.com/it/u=4105985255,4254704125&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+				</navigator>
 			</view>
 		</view>
 		<!-- 热门专辑 -->
@@ -309,11 +319,16 @@
 			position: relative;
 			display: flex;
 			justify-content: space-between;
-			image {
+			.list-item{
 				width: 15vw;
 				height: 15vw;
 				border-radius: 50%;
 				border: 2px solid #fff;
+			}
+			image {
+				width: 100%;
+				height: 100%;
+				border-radius: 50%;
 			}
 		}
 	}

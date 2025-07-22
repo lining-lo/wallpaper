@@ -1,8 +1,13 @@
 <template>
-	<navbar />
 	<view class="sortlist">
 		<!-- 毛玻璃背景 -->
 		<view class="sortlist-background"></view>
+		<!-- 头部导航 -->
+		<view class="sortlist-navbar">
+			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
+			<text>AI美图</text>
+			<view style="width: 100rpx"></view>
+		</view>
 		<!-- 分类内容列表 -->
 		<view class="sortlist-content">
 			<navigator url="/pages/preview/preview" class="content-item">
@@ -56,14 +61,19 @@
 
 <script setup>
 import navbar from '../../components/navbar.vue';
+
+// 返回上一页
+const goBack = () => {
+	uni.navigateBack();
+};
 </script>
 
 <style lang="scss">
 .sortlist {
-	margin-top: 192rpx;
 	width: 100%;
 	height: 1200px;
 	padding: 30rpx;
+	padding-top: 200rpx;
 	position: relative;
 	background-color: #2c333e;
 	overflow: auto;
@@ -79,6 +89,20 @@ import navbar from '../../components/navbar.vue';
 		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
 		background-size: cover;
 		background-position: center;
+	}
+	/* 头部导航栏 */
+	.sortlist-navbar {
+		width: 100%;
+		height: 180rpx;
+		background-color: #353962;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		padding: 30rpx;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
 	}
 	/* 分类内容列表 */
 	.sortlist-content {
