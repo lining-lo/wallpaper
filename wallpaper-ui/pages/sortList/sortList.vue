@@ -60,7 +60,6 @@
 </template>
 
 <script setup>
-import navbar from '../../components/navbar.vue';
 
 // 返回上一页
 const goBack = () => {

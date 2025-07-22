@@ -3,14 +3,16 @@
 		<view class="navbar-logo">
 			<image src="/static/images/logo.png" mode="aspectFill"></image>
 		</view>
-		<view class="navbar-search">
+		<navigator url="/pages/search/search" class="navbar-search">
 			<uni-icons type="search" color="#a9a6a6" size="16"></uni-icons>
 			<text>搜索</text>
-		</view>
+		</navigator>
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+	
+</script>
 
 <style lang="scss">
 .navbar {
