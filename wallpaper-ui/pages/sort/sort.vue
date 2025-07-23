@@ -5,18 +5,18 @@
 		<view class="sort-background"></view>
 		<!-- 排行榜 -->
 		<view class="sort-ranking">
-			<view class="ranking-item">
+			<navigator url="/pages/rank/rank" class="ranking-item">
 				<text class="title">热门榜</text>
 				<text class="english">Hot ranking</text>
-			</view>
-			<view class="ranking-item">
+			</navigator>
+			<navigator url="/pages/rank/rank" class="ranking-item">
 				<text class="title">点赞榜</text>
 				<text class="english">Like ranking</text>
-			</view>
-			<view class="ranking-item">
+			</navigator>
+			<navigator url="/pages/rank/rank" class="ranking-item">
 				<text class="title">收藏榜</text>
 				<text class="english">Rating ranking</text>
-			</view>
+			</navigator>
 		</view>
 		<!-- 分类精选 -->
 		<view class="sort-list">
