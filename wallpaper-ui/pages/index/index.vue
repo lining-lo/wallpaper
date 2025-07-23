@@ -51,11 +51,11 @@
 		<view class="home-album">
 			<view class="album-title">
 				<view class="title">热门专辑</view>
-				<view class="more">More+</view>
+				<navigator url="/pages/album/album" class="more">More+</navigator>
 			</view>
 			<view class="album-list">
 				<scroll-view scroll-x>
-					<view class="list-item">
+					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
 						<image src="https://img2.baidu.com/it/u=1882468436,1746783708&fm=253&fmt=auto&app=138&f=JPEG?w=791&h=500" mode="aspectFill"></image>
 						<view class="item-info">
 							<view class="info-title">
@@ -66,8 +66,8 @@
 								<text>208人喜欢</text>
 							</view>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
 						<image src="https://img0.baidu.com/it/u=1639506431,2987721590&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500" mode="aspectFill"></image>
 						<view class="item-info">
 							<view class="info-title">
@@ -78,8 +78,8 @@
 								<text>208人喜欢</text>
 							</view>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
 						<image src="https://img2.baidu.com/it/u=3561441785,2160995199&fm=253&fmt=auto&app=138&f=JPEG?w=754&h=500" mode="aspectFill"></image>
 						<view class="item-info">
 							<view class="info-title">
@@ -90,8 +90,8 @@
 								<text>208人喜欢</text>
 							</view>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
 						<image src="https://img1.baidu.com/it/u=3556096279,1315899449&fm=253&fmt=auto&app=138&f=JPEG?w=781&h=500" mode="aspectFill"></image>
 						<view class="item-info">
 							<view class="info-title">
@@ -102,8 +102,8 @@
 								<text>208人喜欢</text>
 							</view>
 						</view>
-					</view>
-					<view class="list-item">
+					</navigator>
+					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
 						<image src="https://img2.baidu.com/it/u=14263107,2364659265&fm=253&fmt=auto&app=120&f=JPEG?w=889&h=500" mode="aspectFill"></image>
 						<view class="item-info">
 							<view class="item-info">
@@ -116,7 +116,7 @@
 								</view>
 							</view>
 						</view>
-					</view>
+					</navigator>
 				</scroll-view>
 			</view>
 		</view>
