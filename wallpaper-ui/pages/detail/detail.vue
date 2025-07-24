@@ -1,17 +1,20 @@
 <template>
-	<navbar />
 	<view class="detail">
 		<!-- 毛玻璃背景 -->
 		<view class="detail-background"></view>
+		<!-- 头部导航 -->
+		<view class="detail-navbar">
+			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
+			<text>图片详情</text>
+			<view style="width: 100rpx"></view>
+		</view>
 		<!-- 图片展示区 -->
-		<view class="detail-image" @click="changeShow">
-			<image class="image-cover" v-if="isShow" src="/static/images/detail1.png"></image>
-			<image class="image-cover" v-else src="/static/images/detail2.png"></image>
-			<image class="image-img" src="https://img1.baidu.com/it/u=1869187227,4137243093&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=926" mode="aspectFill"></image>
-			<view class="image-time" v-if="isShow">
-				<view class="time">12:31</view>
-				<view class="tip">点击屏幕互动</view>
-			</view>
+		<view class="detail-image">
+			<swiper circular>
+				<swiper-item>
+					<image class="image-img" src="https://img1.baidu.com/it/u=1869187227,4137243093&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=926" mode="aspectFill"></image>
+				</swiper-item>
+			</swiper>
 		</view>
 		<!-- 详情内容 -->
 		<view class="detail-content">
@@ -220,11 +223,15 @@ const isShow = ref(true);
 const changeShow = () => {
 	isShow.value = !isShow.value;
 };
+
+// 返回上一页
+const goBack = () => {
+	uni.navigateBack();
+};
 </script>
 
 <style lang="scss">
 .detail {
-	margin-top: 192rpx;
 	width: 100%;
 	height: 100%;
 	position: relative;
@@ -243,40 +250,40 @@ const changeShow = () => {
 		background-size: cover;
 		background-position: center;
 	}
+	/* 头部导航栏 */
+	.detail-navbar {
+		width: 100%;
+		height: 180rpx;
+		// background-color: #353962;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		padding: 30rpx;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
 	/* 图片展示区 */
 	.detail-image {
 		position: relative;
 		margin: 0 auto;
-		width: 84%;
-		height: 88vh;
+		width: 100%;
+		height: 90vh;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		.image-cover {
+		swiper {
 			width: 100%;
 			height: 100%;
 			position: absolute;
-		}
-		.image-img {
-			width: 94%;
-			height: 96%;
-			border-radius: 50rpx;
-		}
-		.image-time {
-			width: 100%;
-			position: absolute;
-			top: 80px;
-			text-align: center;
-			.time {
-				font-size: 46px;
-				font-weight: 600;
-				letter-spacing: 0.2em;
-				margin-bottom: 8px;
-			}
-			.tip {
-				font-size: 20px;
-				font-weight: 400;
-				letter-spacing: 0.2em;
+			swiper-item {
+				width: 100%;
+				height: 100%;
+				image {
+					width: 100%;
+					height: 100%;
+				}
 			}
 		}
 	}
