@@ -10,80 +10,78 @@
 		</view>
 		<!-- 专辑封面 -->
 		<view class="albumdetail-cover">
-			<image src="/static/images/banner1.jpg" mode="aspectFill"></image>
+			<image v-if="coverInfo" :src="coverInfo.cover" mode="aspectFill"></image>
 			<view class="item-info">
 				<view class="info-like">
 					<text class="fill"></text>
 					<text>12</text>
 				</view>
 				<view class="info-title">
-					<text class="name">性感迷人大幂幂</text>
+					<text v-if="coverInfo" class="name">{{ coverInfo.name }}</text>
 					<text class="count">208人喜欢</text>
 				</view>
 			</view>
 		</view>
 		<!-- 分类内容列表 -->
 		<view class="albumdetail-content">
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="content-item">
-				<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-			</navigator>
+			<view @click="toPreview(item)" class="content-item" v-for="(item, index) in albumList" :key="index">
+				<image :src="item.url" mode="aspectFill"></image>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { onLoad } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
+import { selecWallpaperPageByCategoryId } from '../../api/api';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+// 封面信息
+const coverInfo = ref();
+// 专辑列表
+const albumList = ref();
+// 获取专辑列表参数
+const albumListParams = reactive({
+	type: 1,
+	category_id: '',
+	status: 1,
+	page: 1,
+	pagesize: 9
+});
+// 获取专辑列表方法
+const getAlbumList = async (category_id) => {
+	albumListParams.category_id = category_id;
+	const result = await selecWallpaperPageByCategoryId(albumListParams);
+	albumList.value = result;
+	console.log(result);
+};
+// 挂载
+onLoad((options) => {
+	// 获取封面信息
+	const category_item = JSON.parse(decodeURIComponent(options.item));
+	coverInfo.value = category_item;
+	// 获取专辑列表数据
+	getAlbumList(category_item.id);
+});
+
+// 跳转到壁纸预览界面
+const toPreview = (item) => {
+	const detail = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/preview/preview?item=${encodeURIComponent(detail)}`
+	});
 };
 </script>
 
 <style lang="scss">
 .albumdetail {
 	width: 100%;
-	height: 1200px;
+	min-height: 100vh;
 	padding-top: 180rpx;
 	position: relative;
 	background-color: #2c333e;
@@ -175,8 +173,8 @@ const goBack = () => {
 		justify-content: space-between;
 		flex-wrap: wrap;
 		.content-item {
-			width: 28.5vw;
-			height: 60vw;
+			width: 214rpx;
+			height: 450rpx;
 			border-radius: 20rpx;
 			border: 1px solid #fff;
 			margin-bottom: 30rpx;
@@ -184,6 +182,7 @@ const goBack = () => {
 			image {
 				width: 100%;
 				height: 100%;
+				border-radius: 20rpx;
 			}
 		}
 	}

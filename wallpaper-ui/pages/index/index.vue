@@ -6,20 +6,17 @@
 		<!-- 轮播图 -->
 		<view class="home-banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
-				<swiper-item>
-					<image src="/static/images/banner1.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="/static/images/banner2.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="/static/images/banner3.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="/static/images/banner4.jpg" mode="aspectFill"></image>
-				</swiper-item>
-				<swiper-item>
-					<image src="/static/images/banner5.jpg" mode="aspectFill"></image>
+				<swiper-item @click="toAlbumDetail(item)" v-for="(item, index) in album" :key="index">
+					<image :src="item.cover" mode="aspectFill"></image>
+					<view class="item-info">
+						<view class="info-title">
+							<text class="name">{{ item.name }}</text>
+							<text class="count">12</text>
+						</view>
+						<view class="info-like">
+							<text>208人喜欢</text>
+						</view>
+					</view>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -45,79 +42,6 @@
 				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
 					<image src="https://img1.baidu.com/it/u=4105985255,4254704125&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
 				</navigator>
-			</view>
-		</view>
-		<!-- 热门专辑 -->
-		<view class="home-album">
-			<view class="album-title">
-				<view class="title">热门专辑</view>
-				<navigator url="/pages/album/album" class="more">More+</navigator>
-			</view>
-			<view class="album-list">
-				<scroll-view scroll-x>
-					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-						<image src="https://img2.baidu.com/it/u=1882468436,1746783708&fm=253&fmt=auto&app=138&f=JPEG?w=791&h=500" mode="aspectFill"></image>
-						<view class="item-info">
-							<view class="info-title">
-								<text class="name">性感迷人大幂幂</text>
-								<text class="count">12</text>
-							</view>
-							<view class="info-like">
-								<text>208人喜欢</text>
-							</view>
-						</view>
-					</navigator>
-					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-						<image src="https://img0.baidu.com/it/u=1639506431,2987721590&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500" mode="aspectFill"></image>
-						<view class="item-info">
-							<view class="info-title">
-								<text class="name">性感迷人大幂幂</text>
-								<text class="count">12</text>
-							</view>
-							<view class="info-like">
-								<text>208人喜欢</text>
-							</view>
-						</view>
-					</navigator>
-					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-						<image src="https://img2.baidu.com/it/u=3561441785,2160995199&fm=253&fmt=auto&app=138&f=JPEG?w=754&h=500" mode="aspectFill"></image>
-						<view class="item-info">
-							<view class="info-title">
-								<text class="name">性感迷人大幂幂</text>
-								<text class="count">12</text>
-							</view>
-							<view class="info-like">
-								<text>208人喜欢</text>
-							</view>
-						</view>
-					</navigator>
-					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-						<image src="https://img1.baidu.com/it/u=3556096279,1315899449&fm=253&fmt=auto&app=138&f=JPEG?w=781&h=500" mode="aspectFill"></image>
-						<view class="item-info">
-							<view class="info-title">
-								<text class="name">性感迷人大幂幂</text>
-								<text class="count">12</text>
-							</view>
-							<view class="info-like">
-								<text>208人喜欢</text>
-							</view>
-						</view>
-					</navigator>
-					<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-						<image src="https://img2.baidu.com/it/u=14263107,2364659265&fm=253&fmt=auto&app=120&f=JPEG?w=889&h=500" mode="aspectFill"></image>
-						<view class="item-info">
-							<view class="item-info">
-								<view class="info-title">
-									<text class="name">性感迷人大幂幂</text>
-									<text class="count">12</text>
-								</view>
-								<view class="info-like">
-									<text>208人喜欢</text>
-								</view>
-							</view>
-						</view>
-					</navigator>
-				</scroll-view>
 			</view>
 		</view>
 		<!-- 分类精选 -->
@@ -234,16 +158,44 @@
 </template>
 
 <script setup>
-	import navbar from '../../components/navbar.vue';
-	
+import navbar from '../../components/navbar.vue';
+import { selecCategoryPage } from '../../api/api';
+import { onLoad } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
+
+// 专辑数据
+const album = ref();
+// 分页获取专辑的参数
+const albumParams = reactive({
+	type: 1,
+	page: 1,
+	pagesize: 8
+});
+//  分页获取专辑方法
+const getAlbum = async () => {
+	const result = await selecCategoryPage(albumParams);
+	album.value = result;
+	// console.log(album.value)
+};
+// 挂载
+onLoad(() => {
+	getAlbum();
+});
+// 跳转到专辑详情
+const toAlbumDetail = (item) => {
+	const album_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/albumDetail/albumDetail?item=${encodeURIComponent(album_item)}`
+	});
+};
 </script>
 
 <style lang="scss">
 .home {
-	margin-top: 192rpx;
 	width: 100%;
 	height: 100%;
 	padding: 30rpx;
+	padding-top: 210rpx;
 	position: relative;
 	background-color: #2c333e;
 	overflow: auto;
@@ -262,8 +214,9 @@
 	}
 	/* 轮播图 */
 	.home-banner {
+		position: relative;
 		width: 100%;
-		height: 300rpx;
+		height: 358rpx;
 		border-radius: 20rpx;
 		overflow: hidden;
 		box-shadow: 0 1px 20px -6px #00000080;
@@ -276,16 +229,63 @@
 			}
 		}
 		swiper {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			position: relative;
 			width: 100%;
 			height: 100%;
 			swiper-item {
 				width: 100%;
 				height: 100%;
+				margin-bottom: 30rpx;
+				border-radius: 20rpx;
+				border: 1px solid #fff;
+				position: relative;
 				image {
 					width: 100%;
 					height: 100%;
 					border-radius: 20rpx;
-					border: 1px solid #fff;
+				}
+				.item-info {
+					width: 100%;
+					height: 100%;
+					padding: 20rpx;
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+					position: absolute;
+					top: 0;
+					.info-title {
+						display: flex;
+						justify-content: space-between;
+						.name {
+							font-weight: 700;
+							background-color: rgb(40, 40, 40, 0.8);
+							font-size: 20px;
+							font-family: cursive;
+						}
+						.count {
+							display: flex;
+							align-items: center;
+							font-size: 12px;
+							padding: 0 8px;
+							background-color: rgba(40, 40, 40, 0.8);
+							border-radius: 10px;
+						}
+					}
+					.info-like {
+						width: 100%;
+						display: flex;
+						align-items: center;
+						text {
+							font-size: 12px;
+							padding: 4px 16px;
+							background-color: rgba(40, 40, 40, 0.8);
+							border-radius: 20px;
+						}
+					}
 				}
 			}
 		}
@@ -319,7 +319,7 @@
 			position: relative;
 			display: flex;
 			justify-content: space-between;
-			.list-item{
+			.list-item {
 				width: 15vw;
 				height: 15vw;
 				border-radius: 50%;
@@ -329,92 +329,6 @@
 				width: 100%;
 				height: 100%;
 				border-radius: 50%;
-			}
-		}
-	}
-	/* 热门专辑 */
-	.home-album {
-		width: 100%;
-		margin: 60rpx 0;
-		.album-title {
-			width: 100%;
-			position: relative;
-			padding-bottom: 36rpx;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			font-family: fantasy;
-			.title {
-				font-size: 20px;
-				font-weight: 700;
-			}
-			.more {
-				font-size: 16px;
-				color: gray;
-				border-radius: 0.625rem;
-				padding: 0.14rem 0.4rem;
-				background-color: #e1dbd5;
-			}
-		}
-		.album-list {
-			height: 32vw;
-			scroll-view {
-				height: 100%;
-				white-space: nowrap;
-				height: 100%;
-				.list-item {
-					width: 64vw;
-					height: 100%;
-					margin-right: 30rpx;
-					display: inline-block;
-					border-radius: 20rpx;
-					border: 1px solid #fff;
-					position: relative;
-					&:last-child {
-						margin-right: 0;
-					}
-					image {
-						width: 100%;
-						height: 100%;
-						border-radius: 20rpx;
-					}
-					.item-info {
-						width: 100%;
-						height: 100%;
-						padding: 20rpx;
-						display: flex;
-						flex-direction: column;
-						justify-content: space-between;
-						position: absolute;
-						top: 0;
-						.info-title {
-							display: flex;
-							justify-content: space-between;
-							.name {
-								font-weight: 700;
-							}
-							.count {
-								display: flex;
-								align-items: center;
-								font-size: 12px;
-								padding: 0 8px;
-								background-color: rgba(40, 40, 40, 0.8);
-								border-radius: 10px;
-							}
-						}
-						.info-like {
-							width: 100%;
-							display: flex;
-							align-items: center;
-							text {
-								font-size: 12px;
-								padding: 4px 16px;
-								background-color: rgba(40, 40, 40, 0.8);
-								border-radius: 20px;
-							}
-						}
-					}
-				}
 			}
 		}
 	}
@@ -443,13 +357,13 @@
 			}
 		}
 		.sort-list {
-			height: 42vw;
+			height: 320rpx;
 			scroll-view {
 				height: 100%;
 				white-space: nowrap;
 				height: 100%;
 				.list-item {
-					width: 26vw;
+					width: 216rpx;
 					height: 100%;
 					margin-right: 20rpx;
 					display: inline-block;
@@ -526,7 +440,7 @@
 			flex-wrap: wrap;
 			.list-item {
 				width: calc(34% - 20rpx);
-				height: 46vw;
+				height: 450rpx;
 				margin-right: 20rpx;
 				margin-bottom: 30rpx;
 				border-radius: 20rpx;

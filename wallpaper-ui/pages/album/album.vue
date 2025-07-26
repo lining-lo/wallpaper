@@ -10,83 +10,63 @@
 		</view>
 		<!-- 专辑列表 -->
 		<view class="album-list">
-			<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=1882468436,1746783708&fm=253&fmt=auto&app=138&f=JPEG?w=791&h=500" mode="aspectFill"></image>
+			<view @click="toAlbumDetail(item)" class="list-item" v-for="(item, index) in album" :key="index">
+				<image :src="item.cover" mode="aspectFill"></image>
 				<view class="item-info">
 					<view class="info-title">
-						<text class="name">性感迷人大幂幂</text>
+						<text class="name">{{ item.name }}</text>
 						<text class="count">12</text>
 					</view>
 					<view class="info-like">
 						<text>208人喜欢</text>
 					</view>
 				</view>
-			</navigator>
-			<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1639506431,2987721590&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500" mode="aspectFill"></image>
-				<view class="item-info">
-					<view class="info-title">
-						<text class="name">性感迷人大幂幂</text>
-						<text class="count">12</text>
-					</view>
-					<view class="info-like">
-						<text>208人喜欢</text>
-					</view>
-				</view>
-			</navigator>
-			<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=3561441785,2160995199&fm=253&fmt=auto&app=138&f=JPEG?w=754&h=500" mode="aspectFill"></image>
-				<view class="item-info">
-					<view class="info-title">
-						<text class="name">性感迷人大幂幂</text>
-						<text class="count">12</text>
-					</view>
-					<view class="info-like">
-						<text>208人喜欢</text>
-					</view>
-				</view>
-			</navigator>
-			<navigator url="/pages/albumDetail/albumDetail" class="list-item">
-				<image src="https://img1.baidu.com/it/u=3556096279,1315899449&fm=253&fmt=auto&app=138&f=JPEG?w=781&h=500" mode="aspectFill"></image>
-				<view class="item-info">
-					<view class="info-title">
-						<text class="name">性感迷人大幂幂</text>
-						<text class="count">12</text>
-					</view>
-					<view class="info-like">
-						<text>208人喜欢</text>
-					</view>
-				</view>
-			</navigator>
-			<navigator url="/pages/albumDetail/albumDetail"  class="list-item">
-				<image src="https://img2.baidu.com/it/u=14263107,2364659265&fm=253&fmt=auto&app=120&f=JPEG?w=889&h=500" mode="aspectFill"></image>
-				<view class="item-info">
-					<view class="item-info">
-						<view class="info-title">
-							<text class="name">性感迷人大幂幂</text>
-							<text class="count">12</text>
-						</view>
-						<view class="info-like">
-							<text>208人喜欢</text>
-						</view>
-					</view>
-				</view>
-			</navigator>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { selecCategoryPage } from '../../api/api';
+import { onLoad } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+// 专辑数据
+const album = ref();
+// 分页获取专辑的参数
+const albumParams = reactive({
+	type: 1,
+	page: 1,
+	pagesize: 8
+});
+//  分页获取专辑方法
+const getAlbum = async () => {
+	const result = await selecCategoryPage(albumParams);
+	album.value = result;
+	// console.log(album.value)
+};
+// 挂载
+onLoad(() => {
+	getAlbum();
+});
+// 跳转到专辑详情
+const toAlbumDetail = (item) => {
+	const album_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/albumDetail/albumDetail?item=${encodeURIComponent(album_item)}`
+	});
 };
 </script>
 
 <style lang="scss">
 .album {
 	width: 100%;
-	height: 1200px;
+	height: 100%;
 	padding: 30rpx;
 	padding-top: 200rpx;
 	position: relative;
@@ -129,7 +109,7 @@ const goBack = () => {
 		width: 100%;
 		.list-item {
 			width: 100%;
-			height: 300rpx;
+			height: 358rpx;
 			margin-bottom: 30rpx;
 			border-radius: 20rpx;
 			border: 1px solid #fff;

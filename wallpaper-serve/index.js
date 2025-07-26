@@ -17,7 +17,6 @@ app.use(cors());
 
 // 静态资源服务（优先处理静态文件）
 app.use(express.static(path.join(__dirname, 'data')));
-// app.use(express.static(path.join(__dirname, 'dist')));
 
 // 设置视图引擎
 app.engine('html', ejs.__express);
@@ -25,7 +24,7 @@ app.set('view engine', 'html');
 
 // 引入路由模块
 require('./routes')(app);
-// require('./routes/files')(app);
+require('./routes/files')(app);
 // require('./routes/email')(app);
 
 // 启动服务器

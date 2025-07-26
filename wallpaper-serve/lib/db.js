@@ -60,23 +60,38 @@ const createDatabase = async () => {
 // 创建数据表
 const createTables = async () => {
     const tables = [
-        // {
-        //     name: 'comment',
-        //     sql: `create table if not exists comment(
-        //             id VARCHAR(100) NOT NULL,
-        //             type int NOT NULL COMMENT '类型（-1所有、0文章、1说说、2留言墙、3树洞、4相册）',
-        //             type_id VARCHAR(100) NOT NULL COMMENT '所属类型的ID（文章ID、说说ID、留言墙ID、树洞ID）',
-        //             user_id VARCHAR(100) NOT NULL COMMENT '评论者ID',
-        //             user_name VARCHAR(100) COMMENT '用户名称',
-        //             user_type INT NOT NULL COMMENT '用户类型 (0登录用户，1游客)',
-        //             user_imgurl VARCHAR(100) COMMENT '用户头像',
-        //             createdate VARCHAR(100) NOT NULL COMMENT '创建时间',
-        //             content VARCHAR(100) NOT NULL COMMENT '评论内容',
-        //             replier_id VARCHAR(100) COMMENT '回复者ID',
-        //             replier_name VARCHAR(100) COMMENT '回复者名称',
-        //             PRIMARY KEY (id)
-        //         );`
-        // },
+        {
+            name: 'wallpaper',
+            sql: `create table if not exists wallpaper(
+                    id VARCHAR(100) NOT NULL,
+                    title VARCHAR(100) NOT NULL COMMENT '壁纸标题',
+                    description VARCHAR(2000) DEFAULT NULL COMMENT '壁纸描述',
+                    url VARCHAR(100) NOT NULL COMMENT '图片地址',
+                    type INT DEFAULT 0 COMMENT '类型 0-普通 1-专辑',
+                    category_id VARCHAR(100) NOT NULL COMMENT '分类ID',
+                    status INT DEFAULT 0 COMMENT '状态 0-待审核 1-已通过 2-未通过',
+                    recommend INT DEFAULT 0 COMMENT '是否推荐 0-否 1-是',
+                    user_id VARCHAR(100) NOT NULL COMMENT '上传用户ID',
+                    user_name VARCHAR(100) NOT NULL COMMENT '用户名',
+                    user_avatar VARCHAR(255) DEFAULT NULL COMMENT '用户头像',
+                    createdate VARCHAR(100) NOT NULL COMMENT '创建时间',
+                    PRIMARY KEY (id)
+                );`
+        },
+        {
+            name: 'category',
+            sql: `create table if not exists category(
+                    id VARCHAR(100) NOT NULL,
+                    name VARCHAR(100) NOT NULL COMMENT '分类名称',
+                    cover VARCHAR(100) NOT NULL COMMENT '封面',
+                    type INT DEFAULT 0 COMMENT '类型 0-分类 1-专辑',
+                    sort INT DEFAULT 10 COMMENT '排序值',
+                    status INT DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+                    createdate VARCHAR(100) NOT NULL COMMENT '创建时间',
+                    updatedate VARCHAR(100) NOT NULL COMMENT '更新时间',
+                    PRIMARY KEY (id)
+                );`
+        },
     ];
 
     for (const table of tables) {
@@ -105,6 +120,22 @@ const initDatabase = async () => {
 initDatabase()
 
 // 数据库操作方法
-// module.exports = {
+module.exports = {
+    /**
+     * 分类相关
+     */
+    // 分页查询分类数据
+    selecCategoryPage: async (values) => {
+        const sql = `SELECT * FROM category WHERE type=? ORDER BY sort LIMIT ?,?; `
+        return query(sql, values)
+    },
 
-// };
+    /**
+     * 壁纸相关
+     */
+    // 根据分类id分页查询壁纸数据
+    selecWallpaperPageByCategoryId: async (values) => {
+        const sql = `SELECT * FROM wallpaper WHERE type=? AND category_id=? AND status=? ORDER BY createdate DESC LIMIT ?,?; `
+        return query(sql, values)
+    },
+};

@@ -42,7 +42,7 @@
 		</view>
 		<!-- 底部功能按钮 -->
 		<view class="preview-bottom" v-if="isShow" @click.stop="">
-			<view class="bottom-detail btn" @click="toDetail($event)">
+			<view class="bottom-detail btn" @click="changePopup(1)">
 				<uni-icons type="info-filled" color="#fff" size="22"></uni-icons>
 				<text>详情</text>
 			</view>
@@ -59,30 +59,77 @@
 				<text>4567</text>
 			</view>
 		</view>
+		<!-- 详情弹窗 -->
+		<uni-popup type="bottom" ref="popupInfo" :safe-area="false" borderRadius="20rpx 20rpx 0 0" background-color="#353962">
+			<view class="inner" @click.stop="">
+				<view class="popup-title">
+					<view class="fill"></view>
+					<view class="title">壁纸信息</view>
+					<uni-icons @click="changePopup(0)" type="closeempty" color="#fff" size="18"></uni-icons>
+				</view>
+				<scroll-view scroll-y>
+					<view class="content">
+						<view class="row">
+							<view class="label">壁纸ID：</view>
+							<text selectable class="value">sfsfsfsfsfsafs</text>
+						</view>
+						<view class="row">
+							<view class="label">发布者：</view>
+							<text selectable class="value">sfsfsfsfsfsafs</text>
+						</view>
+						<view class="row">
+							<view class="label">标题：</view>
+							<text selectable class="value">sfsfsfsfsfsafs</text>
+						</view>
+						<view class="row">
+							<view class="label">摘要：</view>
+							<text selectable class="value">sfsfsfsfsfsafs</text>
+						</view>
+						<view class="row">
+							<view class="label">标签：</view>
+							<view selectable class="value tags">
+								<text class="tag">喵咪</text>
+								<text class="tag">动物</text>
+							</view>
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script setup>
+import { onLoad } from '@dcloudio/uni-app';
 import { ref } from 'vue';
 
-
+// 详情弹窗dom
+const popupInfo = ref();
+// 打开|关闭弹窗(0关闭，1打开)
+const changePopup = (option) => {
+	if (option === 1) {
+		popupInfo.value.open();
+	} else {
+		popupInfo.value.close();
+	}
+};
 // 显示|隐藏图片以外的信息
 const isShow = ref(true);
 // 切换信息状态
 const changeShow = () => {
 	isShow.value = !isShow.value;
 };
-// 跳转到详情页
-const toDetail = (e) => {
-	e.stopPropagation();
-	uni.navigateTo({
-		url: `/pages/detail/detail`
-	});
-};
 // 返回上一页
-const goBack = ()=>{
-	uni.navigateBack()
-}
+const goBack = () => {
+	uni.navigateBack();
+};
+
+// 挂载
+onLoad((options) => {
+	// 获取封面信息
+	const preview_item = JSON.parse(decodeURIComponent(options.item));
+	console.log(preview_item);
+});
 </script>
 
 <style lang="scss">
@@ -214,6 +261,54 @@ const goBack = ()=>{
 			align-items: center;
 			font-size: 12px;
 			padding: 0 14rpx;
+		}
+	}
+	/* 详情弹窗 */
+	uni-popup {
+		width: 100%;
+		.inner {
+			.popup-title {
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 40rpx 30rpx;
+			}
+			scroll-view {
+				width: 100%;
+				max-height: 60vh;
+				padding: 0 60rpx 60rpx 60rpx;
+				.content {
+					.row {
+						display: flex;
+						padding: 16rpx 0;
+						font-size: 32rpx;
+						line-height: 1.7rem;
+						.label {
+							color: #9c9c9c;
+							width: 140rpx;
+							text-align: right;
+							font-size: 30rpx;
+						}
+						.value {
+							flex: 1;
+							width: 0;
+						}
+						.tags{
+							display: flex;
+							flex-wrap: wrap;
+							.tag{
+								border: 1px solid #fff;
+								font-size: 22rpx;
+								padding: 10rpx 30rpx;
+								border-radius: 40rpx;
+								line-height: 1em;
+								margin: 0 10rpx 10rpx 0;
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

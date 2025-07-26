@@ -18,6 +18,41 @@
 				<text class="english">Rating ranking</text>
 			</navigator>
 		</view>
+		<!-- 标题 -->
+		<view class="sort-title">🪁壁纸分类</view>
+		<!-- 类型分类 -->
+		<view class="sort-tyoe">
+			<view class="type-live type" style="background-color: #4481a3;">
+				<div class="content">
+					<view class="title">动态壁纸</view>
+					<view class="english">Live wallpaper</view>
+				</div>
+				<image src="/static/images/sort_live.png" mode="aspectFill"></image>
+			</view>
+			<view class="type-live type" style="background-color: #6767a7;">
+				<div class="content">
+					<view class="title">专辑</view>
+					<view class="english">Special subject</view>
+				</div>
+				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
+			</view>
+			<view class="type-live type" style="background-color: #ad945d;">
+				<div class="content">
+					<view class="title">平板</view>
+					<view class="english">Tablet computer</view>
+				</div>
+				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
+			</view>
+			<view class="type-live type" style="background-color: #c4595b;">
+				<div class="content">
+					<view class="title">头像</view>
+					<view class="english">Head sculpture</view>
+				</div>
+				<image src="/static/images/sort_avator.png" mode="aspectFill"></image>
+			</view>
+		</view>
+		<!-- 标题 -->
+		<view class="sort-title">🎖️分类精选</view>
 		<!-- 分类精选 -->
 		<view class="sort-list">
 			<navigator url="/pages/sortList/sortList" class="list-item">
@@ -160,7 +195,7 @@
 </template>
 
 <script setup>
-	import navbar from '../../components/navbar.vue';
+import navbar from '../../components/navbar.vue';
 </script>
 
 <style lang="scss">
@@ -212,10 +247,57 @@
 			}
 		}
 	}
+	/* 标题 */
+	.sort-title{
+		position: relative;
+		margin: 50rpx 0;
+		font-weight: 700;
+		font-size: 20px;
+	}
+	/* 类型分类 */
+	.sort-tyoe {
+		position: relative;
+		width: 100%;
+		margin: 30rpx 0;
+		display: flex;
+		justify-content: space-around;
+		flex-wrap: wrap;
+		.type {
+			width: 48%;
+			height: 146rpx;
+			background-color: pink;
+			margin-bottom: 20rpx;
+			border-radius: 20rpx;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			border: 1px solid #fff;
+			.content {
+				width: 70%;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				padding-left: 30rpx;
+				.title {
+					font-weight: 600;
+					font-size: 18px;
+				}
+				.english {
+					font-size: 12px;
+				}
+			}
+			image {
+				margin-top: 30rpx;
+				width: 30%;
+				height: 80rpx;
+				transform: rotate(-45deg);
+			}
+		}
+	}
 	/* 分类精选 */
 	.sort-list {
 		width: 100%;
-		margin: 60rpx 0;
 		display: flex;
 		justify-content: space-between;
 		flex-wrap: wrap;
