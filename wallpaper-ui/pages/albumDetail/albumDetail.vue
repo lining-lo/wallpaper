@@ -24,7 +24,7 @@
 		</view>
 		<!-- 分类内容列表 -->
 		<view class="albumdetail-content">
-			<view @click="toPreview(item)" class="content-item" v-for="(item, index) in albumList" :key="index">
+			<view @click="toPreview(item,index)" class="content-item" v-for="(item, index) in albumList" :key="index">
 				<image :src="item.url" mode="aspectFill"></image>
 			</view>
 		</view>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { onLoad } from '@dcloudio/uni-app';
+import { onLoad, onReachBottom } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId } from '../../api/api';
 
@@ -44,21 +44,31 @@ const goBack = () => {
 // 封面信息
 const coverInfo = ref();
 // 专辑列表
-const albumList = ref();
+const albumList = ref([]);
+// 是否加载全部
+const isEnd = ref(false)
 // 获取专辑列表参数
 const albumListParams = reactive({
 	type: 1,
 	category_id: '',
 	status: 1,
 	page: 1,
-	pagesize: 9
+	pagesize: 6
 });
 // 获取专辑列表方法
-const getAlbumList = async (category_id) => {
-	albumListParams.category_id = category_id;
-	const result = await selecWallpaperPageByCategoryId(albumListParams);
-	albumList.value = result;
-	console.log(result);
+const getAlbumList = async () => {
+	if (!isEnd.value){
+		// 发送请求
+		albumListParams.category_id = coverInfo.value.id;
+		const result = await selecWallpaperPageByCategoryId(albumListParams);
+		// 存入数据
+		albumList.value = [...albumList.value, ...result];
+		uni.setStorageSync('albumList',JSON.stringify(albumList.value))
+		// 是否到底
+		if(result.length === 0){
+			isEnd.value = true
+		}
+	}
 };
 // 挂载
 onLoad((options) => {
@@ -66,14 +76,18 @@ onLoad((options) => {
 	const category_item = JSON.parse(decodeURIComponent(options.item));
 	coverInfo.value = category_item;
 	// 获取专辑列表数据
-	getAlbumList(category_item.id);
+	getAlbumList();
+});
+// 触底加载更加专辑数据
+onReachBottom(() => {
+	albumListParams.page++;
+	getAlbumList();
 });
 
 // 跳转到壁纸预览界面
-const toPreview = (item) => {
-	const detail = JSON.stringify(item);
+const toPreview = (item,index) => {
 	uni.navigateTo({
-		url: `/pages/preview/preview?item=${encodeURIComponent(detail)}`
+		url: `/pages/preview/preview?id=${item.id}&index=${index}`
 	});
 };
 </script>

@@ -7,32 +7,20 @@
 			<uni-icons type="left" size="20" color="#fff"></uni-icons>
 		</view>
 		<!-- 图片轮播图 -->
-		<swiper circular>
-			<swiper-item>
-				<image src="https://img1.baidu.com/it/u=3257114389,2112170662&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=875" mode="aspectFill"></image>
-			</swiper-item>
-			<swiper-item>
-				<image src="https://img1.baidu.com/it/u=178885858,2138464450&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=934" mode="aspectFill"></image>
-			</swiper-item>
-			<swiper-item>
-				<image src="https://img2.baidu.com/it/u=2007894116,2307834774&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=956" mode="aspectFill"></image>
-			</swiper-item>
-			<swiper-item>
-				<image src="https://img1.baidu.com/it/u=532063795,1538461415&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1083" mode="aspectFill"></image>
-			</swiper-item>
-			<swiper-item>
-				<image src="https://img1.baidu.com/it/u=2290924651,729530190&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=938" mode="aspectFill"></image>
+		<swiper circular @change="changeAlbum" :current="currentAlbumIndex">
+			<swiper-item v-for="(item, index) in albumList" :key="index">
+				<image v-if="readAlbumIndexList.includes(index)" :src="item.url" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
 		<!-- 当前图片信息 -->
 		<view class="preview-info" v-if="isShow">
 			<view class="info-current">
-				<text>预览图 1/5</text>
+				<text v-if="albumList">预览图 {{ currentAlbumIndex + 1 }}/{{ albumList.length }}</text>
 			</view>
 			<view class="info-user">
 				<view class="inner">
-					<text>李光洁</text>
-					<image src="https://img2.baidu.com/it/u=93036002,4253821634&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+					<text>{{ currentAlbum.user_name }}</text>
+					<image :src="currentAlbum.user_avatar" mode="aspectFill"></image>
 				</view>
 			</view>
 			<view class="info-time">
@@ -124,12 +112,52 @@ const goBack = () => {
 	uni.navigateBack();
 };
 
+// 专辑列表
+const albumList = ref([]);
+// 当前专辑id
+const currentAlbumId = ref();
+// 当前专辑的索引
+const currentAlbumIndex = ref();
+// 当前的专辑信息
+const currentAlbum = ref({});
+// 看过的专辑索引
+const readAlbumIndexList = ref([]);
 // 挂载
 onLoad((options) => {
 	// 获取封面信息
-	const preview_item = JSON.parse(decodeURIComponent(options.item));
-	console.log(preview_item);
+	albumList.value = JSON.parse(uni.getStorageSync('albumList'));
+	// 获取当前专辑id
+	currentAlbumId.value = options.id;
+	// 获取当前的索引
+	currentAlbumIndex.value = Number(options.index);
+	// 获取当前专辑信息
+	currentAlbum.value = albumList.value[currentAlbumIndex.value];
+
+	// 提取缓存三张图
+	readAlbumIndexList.value.push(
+		currentAlbumIndex.value <= 0 ? albumList.value.length - 1 : currentAlbumIndex.value - 1,
+		currentAlbumIndex.value,
+		currentAlbumIndex.value >= albumList.value.length - 1 ? 0 : currentAlbumIndex.value + 1
+	);
+	// 数组去重
+	readAlbumIndexList.value = [...new Set(readAlbumIndexList.value)];
 });
+// 更换专辑的方法
+const changeAlbum = (event) => {
+	const currentIndex = event.detail.current;
+	currentAlbumIndex.value = currentIndex;
+	currentAlbum.value = albumList.value[currentIndex];
+	readAlbumIndexList.value.push(currentIndex);
+
+	// 提取缓存三张图
+	readAlbumIndexList.value.push(
+		currentAlbumIndex.value <= 0 ? albumList.value.length - 1 : currentAlbumIndex.value - 1,
+		currentAlbumIndex.value,
+		currentAlbumIndex.value >= albumList.value.length - 1 ? 0 : currentAlbumIndex.value + 1
+	);
+	// 数组去重
+	readAlbumIndexList.value = [...new Set(readAlbumIndexList.value)];
+};
 </script>
 
 <style lang="scss">
@@ -294,10 +322,10 @@ onLoad((options) => {
 							flex: 1;
 							width: 0;
 						}
-						.tags{
+						.tags {
 							display: flex;
 							flex-wrap: wrap;
-							.tag{
+							.tag {
 								border: 1px solid #fff;
 								font-size: 22rpx;
 								padding: 10rpx 30rpx;
