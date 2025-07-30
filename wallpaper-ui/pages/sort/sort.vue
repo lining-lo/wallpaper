@@ -22,28 +22,28 @@
 		<view class="sort-title">🪁壁纸分类</view>
 		<!-- 类型分类 -->
 		<view class="sort-tyoe">
-			<view class="type-live type" style="background-color: #4481a3;">
+			<view class="type-live type" style="background-color: #4481a3">
 				<div class="content">
 					<view class="title">动态壁纸</view>
 					<view class="english">Live wallpaper</view>
 				</div>
 				<image src="/static/images/sort_live.png" mode="aspectFill"></image>
 			</view>
-			<view class="type-live type" style="background-color: #6767a7;">
-				<div class="content">
+			<view class="type-live type" style="background-color: #6767a7">
+				<navigator url="/pages/album/album"  class="content">
 					<view class="title">专辑</view>
 					<view class="english">Special subject</view>
-				</div>
+				</navigator>
 				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
 			</view>
-			<view class="type-live type" style="background-color: #ad945d;">
+			<view class="type-live type" style="background-color: #ad945d">
 				<div class="content">
 					<view class="title">平板</view>
 					<view class="english">Tablet computer</view>
 				</div>
 				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
 			</view>
-			<view class="type-live type" style="background-color: #c4595b;">
+			<view class="type-live type" style="background-color: #c4595b">
 				<div class="content">
 					<view class="title">头像</view>
 					<view class="english">Head sculpture</view>
@@ -55,139 +55,13 @@
 		<view class="sort-title">🎖️分类精选</view>
 		<!-- 分类精选 -->
 		<view class="sort-list">
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+			<navigator url="/pages/sortList/sortList" class="list-item" v-for="(item,index) in sort" :key="index">
+				<image :src="item.cover" mode="aspectFill"></image>
 				<view class="item-time">
 					<text>2天前更新</text>
 				</view>
 				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
-				</view>
-			</navigator>
-			<navigator url="/pages/sortList/sortList" class="list-item">
-				<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-				<view class="item-time">
-					<text>2天前更新</text>
-				</view>
-				<view class="item-title">
-					<text>可爱萌宠</text>
+					<text>{{item.name}}</text>
 				</view>
 			</navigator>
 		</view>
@@ -196,13 +70,36 @@
 
 <script setup>
 import navbar from '../../components/navbar.vue';
+import { selecCategoryPage } from '../../api/api';
+import { onLoad } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
+
+// 分类数据
+const sort = ref();
+// 分页获取分类的参数
+const sortParams = reactive({
+	type: 0,
+	status: 1,
+	page: 1,
+	pagesize: 100
+});
+//  分页获取分类方法
+const getSort = async () => {
+	const result = await selecCategoryPage(sortParams);
+	sort.value = result;
+	console.log('sort',sort.value)
+};
+// 挂载
+onLoad(() => {
+	getSort();
+});
 </script>
 
 <style lang="scss">
 .sort {
 	margin-top: 192rpx;
 	width: 100%;
-	height: 100%;
+	min-height: 100vh;
 	padding: 30rpx;
 	position: relative;
 	background-color: #2c333e;
@@ -248,7 +145,7 @@ import navbar from '../../components/navbar.vue';
 		}
 	}
 	/* 标题 */
-	.sort-title{
+	.sort-title {
 		position: relative;
 		margin: 50rpx 0;
 		font-weight: 700;

@@ -7,20 +7,20 @@
 			<uni-icons type="left" size="20" color="#fff"></uni-icons>
 		</view>
 		<!-- 图片轮播图 -->
-		<swiper circular @change="changeAlbum" :current="currentAlbumIndex">
-			<swiper-item v-for="(item, index) in albumList" :key="index">
-				<image v-if="readAlbumIndexList.includes(index)" :src="item.url" mode="aspectFill"></image>
+		<swiper circular @change="changeWallpaper" :current="currentWallpaperIndex">
+			<swiper-item v-for="(item, index) in wallpapers" :key="index">
+				<image v-if="readWallpaperIndexList.includes(index)" :src="item.url" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
 		<!-- 当前图片信息 -->
 		<view class="preview-info" v-if="isShow">
 			<view class="info-current">
-				<text v-if="albumList">预览图 {{ currentAlbumIndex + 1 }}/{{ albumList.length }}</text>
+				<text v-if="wallpapers">预览图 {{ currentWallpaperIndex + 1 }}/{{ wallpapers.length }}</text>
 			</view>
 			<view class="info-user">
 				<view class="inner">
-					<text>{{ currentAlbum.user_name }}</text>
-					<image :src="currentAlbum.user_avatar" mode="aspectFill"></image>
+					<text>{{ currentWallpaper.user_name }}</text>
+					<image :src="currentWallpaper.user_avatar" mode="aspectFill"></image>
 				</view>
 			</view>
 			<view class="info-time">
@@ -59,29 +59,33 @@
 					<view class="content">
 						<view class="row">
 							<view class="label">壁纸ID：</view>
-							<text selectable class="value">sfsfsfsfsfsafs</text>
+							<text selectable class="value">{{ currentWallpaper.id }}</text>
+						</view>
+						<view class="row">
+							<view class="label">分类：</view>
+							<text selectable class="value">{{ currentWallpaper.category_name }}</text>
 						</view>
 						<view class="row">
 							<view class="label">发布者：</view>
-							<text selectable class="value">sfsfsfsfsfsafs</text>
-						</view>
-						<view class="row">
-							<view class="label">标题：</view>
-							<text selectable class="value">sfsfsfsfsfsafs</text>
+							<text selectable class="value">{{ currentWallpaper.user_name }}</text>
 						</view>
 						<view class="row">
 							<view class="label">摘要：</view>
-							<text selectable class="value">sfsfsfsfsfsafs</text>
+							<text selectable class="value">{{ currentWallpaper.description }}</text>
 						</view>
 						<view class="row">
 							<view class="label">标签：</view>
 							<view selectable class="value tags">
-								<text class="tag">喵咪</text>
-								<text class="tag">动物</text>
+								<text class="tag" v-for="(label, index2) in currentWallpaper.labels" :key="index2">{{ label }}</text>
 							</view>
 						</view>
 					</view>
 				</scroll-view>
+				<view class="popup-footer">
+					<view class="content">
+						声明：本图片来自用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸 ID 到邮箱 2092576148@qq.com，管理将删除侵权壁纸，维护您的权益。
+					</view>
+				</view>
 			</view>
 		</uni-popup>
 	</view>
@@ -112,51 +116,52 @@ const goBack = () => {
 	uni.navigateBack();
 };
 
-// 专辑列表
-const albumList = ref([]);
-// 当前专辑id
-const currentAlbumId = ref();
-// 当前专辑的索引
-const currentAlbumIndex = ref();
-// 当前的专辑信息
-const currentAlbum = ref({});
-// 看过的专辑索引
-const readAlbumIndexList = ref([]);
+// 壁纸列表
+const wallpapers = ref([]);
+// 当前壁纸id
+const currentWallpaperId = ref();
+// 当前壁纸的索引
+const currentWallpaperIndex = ref();
+// 当前的壁纸信息
+const currentWallpaper = ref({});
+// 看过的壁纸索引
+const readWallpaperIndexList = ref([]);
 // 挂载
 onLoad((options) => {
 	// 获取封面信息
-	albumList.value = JSON.parse(uni.getStorageSync('albumList'));
-	// 获取当前专辑id
-	currentAlbumId.value = options.id;
+	wallpapers.value = JSON.parse(uni.getStorageSync('wallpapers'));
+	// 获取当前壁纸id
+	currentWallpaperId.value = options.id;
 	// 获取当前的索引
-	currentAlbumIndex.value = Number(options.index);
-	// 获取当前专辑信息
-	currentAlbum.value = albumList.value[currentAlbumIndex.value];
+	currentWallpaperIndex.value = Number(options.index);
+	// 获取当前壁纸信息
+	currentWallpaper.value = wallpapers.value[currentWallpaperIndex.value];
 
 	// 提取缓存三张图
-	readAlbumIndexList.value.push(
-		currentAlbumIndex.value <= 0 ? albumList.value.length - 1 : currentAlbumIndex.value - 1,
-		currentAlbumIndex.value,
-		currentAlbumIndex.value >= albumList.value.length - 1 ? 0 : currentAlbumIndex.value + 1
+	readWallpaperIndexList.value.push(
+		currentWallpaperIndex.value <= 0 ? wallpapers.value.length - 1 : currentWallpaperIndex.value - 1,
+		currentWallpaperIndex.value,
+		currentWallpaperIndex.value >= wallpapers.value.length - 1 ? 0 : currentWallpaperIndex.value + 1
 	);
 	// 数组去重
-	readAlbumIndexList.value = [...new Set(readAlbumIndexList.value)];
+	readWallpaperIndexList.value = [...new Set(readWallpaperIndexList.value)];
 });
-// 更换专辑的方法
-const changeAlbum = (event) => {
+// 更换壁纸的方法
+const changeWallpaper = (event) => {
 	const currentIndex = event.detail.current;
-	currentAlbumIndex.value = currentIndex;
-	currentAlbum.value = albumList.value[currentIndex];
-	readAlbumIndexList.value.push(currentIndex);
+	currentWallpaperIndex.value = currentIndex;
+	currentWallpaper.value = wallpapers.value[currentIndex];
+	readWallpaperIndexList.value.push(currentIndex);
+	console.log(currentWallpaper.value);
 
 	// 提取缓存三张图
-	readAlbumIndexList.value.push(
-		currentAlbumIndex.value <= 0 ? albumList.value.length - 1 : currentAlbumIndex.value - 1,
-		currentAlbumIndex.value,
-		currentAlbumIndex.value >= albumList.value.length - 1 ? 0 : currentAlbumIndex.value + 1
+	readWallpaperIndexList.value.push(
+		currentWallpaperIndex.value <= 0 ? wallpapers.value.length - 1 : currentWallpaperIndex.value - 1,
+		currentWallpaperIndex.value,
+		currentWallpaperIndex.value >= wallpapers.value.length - 1 ? 0 : currentWallpaperIndex.value + 1
 	);
 	// 数组去重
-	readAlbumIndexList.value = [...new Set(readAlbumIndexList.value)];
+	readWallpaperIndexList.value = [...new Set(readWallpaperIndexList.value)];
 };
 </script>
 
@@ -305,7 +310,7 @@ const changeAlbum = (event) => {
 			scroll-view {
 				width: 100%;
 				max-height: 60vh;
-				padding: 0 60rpx 60rpx 60rpx;
+				padding: 0 60rpx 20rpx 60rpx;
 				.content {
 					.row {
 						display: flex;
@@ -319,8 +324,8 @@ const changeAlbum = (event) => {
 							font-size: 30rpx;
 						}
 						.value {
-							flex: 1;
-							width: 0;
+							width: calc(100% - 240rpx);
+							padding: 0 20rpx;
 						}
 						.tags {
 							display: flex;
@@ -335,6 +340,16 @@ const changeAlbum = (event) => {
 							}
 						}
 					}
+				}
+			}
+			.popup-footer {
+				width: 100%;
+				padding: 0 20rpx 80rpx 20rpx;
+				.content {
+					padding: 30rpx;
+					background-color: rgba(40, 40, 40, 0.3);
+					border-radius: 10rpx;
+					line-height: 1.64;
 				}
 			}
 		}

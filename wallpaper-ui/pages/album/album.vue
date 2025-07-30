@@ -42,13 +42,14 @@ const album = ref();
 const albumParams = reactive({
 	type: 1,
 	page: 1,
+	status:1,
 	pagesize: 8
 });
 //  分页获取专辑方法
 const getAlbum = async () => {
 	const result = await selecCategoryPage(albumParams);
 	album.value = result;
-	// console.log(album.value)
+	console.log('album',album.value)
 };
 // 挂载
 onLoad(() => {

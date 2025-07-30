@@ -24,7 +24,7 @@
 		</view>
 		<!-- 分类内容列表 -->
 		<view class="albumdetail-content">
-			<view @click="toPreview(item,index)" class="content-item" v-for="(item, index) in albumList" :key="index">
+			<view @click="toPreview(item, index)" class="content-item" v-for="(item, index) in albumList" :key="index">
 				<image :src="item.url" mode="aspectFill"></image>
 			</view>
 		</view>
@@ -46,7 +46,7 @@ const coverInfo = ref();
 // 专辑列表
 const albumList = ref([]);
 // 是否加载全部
-const isEnd = ref(false)
+const isEnd = ref(false);
 // 获取专辑列表参数
 const albumListParams = reactive({
 	type: 1,
@@ -57,16 +57,17 @@ const albumListParams = reactive({
 });
 // 获取专辑列表方法
 const getAlbumList = async () => {
-	if (!isEnd.value){
+	if (!isEnd.value) {
 		// 发送请求
 		albumListParams.category_id = coverInfo.value.id;
 		const result = await selecWallpaperPageByCategoryId(albumListParams);
+		result.map((item) => (item.labels = JSON.parse(item.labels)));
 		// 存入数据
 		albumList.value = [...albumList.value, ...result];
-		uni.setStorageSync('albumList',JSON.stringify(albumList.value))
+		uni.setStorageSync('wallpapers', JSON.stringify(albumList.value));
 		// 是否到底
-		if(result.length === 0){
-			isEnd.value = true
+		if (result.length === 0) {
+			isEnd.value = true;
 		}
 	}
 };
@@ -85,7 +86,7 @@ onReachBottom(() => {
 });
 
 // 跳转到壁纸预览界面
-const toPreview = (item,index) => {
+const toPreview = (item, index) => {
 	uni.navigateTo({
 		url: `/pages/preview/preview?id=${item.id}&index=${index}`
 	});

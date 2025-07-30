@@ -62,35 +62,57 @@ const createTables = async () => {
     const tables = [
         {
             name: 'wallpaper',
-            sql: `create table if not exists wallpaper(
-                    id VARCHAR(100) NOT NULL,
-                    title VARCHAR(100) NOT NULL COMMENT '壁纸标题',
-                    description VARCHAR(2000) DEFAULT NULL COMMENT '壁纸描述',
-                    url VARCHAR(100) NOT NULL COMMENT '图片地址',
-                    type INT DEFAULT 0 COMMENT '类型 0-普通 1-专辑',
-                    category_id VARCHAR(100) NOT NULL COMMENT '分类ID',
-                    status INT DEFAULT 0 COMMENT '状态 0-待审核 1-已通过 2-未通过',
-                    recommend INT DEFAULT 0 COMMENT '是否推荐 0-否 1-是',
-                    user_id VARCHAR(100) NOT NULL COMMENT '上传用户ID',
-                    user_name VARCHAR(100) NOT NULL COMMENT '用户名',
+            sql: `CREATE TABLE IF NOT EXISTS wallpaper (
+                    id CHAR(21) NOT NULL COMMENT 'ID',
+                    description VARCHAR(150) DEFAULT NULL COMMENT '摘要（限制50字）',
+                    url VARCHAR(255) NOT NULL COMMENT '图片地址',
+                    type TINYINT UNSIGNED DEFAULT 0 COMMENT '类型: 0-普通、1-专辑、2-动态、3-平板、4-头像',
+                    category_id CHAR(21) NOT NULL COMMENT '分类ID',
+                    category_name VARCHAR(50) NOT NULL COMMENT '分类名称',
+                    labels VARCHAR(150) NOT NULL COMMENT '标签（逗号分隔）',
+                    status TINYINT UNSIGNED DEFAULT 0 COMMENT '状态: 0-待审核、1-已通过、2-未通过',
+                    sort TINYINT UNSIGNED DEFAULT 100 COMMENT '排序值（0-255）',
+                    user_id CHAR(21) NOT NULL COMMENT '上传用户ID',
+                    user_name VARCHAR(50) NOT NULL COMMENT '用户名',
                     user_avatar VARCHAR(255) DEFAULT NULL COMMENT '用户头像',
-                    createdate VARCHAR(100) NOT NULL COMMENT '创建时间',
-                    PRIMARY KEY (id)
-                );`
+                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    PRIMARY KEY (id),
+                    KEY idx_type_status (type, status),
+                    KEY idx_category (type, category_id, status, createdate),
+                    KEY idx_user (type, user_id, status, createdate),
+                    KEY idx_createdate (createdate),
+                    FULLTEXT KEY ft_labels (labels) COMMENT '标签全文索引'
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='壁纸表';`
         },
         {
             name: 'category',
-            sql: `create table if not exists category(
-                    id VARCHAR(100) NOT NULL,
-                    name VARCHAR(100) NOT NULL COMMENT '分类名称',
-                    cover VARCHAR(100) NOT NULL COMMENT '封面',
-                    type INT DEFAULT 0 COMMENT '类型 0-分类 1-专辑',
-                    sort INT DEFAULT 10 COMMENT '排序值',
-                    status INT DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
-                    createdate VARCHAR(100) NOT NULL COMMENT '创建时间',
-                    updatedate VARCHAR(100) NOT NULL COMMENT '更新时间',
-                    PRIMARY KEY (id)
-                );`
+            sql: `CREATE TABLE IF NOT EXISTS category (
+                    id CHAR(21) NOT NULL COMMENT 'ID',
+                    name VARCHAR(50) NOT NULL COMMENT '分类名称',
+                    cover VARCHAR(255) NOT NULL COMMENT '封面图片URL',
+                    type TINYINT UNSIGNED DEFAULT 0 COMMENT '类型: 0-分类、1-专辑',
+                    sort TINYINT UNSIGNED DEFAULT 100 COMMENT '排序值(0-255)',
+                    status TINYINT UNSIGNED DEFAULT 1 COMMENT '状态: 0-禁用、1-启用',
+                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    updatedate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                    PRIMARY KEY (id),
+                    UNIQUE KEY uni_name_type (name, type) COMMENT '分类名称+类型唯一约束',
+                    KEY idx_type_status (type, status, sort) COMMENT '类型+状态+排序复合索引',
+                    KEY idx_createdate (createdate) COMMENT '创建时间索引'
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='壁纸分类表';`
+        },
+        {
+            name: 'user',
+            sql: `CREATE TABLE IF NOT EXISTS user (
+                    id CHAR(21) PRIMARY KEY COMMENT 'ID',
+                    name VARCHAR(30) DEFAULT NULL COMMENT '用户昵称',
+                    avatar_url VARCHAR(255) DEFAULT NULL COMMENT '头像地址',
+                    gender TINYINT UNSIGNED DEFAULT 0 COMMENT '性别: 0-未知、1-男、2-女',
+                    motto VARCHAR(150) DEFAULT NULL COMMENT '格言',
+                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    KEY idx_name (name) COMMENT '昵称索引',
+                    KEY idx_createdate (createdate) COMMENT '创建时间索引'
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';`
         },
     ];
 
@@ -126,7 +148,7 @@ module.exports = {
      */
     // 分页查询分类数据
     selecCategoryPage: async (values) => {
-        const sql = `SELECT * FROM category WHERE type=? ORDER BY sort LIMIT ?,?; `
+        const sql = `SELECT id,name,cover,updatedate FROM category WHERE type=? AND status=? ORDER BY sort LIMIT ?,?; `
         return query(sql, values)
     },
 
@@ -135,7 +157,21 @@ module.exports = {
      */
     // 根据分类id分页查询壁纸数据
     selecWallpaperPageByCategoryId: async (values) => {
-        const sql = `SELECT * FROM wallpaper WHERE type=? AND category_id=? AND status=? ORDER BY createdate DESC LIMIT ?,?; `
+        const sql = `SELECT id,description,url,category_id,category_name,labels,user_id,user_name,user_avatar,createdate FROM wallpaper WHERE type=? AND category_id=? AND status=? ORDER BY createdate DESC LIMIT ?,?;`
+        return query(sql, values)
+    },
+    // 根据用户名和壁纸类型分页获取数据
+    selecWallpaperPageByUserId: async (values) => {
+        const sql = `SELECT id,description,url,category_id,category_name,labels,user_id,user_name,user_avatar,createdate FROM wallpaper WHERE type=? AND user_id=?  AND status=? ORDER BY createdate DESC LIMIT ?,?; `
+        return query(sql, values)
+    },
+
+    /**
+     * 用户相关
+     */
+    // 分页查询用户数据
+    selecUserPage: async (values) => {
+        const sql = `SELECT id,name,avatar_url,gender,motto,createdate FROM user LIMIT ?,?; `
         return query(sql, values)
     },
 };

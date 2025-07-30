@@ -27,21 +27,9 @@
 				<navigator url="/pages/author/author" open-type="reLaunch" class="more">More+</navigator>
 			</view>
 			<view class="author-list">
-				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
-					<image src="https://img2.baidu.com/it/u=93036002,4253821634&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3177417376,516182796&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
-					<image src="https://img2.baidu.com/it/u=2201786265,1996910509&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3928639842,338040314&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/authorDetail/authorDetail" class="list-item">
-					<image src="https://img1.baidu.com/it/u=4105985255,4254704125&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-				</navigator>
+				<view @click="toUserDetail(item)" v-for="(item, index) in userList" :key="index" class="list-item">
+					<image :src="item.avatar_url" mode="aspectFill"></image>
+				</view>
 			</view>
 		</view>
 		<!-- 分类精选 -->
@@ -159,7 +147,7 @@
 
 <script setup>
 import navbar from '../../components/navbar.vue';
-import { selecCategoryPage } from '../../api/api';
+import { selecCategoryPage, selecUserPage } from '../../api/api';
 import { onLoad } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
@@ -168,6 +156,7 @@ const album = ref();
 // 分页获取专辑的参数
 const albumParams = reactive({
 	type: 1,
+	status: 1,
 	page: 1,
 	pagesize: 8
 });
@@ -175,12 +164,7 @@ const albumParams = reactive({
 const getAlbum = async () => {
 	const result = await selecCategoryPage(albumParams);
 	album.value = result;
-	// console.log(album.value)
 };
-// 挂载
-onLoad(() => {
-	getAlbum();
-});
 // 跳转到专辑详情
 const toAlbumDetail = (item) => {
 	const album_item = JSON.stringify(item);
@@ -188,6 +172,34 @@ const toAlbumDetail = (item) => {
 		url: `/pages/albumDetail/albumDetail?item=${encodeURIComponent(album_item)}`
 	});
 };
+
+// 用户数据
+const userList = ref();
+// 分页获取用户参数
+const userParams = reactive({
+	page: 1,
+	pagesize: 5
+});
+// 分页获取用户方法
+const getUserList = async () => {
+	const result = await selecUserPage(userParams);
+	userList.value = result;
+};
+// 跳转到用户详情
+const toUserDetail = (item) => {
+	const author_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}`
+	});
+};
+
+// 挂载
+onLoad(() => {
+	// 获取专辑
+	getAlbum();
+	// 获取用户
+	getUserList();
+});
 </script>
 
 <style lang="scss">
@@ -241,7 +253,6 @@ const toAlbumDetail = (item) => {
 				height: 100%;
 				margin-bottom: 30rpx;
 				border-radius: 20rpx;
-				border: 1px solid #fff;
 				position: relative;
 				image {
 					width: 100%;
