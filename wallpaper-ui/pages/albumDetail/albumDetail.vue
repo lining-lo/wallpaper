@@ -1,7 +1,5 @@
 <template>
 	<view class="albumdetail">
-		<!-- 毛玻璃背景 -->
-		<view class="albumdetail-background"></view>
 		<!-- 头部导航 -->
 		<view class="albumdetail-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
@@ -99,21 +97,8 @@ const toPreview = (item, index) => {
 	min-height: 100vh;
 	padding-top: 180rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #353962;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.albumdetail-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 头部导航栏 */
 	.albumdetail-navbar {
 		width: 100%;
@@ -132,7 +117,7 @@ const toPreview = (item, index) => {
 	.albumdetail-cover {
 		width: 100%;
 		height: 360rpx;
-		margin-bottom: 30rpx;
+		margin-bottom: 10rpx;
 		position: relative;
 		image {
 			width: 100%;
@@ -191,7 +176,6 @@ const toPreview = (item, index) => {
 			width: 214rpx;
 			height: 450rpx;
 			border-radius: 20rpx;
-			border: 1px solid #fff;
 			margin-bottom: 30rpx;
 			overflow: hidden;
 			image {

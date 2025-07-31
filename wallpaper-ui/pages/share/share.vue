@@ -1,8 +1,6 @@
 <template>
 	<navbar />
 	<view class="share">
-		<!-- 毛玻璃背景 -->
-		<view class="share-background"></view>
 		<!-- 分享列表 -->
 		<view class="share-list">
 			<navigator url="/pages/detail/detail" class="list-item">
@@ -157,23 +155,10 @@
 .share {
 	margin-top: 192rpx;
 	width: 100%;
-	height: 1200px;
-	background-color: #2c333e;
+	height: 100%;
+	background-color: #262a50;
 	padding: 10rpx;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.share-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 分享列表 */
 	.share-list {
 		width: 100%;

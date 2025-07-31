@@ -1,91 +1,62 @@
 <template>
 	<view class="avatar">
-		<!-- 毛玻璃背景 -->
-		<view class="avatar-background"></view>
 		<!-- 头部导航 -->
 		<view class="avatar-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>头像</text>
 			<view style="width: 100rpx"></view>
 		</view>
-		<!-- 头像列表 -->
+		<!-- 分享列表 -->
 		<view class="avatar-list">
-			<view class="list-item">
-				<image src="https://img2.baidu.com/it/u=3876545315,3121605196&fm=253&fmt=auto&app=138&f=JPEG?w=380&h=358" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img1.baidu.com/it/u=4087345783,908287826&fm=253&fmt=auto&app=138&f=JPEG?w=380&h=426" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=2443685452,931201615&fm=253&fmt=auto&app=138&f=JPEG?w=285&h=285" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=621075495,1071335623&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=621075495,1071335623&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=1290872624,1387101814&fm=253&fmt=auto&app=138&f=JPEG?w=285&h=285" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img2.baidu.com/it/u=135596327,555979949&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=3750182325,1283999780&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=3750182325,1283999780&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img1.baidu.com/it/u=1827515073,4159709519&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=1406705969,2667912439&fm=253&fmt=auto?w=800&h=841" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img2.baidu.com/it/u=2017279352,1833764662&fm=253&fmt=auto&app=138&f=JPEG?w=285&h=285" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img2.baidu.com/it/u=2646719074,1648894215&fm=253&fmt=auto&app=138&f=JPEG?w=285&h=285" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=2700391053,473711727&fm=253&fmt=auto&app=138&f=JPEG?w=285&h=285" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img0.baidu.com/it/u=1441294210,3901210582&fm=253&fmt=auto&app=138&f=JPEG?w=380&h=380" mode="aspectFill"></image>
-			</view>
-			<view class="list-item">
-				<image src="https://img1.baidu.com/it/u=3753595470,3950029239&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=523" mode="aspectFill"></image>
-			</view>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img0.baidu.com/it/u=953640602,4047902931&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img0.baidu.com/it/u=615285359,1419138736&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img2.baidu.com/it/u=2129850704,309143223&fm=253&fmt=auto&app=138&f=JPEG?w=802&h=800" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img0.baidu.com/it/u=3167322707,1679056125&fm=253&fmt=auto&app=138&f=JPEG?w=533&h=500" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img2.baidu.com/it/u=2786903409,1732820867&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img0.baidu.com/it/u=1638790034,3534418596&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img2.baidu.com/it/u=801644006,604878762&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img2.baidu.com/it/u=3087975985,2887273610&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img2.baidu.com/it/u=4263343468,1566665778&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+			</navigator>
+			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
+				<image src="https://img2.baidu.com/it/u=2343135913,1697720286&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+			</navigator>
 		</view>
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+// 返回上一页
+const goBack = () => {
+	uni.navigateBack();
+};
+</script>
 
 <style lang="scss">
 .avatar {
 	width: 100%;
-	min-height: 100vh;
-	padding: 20rpx;
-	padding-top: 200rpx;
-	position: relative;
-	background-color: #2c333e;
+	height: 100%;
+	background-color: #262a50;
+	padding: 10rpx;
+	padding-top: 192rpx;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.avatar-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 头部导航栏 */
 	.avatar-navbar {
 		width: 100%;
@@ -100,24 +71,61 @@
 		align-items: flex-end;
 		justify-content: space-between;
 	}
-	/* 头像列表 */
-	.avatar-list{
-		position: relative;
+	/* 分享列表 */
+	.avatar-list {
 		width: 100%;
+		position: relative;
 		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
 		justify-content: space-between;
-		.list-item{
-			width: calc(33% - 10rpx);
-			height: 226rpx;
-			border: 1px solid #fff;
-			margin-bottom: 20rpx;
-			border-radius: 20rpx;
-			overflow: hidden;
-			image{
+		flex-wrap: wrap;
+		.list-item {
+			width: 49.5%;
+			height: 190px;
+			border-radius: 10rpx;
+			background-color: #262a50;
+			box-shadow: 0 1px 20px -6px #00000080;
+			margin-bottom: 10rpx;
+			image {
 				width: 100%;
 				height: 100%;
+				border-radius: 10rpx;
+			}
+			.item-title {
+				font-size: 13px;
+				padding: 20rpx;
+				font-weight: 600;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.item-info {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 12px;
+				padding: 0 20rpx;
+				.info-user {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					image {
+						width: 40rpx;
+						height: 40rpx;
+						border-radius: 50%;
+					}
+					text {
+						display: block;
+						margin-left: 8rpx;
+					}
+				}
+				.info-like {
+					display: flex;
+					align-items: center;
+					.count {
+						margin-left: 8rpx;
+					}
+				}
 			}
 		}
 	}

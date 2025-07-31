@@ -66,6 +66,7 @@ const createTables = async () => {
                     id CHAR(21) NOT NULL COMMENT 'ID',
                     description VARCHAR(150) DEFAULT NULL COMMENT '摘要（限制50字）',
                     url VARCHAR(255) NOT NULL COMMENT '图片地址',
+                    video_url VARCHAR(255) NOT NULL COMMENT '视频地址',
                     type TINYINT UNSIGNED DEFAULT 0 COMMENT '类型: 0-普通、1-专辑、2-动态、3-平板、4-头像',
                     category_id CHAR(21) NOT NULL COMMENT '分类ID',
                     category_name VARCHAR(50) NOT NULL COMMENT '分类名称',
@@ -76,6 +77,7 @@ const createTables = async () => {
                     user_name VARCHAR(50) NOT NULL COMMENT '用户名',
                     user_avatar VARCHAR(255) DEFAULT NULL COMMENT '用户头像',
                     createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数',
                     PRIMARY KEY (id),
                     KEY idx_type_status (type, status),
                     KEY idx_category (type, category_id, status, createdate),
@@ -157,12 +159,12 @@ module.exports = {
      */
     // 根据分类id分页查询壁纸数据
     selecWallpaperPageByCategoryId: async (values) => {
-        const sql = `SELECT id,description,url,category_id,category_name,labels,user_id,user_name,user_avatar,createdate FROM wallpaper WHERE type=? AND category_id=? AND status=? ORDER BY createdate DESC LIMIT ?,?;`
+        const sql = `SELECT id,description,url,video_url,category_id,category_name,labels,user_id,user_name,user_avatar,count,createdate FROM wallpaper WHERE type=? AND category_id=? AND status=? ORDER BY createdate DESC LIMIT ?,?;`
         return query(sql, values)
     },
     // 根据用户名和壁纸类型分页获取数据
     selecWallpaperPageByUserId: async (values) => {
-        const sql = `SELECT id,description,url,category_id,category_name,labels,user_id,user_name,user_avatar,createdate FROM wallpaper WHERE type=? AND user_id=?  AND status=? ORDER BY createdate DESC LIMIT ?,?; `
+        const sql = `SELECT id,description,url,video_url,category_id,category_name,labels,user_id,user_name,user_avatar,count,createdate FROM wallpaper WHERE type=? AND user_id=?  AND status=? ORDER BY createdate DESC LIMIT ?,?; `
         return query(sql, values)
     },
 

@@ -23,10 +23,10 @@
 		<!-- 类型分类 -->
 		<view class="sort-tyoe">
 			<view class="type-live type" style="background-color: #4481a3">
-				<div class="content">
+				<navigator url="/pages/live/live" class="content">
 					<view class="title">动态壁纸</view>
 					<view class="english">Live wallpaper</view>
-				</div>
+				</navigator>
 				<image src="/static/images/sort_live.png" mode="aspectFill"></image>
 			</view>
 			<view class="type-live type" style="background-color: #6767a7">
@@ -44,10 +44,10 @@
 				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
 			</view>
 			<view class="type-live type" style="background-color: #c4595b">
-				<div class="content">
+				<navigator url="/pages/avatar/avatar" class="content">
 					<view class="title">头像</view>
 					<view class="english">Head sculpture</view>
-				</div>
+				</navigator>
 				<image src="/static/images/sort_avator.png" mode="aspectFill"></image>
 			</view>
 		</view>
