@@ -37,10 +37,10 @@
 				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
 			</view>
 			<view class="type-live type" style="background-color: #ad945d">
-				<div class="content">
+				<navigator url="/pages/tablet/tablet"  class="content">
 					<view class="title">平板</view>
 					<view class="english">Tablet computer</view>
-				</div>
+				</navigator>
 				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
 			</view>
 			<view class="type-live type" style="background-color: #c4595b">

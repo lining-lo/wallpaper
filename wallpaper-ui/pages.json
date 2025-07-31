@@ -50,7 +50,7 @@
 			}
 		},
 		{
-			"path": "pages/detail/detail",
+			"path": "pages/shareList/shareList",
 			"style": {
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
@@ -130,6 +130,14 @@
 		},
 		{
 			"path" : "pages/tablet/tablet",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/tabletDetail/tabletDetail",
 			"style" : 
 			{
 				"navigationBarTitleText" : "",

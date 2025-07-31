@@ -3,7 +3,7 @@
 	<view class="share">
 		<!-- 分享列表 -->
 		<view class="share-list">
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img2.baidu.com/it/u=3109327944,3353382792&fm=253&fmt=auto&app=120&f=JPEG?w=703&h=1216" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -17,7 +17,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img0.baidu.com/it/u=802058814,788146649&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=711" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -31,7 +31,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img0.baidu.com/it/u=1054759078,279081371&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=707" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -45,7 +45,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img1.baidu.com/it/u=827314903,978560304&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=850" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -59,7 +59,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img2.baidu.com/it/u=424471230,304579767&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=760" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -73,7 +73,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img2.baidu.com/it/u=1291127,1468535221&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=855" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -87,7 +87,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img2.baidu.com/it/u=899210046,474850241&fm=253&fmt=auto?w=800&h=1130" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -101,7 +101,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img2.baidu.com/it/u=4148244255,1125607134&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1322" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -115,7 +115,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img2.baidu.com/it/u=3908877121,407742069&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=874" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
@@ -129,7 +129,7 @@
 					</view>
 				</view>
 			</navigator>
-			<navigator url="/pages/detail/detail" class="list-item">
+			<navigator url="/pages/shareList/shareList" class="list-item">
 				<image src="https://img0.baidu.com/it/u=2967915771,3109062559&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=730" mode="aspectFill"></image>
 				<view class="item-title">新作品已发布，快来看看吧!</view>
 				<view class="item-info">
