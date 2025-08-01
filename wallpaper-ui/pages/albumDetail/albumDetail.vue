@@ -12,11 +12,11 @@
 			<view class="item-info">
 				<view class="info-like">
 					<text class="fill"></text>
-					<text>12</text>
+					<text v-if="coverInfo" >{{coverInfo.wallpaper_count}}</text>
 				</view>
 				<view class="info-title">
 					<text v-if="coverInfo" class="name">{{ coverInfo.name }}</text>
-					<text class="count">208人喜欢</text>
+					<text class="count" v-if="coverInfo" >{{coverInfo.total_likes}}人喜欢</text>
 				</view>
 			</view>
 		</view>
@@ -51,7 +51,7 @@ const albumListParams = reactive({
 	category_id: '',
 	status: 1,
 	page: 1,
-	pagesize: 6
+	pagesize: 9
 });
 // 获取专辑列表方法
 const getAlbumList = async () => {

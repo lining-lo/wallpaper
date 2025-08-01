@@ -65,24 +65,25 @@ const createTables = async () => {
             sql: `CREATE TABLE IF NOT EXISTS wallpaper (
                     id CHAR(21) NOT NULL COMMENT 'ID',
                     description VARCHAR(150) DEFAULT NULL COMMENT '摘要（限制50字）',
-                    url VARCHAR(255) NOT NULL COMMENT '图片地址',
-                    video_url VARCHAR(255) NOT NULL COMMENT '视频地址',
+                    url VARCHAR(255) DEFAULT NULL COMMENT '图片地址',
+                    video_url VARCHAR(255) DEFAULT NULL COMMENT '视频地址（动态壁纸，允许为空）',
                     type TINYINT UNSIGNED DEFAULT 0 COMMENT '类型: 0-普通、1-专辑、2-动态、3-平板、4-头像',
                     category_id CHAR(21) NOT NULL COMMENT '分类ID',
                     category_name VARCHAR(50) NOT NULL COMMENT '分类名称',
                     labels VARCHAR(150) NOT NULL COMMENT '标签（逗号分隔）',
                     status TINYINT UNSIGNED DEFAULT 0 COMMENT '状态: 0-待审核、1-已通过、2-未通过',
+                    is_delete TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否删除: 0-未删除、1-已删除',
                     sort TINYINT UNSIGNED DEFAULT 100 COMMENT '排序值（0-255）',
                     user_id CHAR(21) NOT NULL COMMENT '上传用户ID',
                     user_name VARCHAR(50) NOT NULL COMMENT '用户名',
                     user_avatar VARCHAR(255) DEFAULT NULL COMMENT '用户头像',
-                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                     count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数',
+                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    updatedate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                     PRIMARY KEY (id),
-                    KEY idx_type_status (type, status),
-                    KEY idx_category (type, category_id, status, createdate),
-                    KEY idx_user (type, user_id, status, createdate),
-                    KEY idx_createdate (createdate),
+                    KEY idx_category (type, category_id, status, is_delete, createdate),
+                    KEY idx_user (type, user_id, status, is_delete, createdate),
+                    KEY idx_createdate (is_delete, createdate),
                     FULLTEXT KEY ft_labels (labels) COMMENT '标签全文索引'
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='壁纸表';`
         },
@@ -115,6 +116,22 @@ const createTables = async () => {
                     KEY idx_name (name) COMMENT '昵称索引',
                     KEY idx_createdate (createdate) COMMENT '创建时间索引'
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';`
+        },
+        {
+            name: 'feedback',
+            sql: `CREATE TABLE IF NOT EXISTS feedback (
+                    id CHAR(21) PRIMARY KEY COMMENT 'ID',
+                    user_id CHAR(21) NOT NULL COMMENT '用户ID',
+                    wallpaper_id CHAR(21) NOT NULL COMMENT '壁纸ID',
+                    category_id CHAR(21) NOT NULL COMMENT '分类ID',
+                    type TINYINT UNSIGNED NOT NULL COMMENT '行为类型: 0-点赞、1-收藏、2-下载',
+                    status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '行为状态: 1-有效、0-无效（如取消点赞/收藏）',
+                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    updatedate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                    UNIQUE KEY uk_user_wallpaper_type (user_id, wallpaper_id, type),
+                    KEY idx_wallpaper_type (wallpaper_id, type, status),
+                    KEY idx_user_type (user_id, type, status, createdate)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户反馈表（点赞/收藏/下载）';`
         },
     ];
 
@@ -150,7 +167,42 @@ module.exports = {
      */
     // 分页查询分类数据
     selecCategoryPage: async (values) => {
-        const sql = `SELECT id,name,cover,updatedate FROM category WHERE type=? AND status=? ORDER BY sort LIMIT ?,?; `
+        const sql = `
+        SELECT 
+          c.id,
+          c.name,
+          c.cover,
+          c.updatedate,
+          -- 统计分类下的有效壁纸数（未删除、已通过）
+          COUNT(DISTINCT w.id) AS wallpaper_count,
+          -- 统计分类下的有效点赞总数
+          COUNT(DISTINCT f.id) AS total_likes
+        FROM 
+          category c
+        -- 关联有效壁纸（未删除、已通过审核）
+        LEFT JOIN 
+          wallpaper w 
+          ON c.id = w.category_id 
+          AND w.is_delete = 0 
+          AND w.status = 1
+        -- 关联有效点赞记录（type=0为点赞，status=1为有效）
+        LEFT JOIN 
+          feedback f 
+          ON w.id = f.wallpaper_id 
+          AND f.type = 0 
+          AND f.status = 1
+        -- 原分页条件：类型和状态过滤
+        WHERE 
+          c.type = ? 
+          AND c.status = ?
+        -- 按分类分组（核心：确保每个分类只返回一条记录）
+        GROUP BY 
+          c.id, c.name, c.cover, c.updatedate
+        -- 原排序和分页逻辑
+        ORDER BY 
+          c.sort 
+        LIMIT ?, ?;
+      `;
         return query(sql, values)
     },
 
@@ -159,12 +211,88 @@ module.exports = {
      */
     // 根据分类id分页查询壁纸数据
     selecWallpaperPageByCategoryId: async (values) => {
-        const sql = `SELECT id,description,url,video_url,category_id,category_name,labels,user_id,user_name,user_avatar,count,createdate FROM wallpaper WHERE type=? AND category_id=? AND status=? ORDER BY createdate DESC LIMIT ?,?;`
+        const sql = `
+        SELECT 
+            w.id,
+            w.description,
+            w.url,
+            w.video_url,
+            w.category_id,
+            w.category_name,
+            w.labels,
+            w.user_id,
+            w.user_name,
+            w.user_avatar,
+            w.count AS view_count,  -- 查看次数
+            w.createdate,
+            -- 统计有效点赞数（type=0 且 status=1）
+            COUNT(DISTINCT CASE WHEN f.type = 0 AND f.status = 1 THEN f.id END) AS like_count,
+            -- 统计有效收藏数（type=1 且 status=1）
+            COUNT(DISTINCT CASE WHEN f.type = 1 AND f.status = 1 THEN f.id END) AS collect_count,
+            -- 统计有效下载数（type=2 且 status=1）
+            COUNT(DISTINCT CASE WHEN f.type = 2 AND f.status = 1 THEN f.id END) AS download_count
+            FROM 
+            wallpaper w
+            -- 关联反馈表，获取该壁纸的所有行为记录
+            LEFT JOIN 
+            feedback f 
+            ON w.id = f.wallpaper_id  -- 按壁纸ID关联
+            WHERE 
+            w.type = ? 
+            AND w.category_id = ? 
+            AND w.status = ? 
+            AND w.is_delete = 0
+            -- 按壁纸分组，确保每张壁纸只返回一条记录
+            GROUP BY 
+            w.id, w.description, w.url, w.video_url, w.category_id, w.category_name, 
+            w.labels, w.user_id, w.user_name, w.user_avatar, w.count, w.createdate
+            ORDER BY 
+            w.createdate DESC 
+            LIMIT ?, ?;
+        `
         return query(sql, values)
     },
     // 根据用户名和壁纸类型分页获取数据
     selecWallpaperPageByUserId: async (values) => {
-        const sql = `SELECT id,description,url,video_url,category_id,category_name,labels,user_id,user_name,user_avatar,count,createdate FROM wallpaper WHERE type=? AND user_id=?  AND status=? ORDER BY createdate DESC LIMIT ?,?; `
+        const sql = `
+            SELECT 
+                w.id,
+                w.description,
+                w.url,
+                w.video_url,
+                w.category_id,
+                w.category_name,
+                w.labels,
+                w.user_id,
+                w.user_name,
+                w.user_avatar,
+                w.count AS view_count,  -- 查看次数
+                w.createdate,
+                -- 统计有效点赞数（type=0 且 status=1）
+                COUNT(DISTINCT CASE WHEN f.type = 0 AND f.status = 1 THEN f.id END) AS like_count,
+                -- 统计有效收藏数（type=1 且 status=1）
+                COUNT(DISTINCT CASE WHEN f.type = 1 AND f.status = 1 THEN f.id END) AS collect_count,
+                -- 统计有效下载数（type=2 且 status=1）
+                COUNT(DISTINCT CASE WHEN f.type = 2 AND f.status = 1 THEN f.id END) AS download_count
+                FROM 
+                wallpaper w
+                -- 关联反馈表，获取该壁纸的所有行为记录
+                LEFT JOIN 
+                feedback f 
+                ON w.id = f.wallpaper_id  -- 按壁纸ID关联反馈表
+                WHERE 
+                w.type = ? 
+                AND w.user_id = ?  -- 筛选指定用户上传的壁纸
+                AND w.status = ? 
+                AND w.is_delete = 0
+                -- 按壁纸分组，确保每张壁纸只返回一条记录
+                GROUP BY 
+                w.id, w.description, w.url, w.video_url, w.category_id, w.category_name, 
+                w.labels, w.user_id, w.user_name, w.user_avatar, w.count, w.createdate
+                ORDER BY 
+                w.createdate DESC 
+                LIMIT ?, ?;
+        `
         return query(sql, values)
     },
 

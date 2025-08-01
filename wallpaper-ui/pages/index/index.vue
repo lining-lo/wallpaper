@@ -11,10 +11,10 @@
 					<view class="item-info">
 						<view class="info-title">
 							<text class="name">{{ item.name }}</text>
-							<text class="count">12</text>
+							<text class="count">{{item.wallpaper_count}}</text>
 						</view>
 						<view class="info-like">
-							<text>208人喜欢</text>
+							<text>{{item.total_likes}}人喜欢</text>
 						</view>
 					</view>
 				</swiper-item>
@@ -158,12 +158,13 @@ const albumParams = reactive({
 	type: 1,
 	status: 1,
 	page: 1,
-	pagesize: 8
+	pagesize: 6
 });
 //  分页获取专辑方法
 const getAlbum = async () => {
 	const result = await selecCategoryPage(albumParams);
 	album.value = result;
+	console.log(album.value)
 };
 // 跳转到专辑详情
 const toAlbumDetail = (item) => {

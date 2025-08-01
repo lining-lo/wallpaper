@@ -36,15 +36,15 @@
 			</view>
 			<view class="bottom-favorites btn">
 				<uni-icons type="star-filled" color="#fff" size="24"></uni-icons>
-				<text>343</text>
+				<text>{{currentWallpaper.collect_count}}</text>
 			</view>
 			<view class="bottom-like btn">
 				<uni-icons type="heart-filled" color="#fff" size="22"></uni-icons>
-				<text>454</text>
+				<text>{{currentWallpaper.like_count}}</text>
 			</view>
 			<view class="bottom-download btn">
 				<uni-icons type="download-filled" color="#fff" size="22"></uni-icons>
-				<text>4567</text>
+				<text>{{currentWallpaper.download_count}}</text>
 			</view>
 		</view>
 		<!-- 详情弹窗 -->

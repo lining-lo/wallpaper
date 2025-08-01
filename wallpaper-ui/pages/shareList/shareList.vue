@@ -190,12 +190,15 @@ const goBack = () => {
 			width: 100%;
 			display: flex;
 			margin-bottom: 30rpx;
-			.label {
-				padding: 4rpx 30rpx;
-				border-radius: 20rpx;
-				border: 1px solid #fff;
-				margin-right: 20rpx;
-			}
+			flex-wrap: wrap;
+		}
+		.label {
+			padding: 4rpx 30rpx;
+			border-radius: 20rpx;
+			border: 1px solid #fff;
+			margin-right: 20rpx;
+			white-space: nowrap;
+			margin-bottom: 20rpx;
 		}
 		.info-base {
 			width: 100%;
@@ -221,6 +224,10 @@ const goBack = () => {
 					}
 					text {
 						margin-left: 12rpx;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						max-width: 205rpx;
 					}
 				}
 			}
@@ -228,7 +235,7 @@ const goBack = () => {
 	}
 	/* 相关推荐 */
 	.sharelist-recommend {
-		padding:0 30rpx;
+		padding: 0 30rpx;
 		width: 100%;
 		.recommend-title {
 			font-size: 20px;
