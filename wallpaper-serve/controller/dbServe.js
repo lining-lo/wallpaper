@@ -22,7 +22,7 @@ exports.selecCategoryPage = async (request, response) => {
 // 根据分类id分页查询壁纸数据
 exports.selecWallpaperPageByCategoryId = async (request, response) => {
     const data = request.body
-    await db.selecWallpaperPageByCategoryId([data.type, data.category_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+    await db.selecWallpaperPageByCategoryId([data.current_userId, data.type, data.category_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
         // 返回结果
         response.send({
             code: 200,
@@ -33,7 +33,7 @@ exports.selecWallpaperPageByCategoryId = async (request, response) => {
 // 根据用户名和壁纸类型分页获取数据
 exports.selecWallpaperPageByUserId = async (request, response) => {
     const data = request.body
-    await db.selecWallpaperPageByUserId([data.type, data.user_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+    await db.selecWallpaperPageByUserId([data.current_userId, data.type, data.user_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
         // 返回结果
         response.send({
             code: 200,

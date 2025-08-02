@@ -47,6 +47,7 @@ const albumList = ref([]);
 const isEnd = ref(false);
 // 获取专辑列表参数
 const albumListParams = reactive({
+	current_userId:'SVQbwK5rd3',
 	type: 1,
 	category_id: '',
 	status: 1,

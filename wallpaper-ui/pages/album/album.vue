@@ -40,6 +40,7 @@ const goBack = () => {
 const album = ref();
 // 分页获取专辑的参数
 const albumParams = reactive({
+	current_userId:'SVQbwK5rd3',
 	type: 1,
 	page: 1,
 	status:1,

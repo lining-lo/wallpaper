@@ -45,11 +45,11 @@
 					<text>下载：2651</text>
 				</view>
 				<view class="base-avatar base">
-					<uni-icons type="hand-up" size="30" color="#9d4d64"></uni-icons>
+					<uni-icons type="heart" size="30" color="#9d4d64"></uni-icons>
 					<text>点赞：152</text>
 				</view>
 				<view class="base-avatar base">
-					<uni-icons type="heart" size="30" color="#af8933"></uni-icons>
+					<uni-icons type="star" size="30" color="#c61626"></uni-icons>
 					<text>收藏：66</text>
 				</view>
 			</view>
