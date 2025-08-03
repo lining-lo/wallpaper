@@ -129,8 +129,8 @@ const goBack = () => {
 		border-radius: 50%;
 		background-color: rgba(40, 40, 40, 0.8);
 		position: fixed;
-		z-index: 1;
-		top: 92rpx;
+		z-index: 2;
+		top: 100rpx;
 		left: 20rpx;
 		display: flex;
 		align-items: center;

@@ -5,6 +5,10 @@ const config = {
         USER: 'root',
         PASSWORD: '123456',
         DATABASE: 'wallpaper',
+    },
+    wx: {
+        APPID: 'wx83f7894512f1b748',
+        APPSECRET: '6c51c7ed2094375c8cc895d2dd1f264e',
     }
 }
 

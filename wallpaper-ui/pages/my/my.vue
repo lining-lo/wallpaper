@@ -1,14 +1,13 @@
 <template>
-	<navbar />
 	<view class="my">
 		<!-- 账号信息 -->
 		<view class="my-info">
 			<view class="info-avatar">
 				<view class="avatar-left">
-					<image src="https://img2.baidu.com/it/u=1500365215,2246792370&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+					<image src="/static/images/avatar.png" mode="aspectFill"></image>
 				</view>
 				<view class="avatar-right">
-					<view class="name">分享馆用户</view>
+					<view class="name">分享室用户</view>
 					<view class="userid">id：615615154</view>
 					<view class="sex">性别：未知</view>
 				</view>
@@ -85,13 +84,15 @@
 	</view>
 </template>
 
-<script setup></script>
+<script setup>
+	
+</script>
 
 <style lang="scss">
 .my {
 	width: 100%;
 	min-height: 100vh;
-	background-color: black;
+	background-color: #232749;
 	padding: 30rpx;
 	padding-top: 200rpx;
 	overflow: auto;
@@ -153,7 +154,7 @@
 		.logo-img {
 			width: 90%;
 			height: 160rpx;
-			background-color: #282828;
+			background-color: #272b4d;
 			border-radius: 30rpx 30rpx 0 0;
 			box-shadow: 0 1px 20px -6px #00000080;
 			margin: 0 auto;
@@ -170,7 +171,7 @@
 			height: 150rpx;
 			border-radius: 30rpx;
 			box-shadow: 0 1px 20px -6px #00000080;
-			background-color: #282828;
+			background-color: #272b4d;
 			display: flex;
 			align-items: center;
 			justify-content: space-around;

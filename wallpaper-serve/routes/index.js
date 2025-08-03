@@ -1,4 +1,5 @@
 const controller = require('../controller/dbServe')
+const verifyToken = require('../middleware/verifyToken');
 module.exports = function (app) {
     /**
      * 分类相关
@@ -27,5 +28,9 @@ module.exports = function (app) {
     // 分页查询用户数据
     app.post('/selecUserPage', (request, response) => {
         controller.selecUserPage(request, response)
+    })
+    // 微信一键登录
+    app.post('/login', (request, response) => {
+        controller.login(request, response)
     })
 }

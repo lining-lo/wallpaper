@@ -11,10 +11,10 @@
 					<view class="item-info">
 						<view class="info-title">
 							<text class="name">{{ item.name }}</text>
-							<text class="count">{{item.wallpaper_count}}</text>
+							<text class="count">{{ item.wallpaper_count }}</text>
 						</view>
 						<view class="info-like">
-							<text>{{item.total_likes}}人喜欢</text>
+							<text>{{ item.total_likes }}人喜欢</text>
 						</view>
 					</view>
 				</swiper-item>
@@ -147,7 +147,7 @@
 
 <script setup>
 import navbar from '../../components/navbar.vue';
-import { selecCategoryPage, selecUserPage } from '../../api/api';
+import { selecCategoryPage, selecUserPage, login } from '../../api/api';
 import { onLoad } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
@@ -164,7 +164,7 @@ const albumParams = reactive({
 const getAlbum = async () => {
 	const result = await selecCategoryPage(albumParams);
 	album.value = result;
-	console.log(album.value)
+	// console.log('首页轮播图数据',album.value);
 };
 // 跳转到专辑详情
 const toAlbumDetail = (item) => {
@@ -194,12 +194,36 @@ const toUserDetail = (item) => {
 	});
 };
 
+// 微信一键登录
+const toLogin = async () => {
+	// 1. 调用微信登录接口获取 code
+	const { code } = await uni.login({ provider: 'weixin' });
+	if (!code) {
+		uni.showToast({ title: '登录失败', icon: 'none' });
+		return;
+	}
+	// 2. 将 code 发送到后端
+	const res = await login({ code })
+	console.log(res)
+	// if (res.data.code === 200) {
+	// 	// 3. 存储后端返回的 Token（如存入 Vuex 或本地存储）
+	// 	uni.setStorageSync('token', res.data.data.token);
+	// 	uni.showToast({ title: '登录成功' });
+	// 	// 跳转到首页
+	// 	uni.switchTab({ url: '/pages/index/index' });
+	// } else {
+	// 	uni.showToast({ title: res.data.msg, icon: 'none' });
+	// }
+};
+
 // 挂载
 onLoad(() => {
 	// 获取专辑
 	getAlbum();
 	// 获取用户
 	getUserList();
+	// 用户登录
+	toLogin();
 });
 </script>
 

@@ -1,7 +1,5 @@
 <template>
 	<view class="preview" @click="changeShow">
-		<!-- 毛玻璃背景 -->
-		<view class="preview-background"></view>
 		<!-- 返回按钮 -->
 		<view class="preview-back" @click="goBack">
 			<uni-icons type="left" size="20" color="#fff"></uni-icons>
@@ -93,7 +91,7 @@
 
 <script setup>
 import { onLoad } from '@dcloudio/uni-app';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 // 详情弹窗dom
 const popupInfo = ref();
@@ -163,6 +161,16 @@ const changeWallpaper = (event) => {
 	// 数组去重
 	readWallpaperIndexList.value = [...new Set(readWallpaperIndexList.value)];
 };
+
+// 点赞|收藏|下载的参数
+const feedbackParams = reactive({
+	
+})
+// 点赞|收藏|下载的方法
+const addFeedback = ()=>{
+	
+}
+
 </script>
 
 <style lang="scss">
@@ -172,19 +180,6 @@ const changeWallpaper = (event) => {
 	position: relative;
 	background-color: #2c333e;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.preview-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 返回按钮 */
 	.preview-back {
 		width: 40px;

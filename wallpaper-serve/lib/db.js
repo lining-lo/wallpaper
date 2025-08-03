@@ -107,15 +107,18 @@ const createTables = async () => {
         {
             name: 'user',
             sql: `CREATE TABLE IF NOT EXISTS user (
-                    id CHAR(21) PRIMARY KEY COMMENT 'ID',
+                    id CHAR(21) PRIMARY KEY COMMENT 'ID）',
+                    open_id VARCHAR(100) NOT NULL UNIQUE COMMENT '微信openid（唯一标识）',
                     name VARCHAR(30) DEFAULT NULL COMMENT '用户昵称',
                     avatar_url VARCHAR(255) DEFAULT NULL COMMENT '头像地址',
                     gender TINYINT UNSIGNED DEFAULT 0 COMMENT '性别: 0-未知、1-男、2-女',
                     motto VARCHAR(150) DEFAULT NULL COMMENT '格言',
+                    status TINYINT UNSIGNED DEFAULT 1 COMMENT '账号状态: 0-禁用、1-正常、2管理员',
                     createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                     KEY idx_name (name) COMMENT '昵称索引',
-                    KEY idx_createdate (createdate) COMMENT '创建时间索引'
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';`
+                    KEY idx_createdate (createdate) COMMENT '注册时间索引',
+                    KEY idx_openid_status (open_id, status) COMMENT '优化登录场景：通过open_id查询并验证状态'
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='壁纸小程序用户表';`
         },
         {
             name: 'feedback',
@@ -313,7 +316,7 @@ module.exports = {
      */
     // 分页查询用户数据
     selecUserPage: async (values) => {
-        const sql = `SELECT id,name,avatar_url,gender,motto,createdate FROM user LIMIT ?,?; `
+        const sql = `SELECT id,name,avatar_url,gender,motto,createdate FROM user WHERE status!=0 LIMIT ?,?; `
         return query(sql, values)
     },
 };

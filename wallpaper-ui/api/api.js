@@ -27,3 +27,7 @@ export const selecWallpaperPageByUserId = (data) => {
 export const selecUserPage = (data) => {
 	return http('/selecUserPage', data)
 }
+// 微信一键登录
+export const login = (data) => {
+	return http('/login', data)
+}
