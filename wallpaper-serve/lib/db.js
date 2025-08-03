@@ -319,4 +319,14 @@ module.exports = {
         const sql = `SELECT id,name,avatar_url,gender,motto,createdate FROM user WHERE status!=0 LIMIT ?,?; `
         return query(sql, values)
     },
+    // 根据openid查询用户
+    selectUserByOpenId: async (values) => {
+        const sql = `SELECT id,name,avatar_url,gender,motto,createdate FROM user WHERE open_id =? AND status!=0; `
+        return query(sql, values)
+    },
+    // 新增用户
+    addUser: async (values) => {
+        const sql = `INSERT INTO user (id, open_id) VALUES (?,?,?,?,?,?) `
+        return query(sql, values)
+    },
 };

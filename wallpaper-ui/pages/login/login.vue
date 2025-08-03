@@ -5,7 +5,7 @@
 				<image src="/static/images/logo.png" mode="aspectFill"></image>
 			</view>
 			<view class="inner-btn">
-				<button class="btn-login btn">
+				<button class="btn-login btn" @click="toLogin">
 					<uni-icons type="weixin" size="32" color="#07b55a"></uni-icons>
 					<text>一键登录</text>
 				</button>
@@ -14,9 +14,9 @@
 					<text>暂不登录</text>
 				</button>
 				<view class="inner-agreement">
-					<checkbox-group>
+					<checkbox-group @change="handleAgreeChange">
 						<label>
-							<checkbox value="cb" :checked="true" color="#FFCC33" style="transform: scale(0.7)" />
+							<checkbox value="cb" :checked="isAgree" color="#FFCC33" style="transform: scale(0.7)" />
 						</label>
 					</checkbox-group>
 					<view class="text">
@@ -33,10 +33,71 @@
 </template>
 
 <script setup>
+import { login } from '../../api/api';
+import { onLoad } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
 };
+
+// 是否同意协议
+const isAgree = ref(false);
+// 处理协议是否勾选
+const handleAgreeChange = (e) => {
+	// e.detail.value 是一个数组，包含所有被选中的 checkbox 的 value
+	// 这里只有一个 checkbox，所以判断数组长度即可
+	isAgree.value = e.detail.value.length > 0;
+};
+
+// 微信一键登录
+const toLogin = async () => {
+	if (!isAgree.value) {
+		// 显示模态框，且后续逻辑必须在回调中执行
+		uni.showModal({
+			title: '提示',
+			content: '请先阅读并同意用户协议和隐私政策条款',
+			success: async function (res) {
+				// 注意这里添加 async
+				if (res.confirm) {
+					isAgree.value = true;
+					// 用户确认后，才执行登录逻辑
+					await handleLogin(); // 提取登录逻辑到单独函数
+				} else if (res.cancel) {
+					isAgree.value = false;
+					// 用户取消，不执行登录
+					return;
+				}
+			}
+		});
+		// 这里直接 return，阻止代码继续往下执行
+		return;
+	}
+
+	// 如果已经同意协议，直接执行登录
+	await handleLogin();
+};
+// 处理登录的逻辑
+const handleLogin = async () => {
+	// 调用微信登录接口获取 code
+	const { code } = await uni.login({ provider: 'weixin' });
+	if (!code) {
+		uni.showToast({ title: '登录失败', icon: 'none' });
+		return;
+	}
+	// 将 code 发送到后端
+	const result = await login({ code });
+	// 存储后端返回的Token和用户信息
+	uni.setStorageSync('token', result.token);
+	uni.setStorageSync('userInfo', result.userInfo);
+	uni.showToast({ title: '登录成功' });
+	// 返回之前的页面
+	uni.navigateBack();
+};
+
+// 挂载
+onLoad(() => {});
 </script>
 
 <style lang="scss">
@@ -52,7 +113,7 @@ const goBack = () => {
 		height: 50%;
 		padding: 30rpx;
 		position: absolute;
-		top: 12vh;
+		top: 16vh;
 		margin: 0 auto;
 		display: flex;
 		flex-direction: column;

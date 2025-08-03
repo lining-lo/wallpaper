@@ -1,18 +1,18 @@
 <template>
 	<view class="my">
 		<!-- 账号信息 -->
-		<view class="my-info">
+		<view class="my-info" @click="toEditUser">
 			<view class="info-avatar">
 				<view class="avatar-left">
 					<image src="/static/images/avatar.png" mode="aspectFill"></image>
 				</view>
 				<view class="avatar-right">
-					<view class="name">分享室用户</view>
-					<view class="userid">id：615615154</view>
-					<view class="sex">性别：未知</view>
+					<view class="name">{{ userInfo ? userInfo.name || '分享室用户' : '分享室用户' }}</view>
+					<view class="userid">id：{{ userInfo ? userInfo.id : '615615154' }}</view>
+					<view class="sex">性别：{{ userInfo ? getGender(userInfo.gender) : '未知' }}</view>
 				</view>
 			</view>
-			<view class="info-slogan">点这里完善简介资料</view>
+			<view class="info-slogan">{{ userInfo ? userInfo.motto || '尚未填写简介，点击完善' : '点这里完善简介资料' }}</view>
 		</view>
 		<!-- logo信息 -->
 		<view class="my-logo">
@@ -85,7 +85,30 @@
 </template>
 
 <script setup>
-	
+import { getGender } from '../../utils/customize';
+import { onLoad, onShow } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
+
+// 用户信息
+const userInfo = ref();
+// token信息
+const token = ref();
+// 跳转到用户编辑页
+const toEditUser = () => {
+	if (token.value) {
+		console.log('有token');
+	} else {
+		uni.navigateTo({
+			url: `/pages/login/login`
+		});
+	}
+};
+// 挂载
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+});
 </script>
 
 <style lang="scss">

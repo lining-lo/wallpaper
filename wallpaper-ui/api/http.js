@@ -33,6 +33,7 @@ function http(url, data = {}, method = 'POST') {
           // 特殊处理令牌过期（示例：code=401 代表令牌无效）
           if (data.code === 401) {
             uni.removeStorageSync('token'); // 清除无效令牌
+			uni.removeStorageSync('userInfo'); // 清除用户信息
             uni.navigateTo({ url: '/pages/login/login' }); // 跳转到登录页
           }
           const errorMsg = data.message || `业务错误: ${data.code}`;

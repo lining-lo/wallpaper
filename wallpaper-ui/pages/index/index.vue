@@ -194,36 +194,12 @@ const toUserDetail = (item) => {
 	});
 };
 
-// 微信一键登录
-const toLogin = async () => {
-	// 1. 调用微信登录接口获取 code
-	const { code } = await uni.login({ provider: 'weixin' });
-	if (!code) {
-		uni.showToast({ title: '登录失败', icon: 'none' });
-		return;
-	}
-	// 2. 将 code 发送到后端
-	const res = await login({ code })
-	console.log(res)
-	// if (res.data.code === 200) {
-	// 	// 3. 存储后端返回的 Token（如存入 Vuex 或本地存储）
-	// 	uni.setStorageSync('token', res.data.data.token);
-	// 	uni.showToast({ title: '登录成功' });
-	// 	// 跳转到首页
-	// 	uni.switchTab({ url: '/pages/index/index' });
-	// } else {
-	// 	uni.showToast({ title: res.data.msg, icon: 'none' });
-	// }
-};
-
 // 挂载
 onLoad(() => {
 	// 获取专辑
 	getAlbum();
 	// 获取用户
 	getUserList();
-	// 用户登录
-	toLogin();
 });
 </script>
 

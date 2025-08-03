@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../lib/db')
 const axios = require('axios');
 const config = require('../config/default');
+const { nanoid } = require('nanoid');
 
 /**
  * 分类相关
@@ -87,11 +88,23 @@ exports.login = async (request, response) => {
             });
         }
         // 3.查询数据库，判断用户是否为新用户
-        // const user = await db.query('SELECT * FROM user WHERE openid = ?', [openid]);
-        // if (!user) {
-        //   // 新用户：插入数据库
-        //   await db.query('INSERT INTO user (openid, createdate) VALUES (?, NOW())', [openid]);
-        // }
+        const user = await db.selectUserByOpenId([openid])
+        let userInfo = null
+        if (user.length < 1) {
+            // 新用户：插入数据库
+            const newUser = {
+                id: nanoid(10),
+                openid,
+                name: null,
+                avatar_url: null,
+                gender: 0,
+                motto: null
+            }
+            await db.addUser([newUser.id, newUser.openid, newUser.name, newUser.avatar_url, newUser.gender, newUser.motto]);
+            userInfo = JSON.parse(JSON.stringify(newUser))
+        } else {
+            userInfo = user[0]
+        }
         // 4. 生成自定义登录态 Token（有效期 7 天）
         const token = jwt.sign(
             { openid, session_key }, // 存储 openid（用户唯一标识）
@@ -101,7 +114,17 @@ exports.login = async (request, response) => {
         // 5. 返回 Token 给小程序
         response.send({
             code: 200,
-            message: { token }
+            message: {
+                token,
+                userInfo: {
+                    id: userInfo.id,
+                    name: userInfo.name,
+                    avatar_url: userInfo.avatar_url,
+                    gender: userInfo.gender,
+                    motto: userInfo.motto
+                    // 不返回 session_key 等敏感信息
+                }
+            }
         })
 
     } catch (err) {
