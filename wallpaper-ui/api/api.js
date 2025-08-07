@@ -31,3 +31,15 @@ export const selecUserPage = (data) => {
 export const login = (data) => {
 	return http('/login', data)
 }
+// 修改用户信息
+export const updateUser = (data) => {
+	return http('/updateUser', data)
+}
+
+/**
+ * 文件上传相关
+ */
+// 获取七牛上传凭证
+export const getQiniuToken = () => {
+	return http('/getQiniuToken')
+}

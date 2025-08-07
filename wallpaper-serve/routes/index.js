@@ -33,4 +33,8 @@ module.exports = function (app) {
     app.post('/login', (request, response) => {
         controller.login(request, response)
     })
+    // 修改用户信息
+    app.post('/updateUser', (request, response) => {
+        controller.updateUser(request, response)
+    })
 }

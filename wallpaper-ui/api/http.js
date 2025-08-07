@@ -1,58 +1,89 @@
 const baseUrl = 'http://localhost:3001';
 
 // 默认请求超时时间（毫秒）
-const DEFAULT_TIMEOUT = 5000;
+const DEFAULT_TIMEOUT = 200000;
 
-function http(url, data = {}, method = 'POST') {
+// 存储正在进行的请求，用于防抖
+const pendingRequests = new Map();
+
+function http(url, data = {}, method = 'POST', showLoading = true, customHeader = {}) {
   return new Promise((resolve, reject) => {
-    // 统一转换方法为大写，避免大小写问题
+    // 统一转换方法为大写
     const upperMethod = method.toUpperCase();
     
-    uni.request({
-      url: baseUrl + url,
-      data,
-      method: upperMethod,
-      header: { 
-        'token': uni.getStorageSync('token'),
-        // 对 GET 请求默认添加时间戳，避免缓存
-        ...(upperMethod === 'GET' ? { 'Cache-Control': 'no-cache' } : {})
-      },
-      timeout: DEFAULT_TIMEOUT, // 添加超时设置
-      success: (result) => {
-        const { statusCode, data } = result;
-        
-        // 处理 HTTP 状态码异常
-        if (statusCode < 200 || statusCode >= 300) {
-          const errorMsg = `HTTP错误: ${statusCode}`;
-          uni.showToast({ title: errorMsg, icon: 'none' });
-          return reject({ type: 'http', statusCode, message: errorMsg });
-        }
-        
-        // 处理业务逻辑错误
-        if (data.code !== 200) {
-          // 特殊处理令牌过期（示例：code=401 代表令牌无效）
-          if (data.code === 401) {
-            uni.removeStorageSync('token'); // 清除无效令牌
-			uni.removeStorageSync('userInfo'); // 清除用户信息
-            uni.navigateTo({ url: '/pages/login/login' }); // 跳转到登录页
+    // 生成唯一请求标识（URL + 方法 + 参数的字符串表示）
+    const requestKey = `${upperMethod}-${baseUrl + url}-${JSON.stringify(data)}`;
+    
+    // 检查是否有相同请求正在进行
+    if (pendingRequests.has(requestKey)) {
+      // 如果有，直接复用之前的Promise
+      return pendingRequests.get(requestKey).then(resolve).catch(reject);
+    }
+    
+    // 显示加载提示
+    if (showLoading) {
+      uni.showLoading({ title: '加载中...', mask: true });
+    }
+    
+    // 创建当前请求的Promise并缓存
+    const requestPromise = new Promise((innerResolve, innerReject) => {
+      uni.request({
+        url: baseUrl + url,
+        data,
+        method: upperMethod,
+        header: { 
+          'token': uni.getStorageSync('token'),
+          ...(upperMethod === 'GET' ? { 'Cache-Control': 'no-cache' } : {}),
+          ...customHeader
+        },
+        timeout: DEFAULT_TIMEOUT,
+        success: (result) => {
+          const { statusCode, data } = result;
+          
+          if (statusCode < 200 || statusCode >= 300) {
+            const errorMsg = `HTTP错误: ${statusCode}`;
+            uni.showToast({ title: errorMsg, icon: 'none' });
+            return innerReject({ type: 'http', statusCode, message: errorMsg });
           }
-          const errorMsg = data.message || `业务错误: ${data.code}`;
+          
+          if (data.code !== 200) {
+            if (data.code === 401) {
+              uni.removeStorageSync('token');
+              uni.removeStorageSync('userInfo');
+              uni.navigateTo({ url: '/pages/login/login' });
+            }
+            const errorMsg = data.message || `业务错误: ${data.code}`;
+            uni.showToast({ title: errorMsg, icon: 'none' });
+            return innerReject({ type: 'business', code: data.code, message: errorMsg });
+          }
+          
+          innerResolve(data.message);
+        },
+        fail: (err) => {
+          const errorMsg = err.errMsg || '服务器请求异常';
           uni.showToast({ title: errorMsg, icon: 'none' });
-          return reject({ type: 'business', code: data.code, message: errorMsg });
+          innerReject({ type: 'network', message: errorMsg, detail: err });
+        },
+        complete: () => {
+          // 隐藏提示
+          if (showLoading) {
+            setTimeout(function () {
+              uni.hideLoading();
+            }, 500);
+          }
+		  // 请求完成后隐藏加载提示并移除缓存
+          pendingRequests.delete(requestKey);
         }
-        
-        // 成功：返回完整的业务数据（根据后端规范调整）
-		console.log()
-        resolve(data.message);
-      },
-      fail: (err) => {
-        // 网络错误（如超时、断网）
-        const errorMsg = err.errMsg || '服务器请求异常';
-        uni.showToast({ title: errorMsg, icon: 'none' });
-        reject({ type: 'network', message: errorMsg, detail: err });
-      }
+      });
     });
+    
+    // 缓存当前请求的Promise
+    pendingRequests.set(requestKey, requestPromise);
+    
+    // 将结果传递给外部Promise
+    requestPromise.then(resolve).catch(reject);
   });
 }
 
 export default http;
+    

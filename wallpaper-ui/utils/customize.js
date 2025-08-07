@@ -2,11 +2,11 @@
 export const getGender = (type) => {
 	let result = ''
 	if (type === 0) {
-		result = '未知'
+		result = '女'
 	} else if (type === 1) {
 		result = '男'
 	} else {
-		result = '女'
+		result = '未知'
 	}
 	return result
 }

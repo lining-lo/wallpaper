@@ -25,7 +25,6 @@ app.set('view engine', 'html');
 // 引入路由模块
 require('./routes')(app);
 require('./routes/files')(app);
-// require('./routes/email')(app);
 
 // 启动服务器
 app.listen(config.port, () => {

@@ -1,33 +1,41 @@
-//引入附件上传插件
-var multer = require('multer');
+// 后端 Node.js 生成七牛上传凭证的接口（修正版）
+const qiniu = require('qiniu');
+const config = require('../config/default');
 
-//生成随机数
-function random(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-}
+const accessKey = config.qiniu.ACCESS_KEY;
+const secretKey = config.qiniu.SECRET_KEY;
+const domain = config.qiniu.DOMAIN;
+const bucket = config.qiniu.BUCKET;
 
-//创建multer配置对象
-const storage = multer.diskStorage({
-    //保存路径
-    destination: function (request, file, callback) {
-        callback(null, './data/photo')//注意这里的文件路径,不是相对路径，直接填写从项目根路径开始写就行了
-    },
-    //保存在 destination 中的文件名
-    filename: function (request, file, callback) {
-        //正则匹配后缀名
-        let type = file.originalname.replace(/.+\./, ".")
-        callback(null, Date.now() + random(1, 100) + type)
-    }
-})
-
-//创建multer中间件实例
-const upload = multer({ storage: storage })
-
-//暴露接口
 module.exports = function (app) {
-    app.post('/profile', upload.single('file'), function (request, response, next) {
-        let name = request.file.filename;
-        let imgurl = '/photo/' + name;
-        response.send(imgurl);
-    })
+    app.post('/getQiniuToken', (req, res) => {
+        try {
+            const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+            const options = {
+                scope: bucket,
+                expires: 3600,
+                returnBody: JSON.stringify({
+                    key: '$(key)',
+                    url: `https://${domain}/$(key)`
+                }),
+                // 不配置 saveKey，由前端指定 key
+            };
+
+            const putPolicy = new qiniu.rs.PutPolicy(options);
+            const uploadToken = putPolicy.uploadToken(mac);
+
+            res.json({
+                code: 200,
+                message: { token: uploadToken },
+            });
+
+        } catch (error) {
+            console.error('生成七牛凭证失败:', error);
+            res.status(500).json({
+                code: 500,
+                message: '生成上传凭证失败',
+                error: error.message
+            });
+        }
+    });
 }

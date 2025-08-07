@@ -64,7 +64,7 @@ const createTables = async () => {
             name: 'wallpaper',
             sql: `CREATE TABLE IF NOT EXISTS wallpaper (
                     id CHAR(21) NOT NULL COMMENT 'ID',
-                    description VARCHAR(150) DEFAULT NULL COMMENT '摘要（限制50字）',
+                    description VARCHAR(800) DEFAULT NULL COMMENT '摘要（限制200字）',
                     url VARCHAR(255) DEFAULT NULL COMMENT '图片地址',
                     video_url VARCHAR(255) DEFAULT NULL COMMENT '视频地址（动态壁纸，允许为空）',
                     type TINYINT UNSIGNED DEFAULT 0 COMMENT '类型: 0-普通、1-专辑、2-动态、3-平板、4-头像',
@@ -111,8 +111,8 @@ const createTables = async () => {
                     open_id VARCHAR(100) NOT NULL UNIQUE COMMENT '微信openid（唯一标识）',
                     name VARCHAR(30) DEFAULT NULL COMMENT '用户昵称',
                     avatar_url VARCHAR(255) DEFAULT NULL COMMENT '头像地址',
-                    gender TINYINT UNSIGNED DEFAULT 0 COMMENT '性别: 0-未知、1-男、2-女',
-                    motto VARCHAR(150) DEFAULT NULL COMMENT '格言',
+                    gender TINYINT UNSIGNED DEFAULT NULL COMMENT '性别: null-未知、1-男、0-女',
+                    motto VARCHAR(800) DEFAULT NULL COMMENT '格言，限200字',
                     status TINYINT UNSIGNED DEFAULT 1 COMMENT '账号状态: 0-禁用、1-正常、2管理员',
                     createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                     KEY idx_name (name) COMMENT '昵称索引',
@@ -171,41 +171,41 @@ module.exports = {
     // 分页查询分类数据
     selecCategoryPage: async (values) => {
         const sql = `
-        SELECT 
-          c.id,
-          c.name,
-          c.cover,
-          c.updatedate,
-          -- 统计分类下的有效壁纸数（未删除、已通过）
-          COUNT(DISTINCT w.id) AS wallpaper_count,
-          -- 统计分类下的有效点赞总数
-          COUNT(DISTINCT f.id) AS total_likes
-        FROM 
-          category c
-        -- 关联有效壁纸（未删除、已通过审核）
-        LEFT JOIN 
-          wallpaper w 
-          ON c.id = w.category_id 
-          AND w.is_delete = 0 
-          AND w.status = 1
-        -- 关联有效点赞记录（type=0为点赞，status=1为有效）
-        LEFT JOIN 
-          feedback f 
-          ON w.id = f.wallpaper_id 
-          AND f.type = 0 
-          AND f.status = 1
-        -- 原分页条件：类型和状态过滤
-        WHERE 
-          c.type = ? 
-          AND c.status = ?
-        -- 按分类分组（核心：确保每个分类只返回一条记录）
-        GROUP BY 
-          c.id, c.name, c.cover, c.updatedate
-        -- 原排序和分页逻辑
-        ORDER BY 
-          c.sort 
-        LIMIT ?, ?;
-      `;
+            SELECT 
+            c.id,
+            c.name,
+            c.cover,
+            c.updatedate,
+            -- 统计分类下的有效壁纸数（未删除、已通过）
+            COUNT(DISTINCT w.id) AS wallpaper_count,
+            -- 统计分类下的有效点赞总数
+            COUNT(DISTINCT f.id) AS total_likes
+            FROM 
+            category c
+            -- 关联有效壁纸（未删除、已通过审核）
+            LEFT JOIN 
+            wallpaper w 
+            ON c.id = w.category_id 
+            AND w.is_delete = 0 
+            AND w.status = 1
+            -- 关联有效点赞记录（type=0为点赞，status=1为有效）
+            LEFT JOIN 
+            feedback f 
+            ON w.id = f.wallpaper_id 
+            AND f.type = 0 
+            AND f.status = 1
+            -- 原分页条件：类型和状态过滤
+            WHERE 
+            c.type = ? 
+            AND c.status = ?
+            -- 按分类分组（核心：确保每个分类只返回一条记录）
+            GROUP BY 
+            c.id, c.name, c.cover, c.updatedate
+            -- 原排序和分页逻辑
+            ORDER BY 
+            c.sort 
+            LIMIT ?, ?;
+        `;
         return query(sql, values)
     },
 
@@ -221,43 +221,51 @@ module.exports = {
                 w.url,
                 w.video_url,
                 w.category_id,
-                w.category_name,
+                c.name AS category_name,  -- 从分类表获取分类名称
                 w.labels,
                 w.user_id,
-                w.user_name,
-                w.user_avatar,
+                u.name AS user_name,      -- 从用户表获取用户名
+                u.avatar_url AS user_avatar,  -- 从用户表获取用户头像
                 w.count AS view_count,
                 w.createdate,
-                -- 总互动统计（所有用户）
+                -- 总互动统计（所有用户的点赞、收藏、下载）
                 COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
                 COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
                 COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
-                -- 当前用户是否点赞（1=是，0=否）
+                -- 当前用户是否点赞/收藏（1=是，0=否）
                 MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
-                -- 当前用户是否收藏（1=是，0=否）
                 MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected
             FROM 
                 wallpaper w
-            -- 关联所有用户的反馈表（用于统计总数量）
+            -- 关联分类表获取分类名称
+            LEFT JOIN 
+                category c 
+                ON w.category_id = c.id  -- 通过分类ID关联
+            -- 关联用户表获取用户名和头像
+            LEFT JOIN 
+                user u 
+                ON w.user_id = u.id  -- 通过用户ID关联
+            -- 关联所有用户的反馈表（统计总互动数）
             LEFT JOIN 
                 feedback f_all 
                 ON w.id = f_all.wallpaper_id
-            -- 关联当前用户的反馈表（用于判断用户行为）
+            -- 关联当前用户的反馈表（判断当前用户行为）
             LEFT JOIN 
                 feedback f_user 
                 ON w.id = f_user.wallpaper_id 
-                AND f_user.user_id = ?  -- 传入当前登录用户ID
+                AND f_user.user_id = ?  -- 传入当前登录用户ID（参数1）
             WHERE 
-                w.type = ? 
-                AND w.category_id = ?  -- 筛选指定分类下的壁纸
-                AND w.status = ? 
-                AND w.is_delete = 0
+                w.type = ?  -- 壁纸类型（参数2）
+                AND w.category_id = ?  -- 筛选指定分类（参数3）
+                AND w.status = ?  -- 壁纸状态（参数4，如1-已通过）
+                AND w.is_delete = 0  -- 未删除
             GROUP BY 
-                w.id, w.description, w.url, w.video_url, w.category_id, w.category_name, 
-                w.labels, w.user_id, w.user_name, w.user_avatar, w.count, w.createdate
+                w.id, w.description, w.url, w.video_url, w.category_id, c.name,  -- 包含分类名称
+                w.labels, w.user_id, u.name, u.avatar_url,  -- 包含用户名和头像
+                w.count, w.createdate
             ORDER BY 
                 w.createdate DESC 
-            LIMIT ?, ?;
+            LIMIT ?, ?;  -- 分页参数（参数5：偏移量，参数6：条数）
         `
         return query(sql, values)
     },
@@ -270,43 +278,51 @@ module.exports = {
                 w.url,
                 w.video_url,
                 w.category_id,
-                w.category_name,
+                c.name AS category_name,  -- 从分类表获取分类名称
                 w.labels,
                 w.user_id,
-                w.user_name,
-                w.user_avatar,
-                w.count AS view_count,  -- 查看次数
+                u.name AS user_name,      -- 从用户表获取用户名
+                u.avatar_url AS user_avatar,  -- 从用户表获取用户头像
+                w.count AS view_count,    -- 查看次数
                 w.createdate,
-                -- 总互动统计（所有用户）
+                -- 总互动统计（所有用户的点赞、收藏、下载）
                 COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
                 COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
                 COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
-                -- 当前用户是否点赞（1=是，0=否）
+                -- 当前用户是否点赞/收藏（1=是，0=否）
                 MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
-                -- 当前用户是否收藏（1=是，0=否）
                 MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected
             FROM 
                 wallpaper w
-            -- 关联所有用户的反馈表（用于统计总数量）
+            -- 关联分类表获取分类名称
+            LEFT JOIN 
+                category c 
+                ON w.category_id = c.id  -- 通过分类ID关联
+            -- 关联用户表获取用户名和头像
+            LEFT JOIN 
+                user u 
+                ON w.user_id = u.id  -- 通过用户ID关联（壁纸上传者）
+            -- 关联所有用户的反馈表（统计总互动数）
             LEFT JOIN 
                 feedback f_all 
                 ON w.id = f_all.wallpaper_id
-            -- 关联当前用户的反馈表（用于判断用户行为）
+            -- 关联当前登录用户的反馈表（判断其行为）
             LEFT JOIN 
                 feedback f_user 
                 ON w.id = f_user.wallpaper_id 
-                AND f_user.user_id = ?  -- 传入当前登录用户ID
+                AND f_user.user_id = ?  -- 传入当前登录用户ID（参数1）
             WHERE 
-                w.type = ? 
-                AND w.user_id = ?  -- 筛选指定用户上传的壁纸
-                AND w.status = ? 
-                AND w.is_delete = 0
+                w.type = ?  -- 壁纸类型（参数2）
+                AND w.user_id = ?  -- 筛选指定上传用户的壁纸（参数3）
+                AND w.status = ?  -- 壁纸状态（参数4，如1-已通过）
+                AND w.is_delete = 0  -- 未删除
             GROUP BY 
-                w.id, w.description, w.url, w.video_url, w.category_id, w.category_name, 
-                w.labels, w.user_id, w.user_name, w.user_avatar, w.count, w.createdate
+                w.id, w.description, w.url, w.video_url, w.category_id, c.name,  -- 包含分类名称
+                w.labels, w.user_id, u.name, u.avatar_url,  -- 包含用户名和头像
+                w.count, w.createdate
             ORDER BY 
                 w.createdate DESC 
-            LIMIT ?, ?;
+            LIMIT ?, ?;  -- 分页参数（参数5：偏移量，参数6：条数）;
         `
         return query(sql, values)
     },
@@ -326,7 +342,12 @@ module.exports = {
     },
     // 新增用户
     addUser: async (values) => {
-        const sql = `INSERT INTO user (id, open_id) VALUES (?,?,?,?,?,?) `
+        const sql = `INSERT INTO user (id, open_id) VALUES (?,?) `
+        return query(sql, values)
+    },
+    // 修改用户信息
+    updateUser: async (values) => {
+        const sql = `UPDATE user SET name = ?, avatar_url = ?, gender = ?, motto = ? WHERE id = ?;`
         return query(sql, values)
     },
 };

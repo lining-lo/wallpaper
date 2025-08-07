@@ -4,7 +4,7 @@
 		<view class="my-info" @click="toEditUser">
 			<view class="info-avatar">
 				<view class="avatar-left">
-					<image src="/static/images/avatar.png" mode="aspectFill"></image>
+					<image :src="userInfo ? userInfo.avatar_url : '/static/images/avatar.png'" mode="aspectFill"></image>
 				</view>
 				<view class="avatar-right">
 					<view class="name">{{ userInfo ? userInfo.name || '分享室用户' : '分享室用户' }}</view>
@@ -96,7 +96,9 @@ const token = ref();
 // 跳转到用户编辑页
 const toEditUser = () => {
 	if (token.value) {
-		console.log('有token');
+		uni.navigateTo({
+			url: `/pages/myInfo/myInfo`
+		});
 	} else {
 		uni.navigateTo({
 			url: `/pages/login/login`
