@@ -43,3 +43,15 @@ export const updateUser = (data) => {
 export const getQiniuToken = () => {
 	return http('/getQiniuToken')
 }
+
+/**
+ * 反馈相关（点赞|收藏|下载）
+ */
+// 新增反馈
+export const addFeedBack = (data) => {
+	return http('/addFeedBack', data)
+}
+// 修改反馈状态
+export const updateFeedBackStatus = (data) => {
+	return http('/updateFeedBackStatus', data)
+}

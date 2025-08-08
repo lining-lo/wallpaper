@@ -12,11 +12,11 @@
 			<view class="item-info">
 				<view class="info-like">
 					<text class="fill"></text>
-					<text v-if="coverInfo" >{{coverInfo.wallpaper_count}}</text>
+					<text v-if="coverInfo">{{ coverInfo.wallpaper_count }}</text>
 				</view>
 				<view class="info-title">
 					<text v-if="coverInfo" class="name">{{ coverInfo.name }}</text>
-					<text class="count" v-if="coverInfo" >{{coverInfo.total_likes}}人喜欢</text>
+					<text class="count" v-if="coverInfo">{{ coverInfo.total_likes }}人喜欢</text>
 				</view>
 			</view>
 		</view>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { onLoad, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId } from '../../api/api';
 
@@ -39,15 +39,26 @@ const goBack = () => {
 	uni.navigateBack();
 };
 
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+});
+
 // 封面信息
 const coverInfo = ref();
 // 专辑列表
 const albumList = ref([]);
 // 是否加载全部
 const isEnd = ref(false);
+
 // 获取专辑列表参数
 const albumListParams = reactive({
-	current_userId:'SVQbwK5rd3',
+	current_userId: userInfo.value.id || '',
 	type: 1,
 	category_id: '',
 	status: 1,
@@ -59,8 +70,18 @@ const getAlbumList = async () => {
 	if (!isEnd.value) {
 		// 发送请求
 		albumListParams.category_id = coverInfo.value.id;
+		albumListParams.current_userId = userInfo.value.id || ''
+		console.log(userInfo.value.id)
 		const result = await selecWallpaperPageByCategoryId(albumListParams);
-		result.map((item) => (item.labels = JSON.parse(item.labels)));
+		result.map((item) => {
+			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
+			if (item.is_collected >= 1) {
+				item.isFristCollection = false; // 初始化是否首次收藏标记
+			} else {
+				item.isFristCollection = true; // 初始化是否首次收藏标记
+			}
+			return item;
+		});
 		// 存入数据
 		albumList.value = [...albumList.value, ...result];
 		uni.setStorageSync('wallpapers', JSON.stringify(albumList.value));

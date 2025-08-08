@@ -37,4 +37,16 @@ module.exports = function (app) {
     app.post('/updateUser', (request, response) => {
         controller.updateUser(request, response)
     })
+
+    /**
+     * 反馈相关（点赞|收藏|下载）
+     */
+    // 新增反馈
+    app.post('/addFeedBack', (request, response) => {
+        controller.addFeedBack(request, response)
+    })
+    // 修改反馈状态
+    app.post('/updateFeedBackStatus', (request, response) => {
+        controller.updateFeedBackStatus(request, response)
+    })
 }

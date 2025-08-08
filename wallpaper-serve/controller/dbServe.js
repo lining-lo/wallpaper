@@ -79,6 +79,8 @@ exports.selecCategoryPage = async (request, response) => {
 // 根据分类id分页查询壁纸数据
 exports.selecWallpaperPageByCategoryId = async (request, response) => {
     const data = request.body
+    console.log(data.current_userId, data.type, data.category_id, data.status, (data.page - 1) * data.pagesize, data.pagesize);
+    
     await db.selecWallpaperPageByCategoryId([data.current_userId, data.type, data.category_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
         // 返回结果
         response.send({
@@ -197,7 +199,7 @@ exports.updateUser = async (request, response) => {
     // if (data.avatar_url && data.avatar_url.trim() !== '') {
     //     const mediaCheckResult = await checkMediaSecurity(access_token, data.avatar_url);
     //     console.log(mediaCheckResult);
-        
+
     // }
     // 验证用户名
     if (data.name && data.name.trim() !== '') {
@@ -234,3 +236,30 @@ exports.updateUser = async (request, response) => {
         });
     }
 };
+
+
+/**
+ * 反馈相关（点赞|收藏|下载）
+ */
+// 新增反馈
+exports.addFeedBack = async (request, response) => {
+    const data = request.body
+    await db.addFeedBack([data.user_id, data.wallpaper_id, data.category_id, data.type, data.status]).then(async result => {
+        // 返回结果
+        response.send({
+            code: 200,
+            message: result
+        })
+    })
+}
+// 修改反馈状态
+exports.updateFeedBackStatus = async (request, response) => {
+    const data = request.body
+    await db.updateFeedBackStatus([data.status, data.user_id, data.wallpaper_id, data.type]).then(async result => {
+        // 返回结果
+        response.send({
+            code: 200,
+            message: result
+        })
+    })
+}

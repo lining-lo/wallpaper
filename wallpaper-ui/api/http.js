@@ -1,7 +1,7 @@
 const baseUrl = 'http://localhost:3001';
 
 // 默认请求超时时间（毫秒）
-const DEFAULT_TIMEOUT = 200000;
+const DEFAULT_TIMEOUT = 8000;
 
 // 存储正在进行的请求，用于防抖
 const pendingRequests = new Map();

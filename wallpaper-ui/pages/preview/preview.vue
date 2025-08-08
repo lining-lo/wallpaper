@@ -29,20 +29,20 @@
 		<!-- 底部功能按钮 -->
 		<view class="preview-bottom" v-if="isShow" @click.stop="">
 			<view class="bottom-detail btn" @click="changePopup(1)">
-				<uni-icons type="info-filled" color="#fff" size="22"></uni-icons>
+				<uni-icons type="info-filled" color="#03A9F4" size="22"></uni-icons>
 				<text>详情</text>
 			</view>
-			<view class="bottom-favorites btn">
-				<uni-icons type="star-filled" color="#fff" size="24"></uni-icons>
-				<text>{{currentWallpaper.collect_count}}</text>
+			<view class="bottom-favorites btn" @click="handleFeedback(1)">
+				<uni-icons type="star-filled" :color="currentWallpaper.is_collected >= 1 ? '#f4ff14' : '#fff'" size="24"></uni-icons>
+				<text>{{ currentWallpaper.collect_count }}</text>
 			</view>
-			<view class="bottom-like btn">
-				<uni-icons type="heart-filled" color="#fff" size="22"></uni-icons>
-				<text>{{currentWallpaper.like_count}}</text>
+			<view class="bottom-like btn" @click="handleFeedback(0)">
+				<uni-icons type="heart-filled" :color="currentWallpaper.is_liked >= 1 ? '#ff3613' : '#fff'" size="22"></uni-icons>
+				<text>{{ currentWallpaper.like_count }}</text>
 			</view>
-			<view class="bottom-download btn">
-				<uni-icons type="download-filled" color="#fff" size="22"></uni-icons>
-				<text>{{currentWallpaper.download_count}}</text>
+			<view class="bottom-download btn" @click="handleFeedback(2)">
+				<uni-icons type="download-filled" :color="currentWallpaper.is_downloaded >= 1 ? '#8d5fe0' : '#fff'" size="22"></uni-icons>
+				<text>{{ currentWallpaper.download_count }}</text>
 			</view>
 		</view>
 		<!-- 详情弹窗 -->
@@ -90,7 +90,8 @@
 </template>
 
 <script setup>
-import { onLoad } from '@dcloudio/uni-app';
+import { addFeedBack, updateFeedBackStatus } from '../../api/api';
+import { onLoad, onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
 // 详情弹窗dom
@@ -162,15 +163,173 @@ const changeWallpaper = (event) => {
 	readWallpaperIndexList.value = [...new Set(readWallpaperIndexList.value)];
 };
 
+// 用户信息
+const userInfo = ref();
+// token信息
+const token = ref();
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+});
+
 // 点赞|收藏|下载的参数
 const feedbackParams = reactive({
-	
-})
-// 点赞|收藏|下载的方法
-const addFeedback = ()=>{
-	
-}
+	user_id: '',
+	wallpaper_id: '',
+	category_id: '',
+	type: 0,
+	status: 1
+});
 
+// 点赞|收藏|下载的方法
+const handleFeedback = (type) => {
+	if (!token.value) {
+		return uni.navigateTo({
+			url: `/pages/login/login`
+		});
+	}
+
+	// 获取参数
+	feedbackParams.user_id = userInfo.value.id;
+	feedbackParams.wallpaper_id = currentWallpaper.value.id;
+	feedbackParams.category_id = currentWallpaper.value.category_id;
+	feedbackParams.type = type;
+	feedbackParams.status = 1;
+
+	// 根据反馈类型做出不同处理
+	// 点赞
+	if (type === 0) {
+		if (currentWallpaper.value.is_liked >= 1) {
+			return uni.showToast({
+				title: '您已点过赞了',
+				icon: 'none',
+				duration: 2000
+			});
+		} else {
+			addFeedBack(feedbackParams);
+			currentWallpaper.value.is_liked += 1;
+			currentWallpaper.value.like_count += 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '点赞成功',
+					icon: 'success',
+					duration: 2000
+				});
+			}, 500);
+		}
+	}
+	// 收藏
+	if (type === 1) {
+		if (currentWallpaper.value.is_collected >= 1) {
+			feedbackParams.status = 0;
+			updateFeedBackStatus(feedbackParams);
+			currentWallpaper.value.is_collected -= 1;
+			currentWallpaper.value.collect_count -= 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '已取消收藏',
+					icon: 'none',
+					duration: 2000
+				});
+			}, 1000);
+		} else {
+			// 第一次收藏
+			if (currentWallpaper.value.isFristCollection) {
+				addFeedBack(feedbackParams);
+				currentWallpaper.value.isFristCollection = false;
+			} else {
+				updateFeedBackStatus(feedbackParams);
+			}
+			currentWallpaper.value.is_collected += 1;
+			currentWallpaper.value.collect_count += 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '收藏成功',
+					icon: 'success',
+					duration: 2000
+				});
+			}, 1000);
+		}
+	}
+	// 下载
+	if (type === 2) {
+		if (currentWallpaper.value.is_downloaded >= 1) {
+			return uni.showToast({
+				title: '请勿重复下载',
+				icon: 'none',
+				duration: 2000
+			});
+		} else {
+			handleDownload();
+		}
+	}
+	// 同步更新缓存
+	updateWallpaperCache();
+};
+// 同步更新壁纸列表缓存
+const updateWallpaperCache = () => {
+	// 更新 wallpapers 数组中当前壁纸的数据（与 currentWallpaper 同步）
+	if (wallpapers.value && wallpapers.value.length > currentWallpaperIndex.value) {
+		wallpapers.value[currentWallpaperIndex.value] = {
+			...wallpapers.value[currentWallpaperIndex.value],
+			is_liked: currentWallpaper.value.is_liked,
+			like_count: currentWallpaper.value.like_count
+		};
+	}
+	// 将更新后的 wallpapers 重新存储到缓存
+	uni.setStorageSync('wallpapers', JSON.stringify(wallpapers.value));
+};
+
+// 下载图片的方法
+const handleDownload = async () => {
+	uni.getImageInfo({
+		src: currentWallpaper.value.url,
+		success: (res) => {
+			uni.saveImageToPhotosAlbum({
+				filePath: res.path,
+				success: (res) => {
+					addFeedBack(feedbackParams);
+					currentWallpaper.value.is_downloaded += 1;
+					currentWallpaper.value.download_count += 1;
+					uni.showToast({
+						title: '保存成功',
+						icon: 'success',
+						duration: 2000
+					});
+				},
+				fail: (err) => {
+					// 处理特殊错误：用户拒绝授权后引导到设置页
+					if (err.errMsg.includes('auth deny') || err.errMsg.includes('deny')) {
+						uni.showModal({
+							title: '权限不足',
+							content: '需要开启相册权限才能保存图片，是否去设置？',
+							confirmText: '去设置',
+							success: (modalRes) => {
+								if (modalRes.confirm) {
+									// 打开应用设置页
+									uni.openSetting();
+								}
+							}
+						});
+					} else {
+						uni.showToast({
+							title: '保存失败，请重试',
+							icon: 'none'
+						});
+					}
+				}
+			});
+		},
+		fail: (err) => {
+			console.error('获取图片信息失败:', err);
+			uni.showToast({
+				title: '图片加载失败，请重试',
+				icon: 'none'
+			});
+		}
+	});
+};
 </script>
 
 <style lang="scss">
