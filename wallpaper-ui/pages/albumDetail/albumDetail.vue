@@ -31,7 +31,7 @@
 
 <script setup>
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
-import { reactive, ref } from 'vue';
+import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId } from '../../api/api';
 
 // 返回上一页
@@ -43,10 +43,26 @@ const goBack = () => {
 const userInfo = ref({});
 // token信息
 const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	// 仅在非首次显示时执行逻辑
+	if (!isFirstLoad.value) {
+		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
+		// 注意：需确保 coverInfo 已初始化（依赖 onLoad 的执行）
+		if (coverInfo.value) {
+			// 加判断避免 coverInfo 未初始化导致的报错
+			// 重置页码为 1，重新加载第一页数据（避免重复叠加）
+			albumListParams.page = 1;
+			albumList.value = []; // 清空原有列表
+			isEnd.value = false; // 重置到底状态
+			getAlbumList(); // 重新请求数据
+		}
+	}
 });
 
 // 封面信息
@@ -70,15 +86,17 @@ const getAlbumList = async () => {
 	if (!isEnd.value) {
 		// 发送请求
 		albumListParams.category_id = coverInfo.value.id;
-		albumListParams.current_userId = userInfo.value.id || ''
-		console.log(userInfo.value.id)
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		albumListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
 		const result = await selecWallpaperPageByCategoryId(albumListParams);
 		result.map((item) => {
-			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
-			if (item.is_collected >= 1) {
-				item.isFristCollection = false; // 初始化是否首次收藏标记
-			} else {
-				item.isFristCollection = true; // 初始化是否首次收藏标记
+			// 安全解析 labels，避免格式错误导致崩溃
+			try {
+				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+			} catch (err) {
+				console.error('解析 labels 失败:', err);
+				item.labels = []; // 解析失败时用空数组兜底
 			}
 			return item;
 		});
@@ -98,6 +116,11 @@ onLoad((options) => {
 	coverInfo.value = category_item;
 	// 获取专辑列表数据
 	getAlbumList();
+
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
 });
 // 触底加载更加专辑数据
 onReachBottom(() => {
@@ -107,6 +130,7 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
+	console.log('click', item);
 	uni.navigateTo({
 		url: `/pages/preview/preview?id=${item.id}&index=${index}`
 	});

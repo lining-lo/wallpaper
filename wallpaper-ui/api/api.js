@@ -19,6 +19,10 @@ export const selecWallpaperPageByCategoryId = (data) => {
 export const selecWallpaperPageByUserId = (data) => {
 	return http('/selecWallpaperPageByUserId', data)
 }
+// 查找用户下载|收藏的壁纸
+export const selectUserWallpapers = (data) => {
+	return http('/selectUserWallpapers', data)
+}
 
 /**
  * 用户相关
@@ -47,11 +51,7 @@ export const getQiniuToken = () => {
 /**
  * 反馈相关（点赞|收藏|下载）
  */
-// 新增反馈
-export const addFeedBack = (data) => {
-	return http('/addFeedBack', data)
-}
-// 修改反馈状态
-export const updateFeedBackStatus = (data) => {
-	return http('/updateFeedBackStatus', data)
+// 统一处理反馈的新增/状态更新
+export const handleFeedback = (data) => {
+	return http('/handleFeedback', data)
 }

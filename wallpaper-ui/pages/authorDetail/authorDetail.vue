@@ -11,16 +11,16 @@
 		<!-- 账号信息 -->
 		<view class="authordetail-info">
 			<view class="info-left">
-				<image v-if="userInfo.avatar_url" :src="userInfo.avatar_url" mode="aspectFill"></image>
+				<image v-if="authorInfo.avatar_url" :src="authorInfo.avatar_url" mode="aspectFill"></image>
 			</view>
 			<view class="info-right">
-				<view class="name" v-if="userInfo.name">{{ userInfo.name }}</view>
-				<view class="userid" v-if="userInfo.id">id：{{ userInfo.id }}</view>
-				<view class="sex" v-if="userInfo">性别：{{ getGender(userInfo.gender) }}</view>
+				<view class="name" v-if="authorInfo.name">{{ authorInfo.name }}</view>
+				<view class="userid" v-if="authorInfo.id">id：{{ authorInfo.id }}</view>
+				<view class="sex" v-if="authorInfo">性别：{{ getGender(authorInfo.gender) }}</view>
 			</view>
 		</view>
 		<!-- 标语 -->
-		<view class="authordetail-slogan" v-if="userInfo.motto">{{ userInfo.motto }}</view>
+		<view class="authordetail-slogan" v-if="authorInfo.motto">{{ authorInfo.motto }}</view>
 		<!-- 反馈信息 -->
 		<view class="authordetail-feedback">
 			<view class="feedback-follow feedback">
@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { onLoad, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { getGender } from '../../utils/customize';
 import { selecWallpaperPageByUserId } from '../../api/api';
 import { reactive, ref } from 'vue';
@@ -76,11 +76,21 @@ const goBack = () => {
 
 // 用户信息
 const userInfo = ref({});
-// 用户的作品
+// token信息
+const token = ref();
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+});
+
+// 作者信息
+const authorInfo = ref({});
+// 作者的作品
 const works = ref([]);
-// 获取用户作品的参数
+// 获取作者作品的参数
 const worksParams = reactive({
-	current_userId:'SVQbwK5rd3',
+	current_userId: '',
 	type: 1,
 	user_id: '',
 	status: 1,
@@ -89,12 +99,24 @@ const worksParams = reactive({
 });
 // 是否加载全部
 const isEnd = ref(false);
-// 获取用户作品的方法
+// 获取作者作品的方法
 const getWorks = async () => {
 	if (!isEnd.value) {
-		worksParams.user_id = userInfo.value.id;
+		worksParams.user_id = authorInfo.value.id;
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		worksParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+		console.log(worksParams)
 		const result = await selecWallpaperPageByUserId(worksParams);
-		result.map(item => item.labels = JSON.parse(item.labels))
+		result.map((item) => {
+			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
+			if (item.is_collected >= 1) {
+				item.isFristCollection = false; // 初始化是否首次收藏标记
+			} else {
+				item.isFristCollection = true; // 初始化是否首次收藏标记
+			}
+			return item;
+		});
 		works.value = [...works.value, ...result];
 		uni.setStorageSync('wallpapers', JSON.stringify(works.value));
 		// 是否到底
@@ -105,10 +127,10 @@ const getWorks = async () => {
 };
 // 挂载
 onLoad((options) => {
-	// 获取用户信息
-	const user_item = JSON.parse(decodeURIComponent(options.item));
-	userInfo.value = user_item;
-	// 获取用户作品
+	// 获取作者信息
+	const author_item = JSON.parse(decodeURIComponent(options.item));
+	authorInfo.value = author_item;
+	// 获取作者作品
 	getWorks();
 });
 // 触底加载更多

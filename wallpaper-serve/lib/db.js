@@ -131,9 +131,7 @@ const createTables = async () => {
                     status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '行为状态: 1-有效、0-无效（如取消点赞/收藏）',
                     createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                     updatedate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                    UNIQUE KEY uk_user_wallpaper_type (user_id, wallpaper_id, type),
-                    KEY idx_wallpaper_type (wallpaper_id, type, status),
-                    KEY idx_user_type (user_id, type, status, createdate)
+                    KEY idx_user_type (user_id ,wallpaper_id , type)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户反馈表（点赞/收藏/下载）';`
         },
     ];
@@ -308,6 +306,50 @@ module.exports = {
         `
         return query(sql, values)
     },
+    // 查找用户下载|收藏的壁纸
+    selectUserWallpapers: async (values) => {
+        const sql = `
+            SELECT
+                w.id,
+                w.description,
+                w.url,
+                w.video_url,
+                w.category_id,
+                c.name AS category_name,
+                w.labels,
+                w.user_id,
+                u.name AS user_name,
+                u.avatar_url AS user_avatar,
+                w.count AS view_count,
+                w.createdate,
+                -- 总互动统计
+                COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
+                -- 当前用户行为判断
+                MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
+                MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected,
+                MAX(CASE WHEN f_user.type = 2 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_downloaded,
+                MAX(f_user.createdate) AS last_action_time
+            FROM
+                -- 子查询：先筛选有效壁纸
+                (SELECT * FROM wallpaper WHERE is_delete = 0 AND status = 1) w
+            INNER JOIN category c ON w.category_id = c.id
+            INNER JOIN user u ON w.user_id = u.id
+            LEFT JOIN feedback f_all ON w.id = f_all.wallpaper_id
+            INNER JOIN feedback f_user ON w.id = f_user.wallpaper_id 
+                AND f_user.user_id = ?
+            WHERE
+                f_user.type = ?
+                AND f_user.status = 1
+            GROUP BY
+                w.id
+            ORDER BY
+                last_action_time DESC
+            LIMIT ?, ?;
+            `;
+        return query(sql, values)
+    },
 
     /**
      * 用户相关
@@ -343,7 +385,29 @@ module.exports = {
     },
     // 修改反馈状态
     updateFeedBackStatus: async (values) => {
-        const sql = `UPDATE feedback SET status = ? WHERE user_id = ? AND wallpaper_id = ? AND type = ?; `
+        const sql = `
+            UPDATE feedback 
+            SET status = 1 - status, 
+                updatedate = CURRENT_TIMESTAMP 
+            WHERE 
+                user_id = ? 
+                AND wallpaper_id = ? 
+                AND type = ?
+        `;
+        return query(sql, values)
+    },
+    // 查找用户是否点赞|收藏|下载
+    selectFeedBackByUserId: async (values) => {
+        const sql = `
+            SELECT 
+            COUNT(*) AS action_count  -- 为计数结果起别名，方便前端取值
+            FROM 
+            feedback 
+            WHERE 
+            user_id = ?          -- 用户ID条件
+            AND wallpaper_id = ?         -- 壁纸ID条件
+            AND type = ?             -- 行为类型条件（0-点赞、1-收藏、2-下载）
+        `;
         return query(sql, values)
     },
 };

@@ -167,6 +167,22 @@
 				"navigationBarTitleText" : "",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path" : "pages/myDownload/myDownload",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/myCollection/myCollection",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"tabBar": {

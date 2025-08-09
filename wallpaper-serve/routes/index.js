@@ -21,6 +21,11 @@ module.exports = function (app) {
     app.post('/selecWallpaperPageByUserId', (request, response) => {
         controller.selecWallpaperPageByUserId(request, response)
     })
+    // 查找用户下载|收藏的壁纸
+    app.post('/selectUserWallpapers', (request, response) => {
+        controller.selectUserWallpapers(request, response)
+    })
+
 
     /**
      * 用户相关
@@ -41,12 +46,9 @@ module.exports = function (app) {
     /**
      * 反馈相关（点赞|收藏|下载）
      */
-    // 新增反馈
-    app.post('/addFeedBack', (request, response) => {
-        controller.addFeedBack(request, response)
+    // 统一处理反馈的新增/状态更新
+    app.post('/handleFeedback', (request, response) => {
+        controller.handleFeedback(request, response)
     })
-    // 修改反馈状态
-    app.post('/updateFeedBackStatus', (request, response) => {
-        controller.updateFeedBackStatus(request, response)
-    })
+
 }

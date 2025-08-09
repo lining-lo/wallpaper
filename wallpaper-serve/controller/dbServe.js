@@ -79,8 +79,6 @@ exports.selecCategoryPage = async (request, response) => {
 // 根据分类id分页查询壁纸数据
 exports.selecWallpaperPageByCategoryId = async (request, response) => {
     const data = request.body
-    console.log(data.current_userId, data.type, data.category_id, data.status, (data.page - 1) * data.pagesize, data.pagesize);
-    
     await db.selecWallpaperPageByCategoryId([data.current_userId, data.type, data.category_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
         // 返回结果
         response.send({
@@ -100,6 +98,18 @@ exports.selecWallpaperPageByUserId = async (request, response) => {
         })
     })
 }
+// 查找用户下载|收藏的壁纸
+exports.selectUserWallpapers = async (request, response) => {
+    const data = request.body
+    await db.selectUserWallpapers([data.user_id, data.type , (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+        // 返回结果
+        response.send({
+            code: 200,
+            message: result
+        })
+    })
+}
+
 
 /**
  * 用户相关
@@ -241,25 +251,74 @@ exports.updateUser = async (request, response) => {
 /**
  * 反馈相关（点赞|收藏|下载）
  */
-// 新增反馈
-exports.addFeedBack = async (request, response) => {
-    const data = request.body
-    await db.addFeedBack([data.user_id, data.wallpaper_id, data.category_id, data.type, data.status]).then(async result => {
-        // 返回结果
+// 统一处理反馈的新增/状态更新，避免回调嵌套
+exports.handleFeedback = async (request, response) => {
+    try {
+        const { user_id, wallpaper_id, category_id, type, status = 1 } = request.body;
+
+        // 1. 参数校验
+        if (!user_id || !wallpaper_id || type === undefined) {
+            return response.send({
+                code: 400,
+                message: "参数不完整，请提供 user_id、wallpaper_id、type"
+            });
+        }
+
+        // 2. 查询是否存在记录
+        const existingRecords = await db.selectFeedBackByUserId([user_id, wallpaper_id, type]);
+        const hasRecord = existingRecords[0].action_count >= 1;
+        console.log(['点赞', '收藏', '下载'][type], hasRecord);
+
+        // 3. 分类型处理
+        switch (type) {
+            // 点赞（type=0）：仅允许一次，不支持取消
+            case 0:
+                if (hasRecord) {
+                    // 已点赞 → 直接返回提示，不执行操作
+                    console.log('已点赞 → 直接返回提示，不执行操作');
+                    response.send({ code: 200, message: "您已点过赞，无法重复点赞" });
+                } else {
+                    // 未点赞 → 新增点赞记录
+                    console.log('未点赞 → 新增点赞记录');
+                    await db.addFeedBack([user_id, wallpaper_id, category_id, type, status]);
+                    response.send({ code: 200, message: "点赞成功" });
+                }
+                break;
+
+            // 收藏（type=1）：支持收藏/取消收藏切换
+            case 1:
+                if (hasRecord) {
+                    // 已收藏 → 取消收藏 | 取消收藏 → 重新收藏
+                    console.log('已收藏 → 取消收藏 | 取消收藏 → 重新收藏');
+                    await db.updateFeedBackStatus([user_id, wallpaper_id, type]); // SQL需实现 status=1-status
+                    response.send({ code: 200, message: "'已收藏 → 取消收藏 | 取消收藏 → 重新收藏" });
+                } else {
+                    // 未收藏 → 新增收藏记录
+                    console.log('未收藏 → 新增收藏记录');
+                    await db.addFeedBack([user_id, wallpaper_id, category_id, type, status]);
+                    response.send({ code: 200, message: "收藏成功" });
+                }
+                break;
+
+            // 下载（type=2）：允许重复记录，直接新增
+            case 2:
+                await db.addFeedBack([user_id, wallpaper_id, category_id, type, status]);
+                console.log('允许重复下载，直接新增');
+                response.send({ code: 200, message: "下载记录已添加" });
+                break;
+
+            // 无效类型
+            default:
+                response.send({ code: 400, message: "无效的类型（type 应为 0/1/2）" });
+        }
+
+    } catch (error) {
+        // 4. 统一错误处理
+        console.error("反馈操作失败：", error);
         response.send({
-            code: 200,
-            message: result
-        })
-    })
-}
-// 修改反馈状态
-exports.updateFeedBackStatus = async (request, response) => {
-    const data = request.body
-    await db.updateFeedBackStatus([data.status, data.user_id, data.wallpaper_id, data.type]).then(async result => {
-        // 返回结果
-        response.send({
-            code: 200,
-            message: result
-        })
-    })
-}
+            code: 500,
+            message: "操作失败，请重试",
+            error: process.env.NODE_ENV === "development" ? error.message : undefined
+        });
+    }
+};

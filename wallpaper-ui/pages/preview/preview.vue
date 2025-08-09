@@ -32,15 +32,15 @@
 				<uni-icons type="info-filled" color="#03A9F4" size="22"></uni-icons>
 				<text>详情</text>
 			</view>
-			<view class="bottom-favorites btn" @click="handleFeedback(1)">
+			<view class="bottom-favorites btn" @click="toHandleFeedback(1)">
 				<uni-icons type="star-filled" :color="currentWallpaper.is_collected >= 1 ? '#f4ff14' : '#fff'" size="24"></uni-icons>
 				<text>{{ currentWallpaper.collect_count }}</text>
 			</view>
-			<view class="bottom-like btn" @click="handleFeedback(0)">
+			<view class="bottom-like btn" @click="toHandleFeedback(0)">
 				<uni-icons type="heart-filled" :color="currentWallpaper.is_liked >= 1 ? '#ff3613' : '#fff'" size="22"></uni-icons>
 				<text>{{ currentWallpaper.like_count }}</text>
 			</view>
-			<view class="bottom-download btn" @click="handleFeedback(2)">
+			<view class="bottom-download btn" @click="toHandleFeedback(2)">
 				<uni-icons type="download-filled" :color="currentWallpaper.is_downloaded >= 1 ? '#8d5fe0' : '#fff'" size="22"></uni-icons>
 				<text>{{ currentWallpaper.download_count }}</text>
 			</view>
@@ -90,7 +90,7 @@
 </template>
 
 <script setup>
-import { addFeedBack, updateFeedBackStatus } from '../../api/api';
+import { handleFeedback } from '../../api/api';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
@@ -183,7 +183,7 @@ const feedbackParams = reactive({
 });
 
 // 点赞|收藏|下载的方法
-const handleFeedback = (type) => {
+const toHandleFeedback = async (type) => {
 	if (!token.value) {
 		return uni.navigateTo({
 			url: `/pages/login/login`
@@ -207,7 +207,8 @@ const handleFeedback = (type) => {
 				duration: 2000
 			});
 		} else {
-			addFeedBack(feedbackParams);
+			const result = await handleFeedback(feedbackParams);
+			console.log(result);
 			currentWallpaper.value.is_liked += 1;
 			currentWallpaper.value.like_count += 1;
 			setTimeout(() => {
@@ -222,8 +223,7 @@ const handleFeedback = (type) => {
 	// 收藏
 	if (type === 1) {
 		if (currentWallpaper.value.is_collected >= 1) {
-			feedbackParams.status = 0;
-			updateFeedBackStatus(feedbackParams);
+			await handleFeedback(feedbackParams);
 			currentWallpaper.value.is_collected -= 1;
 			currentWallpaper.value.collect_count -= 1;
 			setTimeout(() => {
@@ -234,13 +234,7 @@ const handleFeedback = (type) => {
 				});
 			}, 1000);
 		} else {
-			// 第一次收藏
-			if (currentWallpaper.value.isFristCollection) {
-				addFeedBack(feedbackParams);
-				currentWallpaper.value.isFristCollection = false;
-			} else {
-				updateFeedBackStatus(feedbackParams);
-			}
+			await handleFeedback(feedbackParams);
 			currentWallpaper.value.is_collected += 1;
 			currentWallpaper.value.collect_count += 1;
 			setTimeout(() => {
@@ -254,33 +248,24 @@ const handleFeedback = (type) => {
 	}
 	// 下载
 	if (type === 2) {
-		if (currentWallpaper.value.is_downloaded >= 1) {
-			return uni.showToast({
-				title: '请勿重复下载',
-				icon: 'none',
-				duration: 2000
-			});
-		} else {
-			handleDownload();
-		}
+		handleDownload();
 	}
 	// 同步更新缓存
 	updateWallpaperCache();
+	console.log('current', currentWallpaper.value);
 };
 // 同步更新壁纸列表缓存
 const updateWallpaperCache = () => {
-	// 更新 wallpapers 数组中当前壁纸的数据（与 currentWallpaper 同步）
 	if (wallpapers.value && wallpapers.value.length > currentWallpaperIndex.value) {
+		// 直接用当前最新的 currentWallpaper 覆盖数组中的旧数据
 		wallpapers.value[currentWallpaperIndex.value] = {
-			...wallpapers.value[currentWallpaperIndex.value],
-			is_liked: currentWallpaper.value.is_liked,
-			like_count: currentWallpaper.value.like_count
+			...wallpapers.value[currentWallpaperIndex.value], // 保留原始数据结构（避免丢失未修改的字段）
+			...currentWallpaper.value // 用最新的 currentWallpaper 覆盖所有字段
 		};
 	}
-	// 将更新后的 wallpapers 重新存储到缓存
+	// 重新保存到缓存
 	uni.setStorageSync('wallpapers', JSON.stringify(wallpapers.value));
 };
-
 // 下载图片的方法
 const handleDownload = async () => {
 	uni.getImageInfo({
@@ -288,10 +273,12 @@ const handleDownload = async () => {
 		success: (res) => {
 			uni.saveImageToPhotosAlbum({
 				filePath: res.path,
-				success: (res) => {
-					addFeedBack(feedbackParams);
+				success: async (res) => {
+					await handleFeedback(feedbackParams);
 					currentWallpaper.value.is_downloaded += 1;
 					currentWallpaper.value.download_count += 1;
+					// 同步更新缓存
+					updateWallpaperCache();
 					uni.showToast({
 						title: '保存成功',
 						icon: 'success',
