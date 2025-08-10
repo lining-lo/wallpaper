@@ -143,13 +143,13 @@ const toPreview = (item, index) => {
 	min-height: 100vh;
 	padding-top: 180rpx;
 	position: relative;
-	background-color: #353962;
+	background-color: #141414;
 	overflow: auto;
 	/* 头部导航栏 */
 	.albumdetail-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;

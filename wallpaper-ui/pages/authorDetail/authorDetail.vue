@@ -1,7 +1,5 @@
 <template>
 	<view class="authordetail">
-		<!-- 毛玻璃背景 -->
-		<view class="authordetail-background"></view>
 		<!-- 头部导航 -->
 		<view class="authordetail-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
@@ -48,11 +46,8 @@
 		<view class="authordetail-selects">
 			<view class="work selected">手机(6)</view>
 			<view class="album">平板(0)</view>
-			<view class="album">头像(0)</view>
-			<view class="statement">
-				<uni-icons type="info" size="22" color="#fff"></uni-icons>
-				<text style="margin-left: 4px">声明</text>
-			</view>
+			<view class="avatar">头像(0)</view>
+			<view class="live">动态(0)</view>
 		</view>
 		<!-- 作品列表 -->
 		<view class="authordetail-works">
@@ -106,7 +101,7 @@ const getWorks = async () => {
 		// 从本地存储重新读取一次，避免依赖onShow的时机
 		userInfo.value = uni.getStorageSync('userInfo');
 		worksParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
-		console.log(worksParams)
+		console.log(worksParams);
 		const result = await selecWallpaperPageByUserId(worksParams);
 		result.map((item) => {
 			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
@@ -150,28 +145,15 @@ const toPreview = (item, index) => {
 .authordetail {
 	width: 100%;
 	min-height: 100vh;
-	background-color: #2c333e;
+	background-color: #141414;
 	padding: 30rpx;
 	padding-top: 200rpx;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.authordetail-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 头部导航栏 */
 	.authordetail-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -291,12 +273,10 @@ const toPreview = (item, index) => {
 		flex-wrap: wrap;
 		.works-item {
 			width: calc(34% - 20rpx);
-			height: 350rpx;
+			height: 450rpx;
 			margin-right: 20rpx;
 			margin-bottom: 30rpx;
 			border-radius: 20rpx;
-			border: 1px solid #fff;
-			position: relative;
 			&:nth-child(3n) {
 				margin-right: 0;
 			}

@@ -68,7 +68,7 @@ onShow(() => {
 	margin-top: 180rpx; /* 适配navbar高度 */
 	width: 100%;
 	min-height: 100vh;
-	background-color: #262a50;
+	background-color: #141414;
 	padding: 10rpx;
 	box-sizing: border-box; /* 防止padding导致宽度溢出 */
 	overflow-x: hidden; /* 隐藏横向滚动条 */
@@ -77,7 +77,7 @@ onShow(() => {
 	.mydownload-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -105,6 +105,7 @@ onShow(() => {
 			/* 主图片样式 */
 			.item-img {
 				width: 100%;
+				max-height: 620rpx;
 				display: block; /* 消除图片底部默认间距 */
 			}
 			/* 图片类型 */

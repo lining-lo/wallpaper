@@ -188,7 +188,7 @@
 	"tabBar": {
 		"color": "#7b7b7f",
 		"selectedColor": "#007aff",
-		"backgroundColor": "#353962",
+		"backgroundColor": "#141414",
 		"list": [{
 				"text": "首页",
 				"pagePath": "pages/index/index",

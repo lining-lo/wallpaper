@@ -1,8 +1,6 @@
 <template>
 	<navbar />
 	<view class="author">
-		<!-- 毛玻璃背景 -->
-		<view class="author-background"></view>
 		<!-- 欢迎及介绍 -->
 		<view class="author-welcome">
 			<view class="welcome-title">欢迎创作者分享您的壁纸</view>
@@ -291,21 +289,8 @@ import navbar from '../../components/navbar.vue';
 	height: 100%;
 	padding: 30rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.author-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 欢迎及介绍 */
 	.author-welcome {
 		width: 100%;
@@ -314,15 +299,18 @@ import navbar from '../../components/navbar.vue';
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
-		background-image: url(https://img1.baidu.com/it/u=2685174318,3941395360&fm=253&fmt=auto&app=138&f=JPEG?w=750&h=500);
+		background-image: url(https://img0.baidu.com/it/u=349784041,132589072&fm=253&fmt=auto&app=120&f=JPEG?w=654&h=345);
 		background-size: cover;
 		background-position: center;
 		border-radius: 40rpx;
-		padding: 40rpx;
-		font-family: fantasy;
+		padding: 12rpx 30rpx;
+		font-family: cursive;
+		box-shadow: 0 -2px 4px 0px #626069;
 		.welcome-title {
+			width: fit-content;
+			font-weight: 700;
+			background-color: rgba(40, 40, 40, 0.8);
 			font-size: 20px;
-			font-weight: 600;
 		}
 		.welcome-tip {
 			display: flex;
@@ -330,9 +318,8 @@ import navbar from '../../components/navbar.vue';
 			padding: 0 30rpx;
 			text {
 				padding: 8rpx 30rpx;
-				background-color: #faecff;
+				background-color: #050506;
 				border-radius: 40rpx;
-				color: #43214e;
 				font-weight: 500;
 				font-size: 14px;
 			}
@@ -345,15 +332,14 @@ import navbar from '../../components/navbar.vue';
 		position: relative;
 		.list-item {
 			width: 100%;
-			height: 60vw;
+			height: 446rpx;
 			border-radius: 30rpx;
-			background-color: #262a50;
-			box-shadow: 0 1px 20px -6px #00000080;
 			padding: 0 20rpx 20rpx 20rpx;
 			margin-bottom: 100rpx;
+			box-shadow: 0 1px 20px -6px #45434c;
 			.item-info {
 				width: 100%;
-				height: 10vw;
+				height: 78rpx;
 				margin-bottom: 20rpx;
 				display: flex;
 				align-items: center;
@@ -386,19 +372,17 @@ import navbar from '../../components/navbar.vue';
 			}
 			.item-works {
 				width: 100%;
-				height: 43vw;
+				height: 330rpx;
 				display: flex;
 				justify-content: space-between;
 				.works-item {
 					width: 32%;
 					height: 100%;
 					border-radius: 10rpx;
-					border: 1px solid #fff;
 					image {
 						width: 100%;
 						height: 100%;
-						border-radius: 10rpx;
-						// border: 1px solid #fff;
+						border-radius: 20rpx;
 					}
 				}
 			}
@@ -417,8 +401,8 @@ import navbar from '../../components/navbar.vue';
 			display: inline-block;
 			font-size: 60rpx;
 			width: 30vw;
-			height: 10vw;
-			line-height: 10vw;
+			height: 78rpx;
+			line-height: 78rpx;
 			text-align: center;
 			background-color: #5548f7;
 			border-radius: 20rpx 20rpx 0 0;

@@ -25,10 +25,10 @@
 					<text class="count">12</text>
 				</view>
 				<text class="separate">|</text>
-				<view class="collection integration">
+				<navigator url="/pages/myCollection/myCollection" class="collection integration">
 					<text class="title">我的收藏</text>
 					<text class="count">4</text>
-				</view>
+				</navigator>
 				<text class="separate">|</text>
 				<view class="energy integration">
 					<text class="title">我的积分</text>
@@ -39,10 +39,10 @@
 		<!-- 底部功能 -->
 		<view class="my-footer">
 			<view class="row">
-				<view class="label">
+				<navigator url="/pages/myDownload/myDownload" class="label">
 					<uni-icons type="cloud-download-filled" size="32" color="#109be7"></uni-icons>
 					<text class="title">下载记录</text>
-				</view>
+				</navigator>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
 			</view>
 			<view class="row">
@@ -117,14 +117,14 @@ onShow(() => {
 .my {
 	width: 100%;
 	min-height: 100vh;
-	background-color: #232749;
+	background-color: #141414;
 	padding: 30rpx;
 	padding-top: 200rpx;
 	overflow: auto;
 	/* 账号信息 */
 	.my-info {
 		width: 100%;
-		padding: 0 30rpx;
+		padding: 0 80rpx;
 		margin-bottom: 60rpx;
 		.info-avatar {
 			width: 100%;
@@ -179,9 +179,8 @@ onShow(() => {
 		.logo-img {
 			width: 90%;
 			height: 160rpx;
-			background-color: #272b4d;
 			border-radius: 30rpx 30rpx 0 0;
-			box-shadow: 0 1px 20px -6px #00000080;
+			box-shadow: 0 -6px 2px 0px #45434c;
 			margin: 0 auto;
 			display: flex;
 			align-items: center;
@@ -195,8 +194,8 @@ onShow(() => {
 			width: 100%;
 			height: 150rpx;
 			border-radius: 30rpx;
-			box-shadow: 0 1px 20px -6px #00000080;
-			background-color: #272b4d;
+			box-shadow: 0 1.8px 0px 1px #45434c;
+			border-top: 1rpx solid #45434c;
 			display: flex;
 			align-items: center;
 			justify-content: space-around;

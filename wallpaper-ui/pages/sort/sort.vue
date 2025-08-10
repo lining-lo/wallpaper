@@ -1,8 +1,6 @@
 <template>
 	<navbar />
 	<view class="sort">
-		<!-- 毛玻璃背景 -->
-		<view class="sort-background"></view>
 		<!-- 排行榜 -->
 		<view class="sort-ranking">
 			<navigator url="/pages/rank/rank" class="ranking-item">
@@ -22,28 +20,28 @@
 		<view class="sort-title">🪁壁纸分类</view>
 		<!-- 类型分类 -->
 		<view class="sort-tyoe">
-			<view class="type-live type" style="background-color: #4481a3">
+			<view class="type-live type" style="background-color: #203440">
 				<navigator url="/pages/live/live" class="content">
 					<view class="title">动态壁纸</view>
 					<view class="english">Live wallpaper</view>
 				</navigator>
 				<image src="/static/images/sort_live.png" mode="aspectFill"></image>
 			</view>
-			<view class="type-live type" style="background-color: #6767a7">
+			<view class="type-live type" style="background-color: #27274c">
 				<navigator url="/pages/album/album"  class="content">
 					<view class="title">专辑</view>
 					<view class="english">Special subject</view>
 				</navigator>
 				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
 			</view>
-			<view class="type-live type" style="background-color: #ad945d">
+			<view class="type-live type" style="background-color: #655636">
 				<navigator url="/pages/tablet/tablet"  class="content">
 					<view class="title">平板</view>
 					<view class="english">Tablet computer</view>
 				</navigator>
 				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
 			</view>
-			<view class="type-live type" style="background-color: #c4595b">
+			<view class="type-live type" style="background-color: #88383a">
 				<navigator url="/pages/avatar/avatar" class="content">
 					<view class="title">头像</view>
 					<view class="english">Head sculpture</view>
@@ -102,21 +100,8 @@ onLoad(() => {
 	min-height: 100vh;
 	padding: 30rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.sort-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 排行榜 */
 	.sort-ranking {
 		width: 100%;
@@ -128,7 +113,7 @@ onLoad(() => {
 			width: 31%;
 			height: 100%;
 			padding: 12rpx 0;
-			background-color: #262a50;
+			background-color: #23232b;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
@@ -169,7 +154,6 @@ onLoad(() => {
 			align-items: center;
 			justify-content: center;
 			overflow: hidden;
-			border: 1px solid #fff;
 			.content {
 				width: 70%;
 				display: flex;
@@ -203,7 +187,6 @@ onLoad(() => {
 			height: 44vw;
 			margin-bottom: 30rpx;
 			border-radius: 30rpx;
-			border: 1px solid #fff;
 			position: relative;
 			overflow: hidden;
 			image {

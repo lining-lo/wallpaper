@@ -3,7 +3,7 @@
 		<!-- 头部导航 -->
 		<view class="tablet-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
-			<text>头像</text>
+			<text>平板</text>
 			<view style="width: 100rpx"></view>
 		</view>
 		<!-- 分享列表 -->
@@ -56,15 +56,15 @@ const goBack = () => {
 .tablet {
 	width: 100%;
 	height: 100%;
-	background-color: #262a50;
-	padding: 10rpx;
+	background-color: #141414;
+	padding: 20rpx;
 	padding-top: 192rpx;
 	overflow: auto;
 	/* 头部导航栏 */
 	.tablet-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -82,16 +82,14 @@ const goBack = () => {
 		justify-content: space-between;
 		flex-wrap: wrap;
 		.list-item {
-			width: 49.5%;
-			height: 140px;
-			border-radius: 10rpx;
-			background-color: #262a50;
+			width: 48%;
+			height: 120px;
 			box-shadow: 0 1px 20px -6px #00000080;
-			margin-bottom: 10rpx;
+			margin-bottom: 40rpx;
 			image {
 				width: 100%;
 				height: 100%;
-				border-radius: 10rpx;
+				border-radius: 30rpx;
 			}
 			.item-title {
 				font-size: 13px;

@@ -1,7 +1,5 @@
 <template>
 	<view class="album">
-		<!-- 毛玻璃背景 -->
-		<view class="album-background"></view>
 		<!-- 头部导航 -->
 		<view class="album-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
@@ -15,10 +13,10 @@
 				<view class="item-info">
 					<view class="info-title">
 						<text class="name">{{ item.name }}</text>
-						<text class="count">{{ item.wallpaper_count}}</text>
+						<text class="count">{{ item.wallpaper_count }}</text>
 					</view>
 					<view class="info-like">
-						<text>{{ item.total_likes}}人喜欢</text>
+						<text>{{ item.total_likes }}人喜欢</text>
 					</view>
 				</view>
 			</view>
@@ -40,10 +38,10 @@ const goBack = () => {
 const album = ref();
 // 分页获取专辑的参数
 const albumParams = reactive({
-	current_userId:'SVQbwK5rd3',
+	current_userId: 'SVQbwK5rd3',
 	type: 1,
 	page: 1,
-	status:1,
+	status: 1,
 	pagesize: 8
 });
 //  分页获取专辑方法
@@ -69,29 +67,16 @@ const toAlbumDetail = (item) => {
 .album {
 	width: 100%;
 	height: 100%;
-	padding: 30rpx;
+	padding: 40rpx;
 	padding-top: 200rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.album-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 头部导航栏 */
 	.album-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -114,7 +99,6 @@ const toAlbumDetail = (item) => {
 			height: 358rpx;
 			margin-bottom: 30rpx;
 			border-radius: 20rpx;
-			border: 1px solid #fff;
 			position: relative;
 			image {
 				width: 100%;
@@ -124,7 +108,7 @@ const toAlbumDetail = (item) => {
 			.item-info {
 				width: 100%;
 				height: 100%;
-				padding: 20rpx;
+				padding: 30rpx;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;

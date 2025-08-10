@@ -53,15 +53,15 @@ const goBack = () => {
 .live {
 	width: 100%;
 	height: 100%;
-	background-color: #262a50;
-	padding: 10rpx;
+	background-color: #141414;
+	padding: 30rpx;
 	padding-top: 192rpx;
 	overflow: auto;
 	/* 头部导航栏 */
 	.live-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -79,53 +79,15 @@ const goBack = () => {
 		justify-content: space-between;
 		flex-wrap: wrap;
 		.list-item {
-			width: 49.5%;
-			height: 340px;
-			border-radius: 10rpx;
-			background-color: #262a50;
+			width: 48%;
+			height: 300px;
+			border-radius: 30rpx;
 			box-shadow: 0 1px 20px -6px #00000080;
-			margin-bottom: 10rpx;
+			margin-bottom: 40rpx;
 			image {
 				width: 100%;
 				height: 100%;
-				border-radius: 10rpx;
-			}
-			.item-title {
-				font-size: 13px;
-				padding: 20rpx;
-				font-weight: 600;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-			.item-info {
-				width: 100%;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				font-size: 12px;
-				padding: 0 20rpx;
-				.info-user {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					image {
-						width: 40rpx;
-						height: 40rpx;
-						border-radius: 50%;
-					}
-					text {
-						display: block;
-						margin-left: 8rpx;
-					}
-				}
-				.info-like {
-					display: flex;
-					align-items: center;
-					.count {
-						margin-left: 8rpx;
-					}
-				}
+				border-radius: 30rpx;
 			}
 		}
 	}

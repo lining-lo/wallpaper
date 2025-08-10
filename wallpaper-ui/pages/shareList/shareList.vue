@@ -120,7 +120,7 @@ const goBack = () => {
 	width: 100%;
 	height: 100%;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
 	/* 返回按钮 */
 	.sharelist-back {

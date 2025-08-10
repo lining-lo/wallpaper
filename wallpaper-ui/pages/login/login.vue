@@ -104,7 +104,7 @@ onLoad(() => {});
 .login {
 	width: 100%;
 	height: 100vh;
-	background-color: #232749;
+	background-color: #141414;
 	padding-top: 200rpx;
 	overflow: auto;
 	position: relative;
@@ -144,10 +144,10 @@ onLoad(() => {});
 				justify-content: center;
 				padding-right: 100rpx;
 				&.btn-login {
-					background-color: #444067;
+					background-color: #275607;
 				}
 				&.btn-back {
-					background-color: #395869;
+					background-color: #2d2d29;
 				}
 				text {
 					margin-left: 10rpx;

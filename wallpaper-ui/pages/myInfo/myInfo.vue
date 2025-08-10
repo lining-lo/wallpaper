@@ -4,7 +4,7 @@
 		<view class="myinfo-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>个人信息</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 22rpx"></view>
 		</view>
 		<!-- 上传按钮 -->
 		<!-- <button class="upload-btn" @click="selectFile">
@@ -40,7 +40,7 @@
 			</view>
 		</view>
 		<!-- 提交按钮 -->
-		<button @click="submit" style="background-color: #7d68fe; color: #fff; border-radius: 20rpx; margin-top: 30rpx">提交信息</button>
+		<button @click="submit" style="background-color: #1f1c2d; color: #fff; border-radius: 20rpx; margin-top: 30rpx">提交信息</button>
 		<!-- 性别选择弹窗 -->
 		<uni-popup type="bottom" ref="popupInfo" :safe-area="false" borderRadius="20rpx 20rpx 0 0" background-color="#fff">
 			<view class="inner">
@@ -140,7 +140,7 @@ onShow(() => {
 .myinfo {
 	width: 100%;
 	min-height: 100vh;
-	background-color: #232749;
+	background-color: #141414;
 	padding: 30rpx 40rpx;
 	padding-top: 200rpx;
 	overflow: auto;
@@ -148,7 +148,7 @@ onShow(() => {
 	.myinfo-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -169,7 +169,6 @@ onShow(() => {
 			width: 200rpx;
 			height: 200rpx;
 			border-radius: 50%;
-			background-color: #7d68fe;
 			padding: 0;
 			image {
 				width: 100%;
@@ -204,7 +203,7 @@ onShow(() => {
 			textarea {
 				width: 100%;
 				height: 100%;
-				background-color: #33375e;
+				background-color: #1b1b1f;
 				padding: 30rpx 40rpx;
 				border-radius: 10rpx;
 			}

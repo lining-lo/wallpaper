@@ -7,7 +7,7 @@
 		<!-- 动态壁纸 -->
 		<video
 			id="myVideo"
-			src="https://mobile-img-baofun.zhhainiao.com/pcwallpaper_ugc_mobile/live/9769482a5c19fa6efa72d7963e35f9eb_preview.mp4"
+			:src="live.video_url"
 			autoplay="true"
 			loop="ture"
 			:muted="isMuted"
@@ -40,6 +40,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 
 // 是否静音
 const isMuted = ref(true);
@@ -48,6 +49,15 @@ const isMuted = ref(true);
 const goBack = () => {
 	uni.navigateBack();
 };
+// 视频数据
+const live = ref({})
+// 挂载
+onLoad((options) => {
+	// 获取封面信息
+	const preview_item = JSON.parse(decodeURIComponent(options.item));
+	live.value = preview_item;
+});
+
 
 </script>
 

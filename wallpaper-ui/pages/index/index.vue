@@ -1,8 +1,6 @@
 <template>
 	<navbar />
 	<view class="home">
-		<!-- 毛玻璃背景 -->
-		<view class="home-background"></view>
 		<!-- 轮播图 -->
 		<view class="home-banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
@@ -40,49 +38,13 @@
 			</view>
 			<view class="sort-list">
 				<scroll-view scroll-x>
-					<navigator url="/pages/sortList/sortList" class="list-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+					<navigator url="/pages/sortList/sortList" class="list-item" v-for="(item,index) in sort" :key="index">
+						<image :src="item.cover" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
 						</view>
 						<view class="item-title">
-							<text>可爱萌宠</text>
-						</view>
-					</navigator>
-					<navigator url="/pages/sortList/sortList" class="list-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-						<view class="item-time">
-							<text>2天前更新</text>
-						</view>
-						<view class="item-title">
-							<text>可爱萌宠</text>
-						</view>
-					</navigator>
-					<navigator url="/pages/sortList/sortList" class="list-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-						<view class="item-time">
-							<text>2天前更新</text>
-						</view>
-						<view class="item-title">
-							<text>可爱萌宠</text>
-						</view>
-					</navigator>
-					<navigator url="/pages/sortList/sortList" class="list-item">
-						<image src="https://img1.baidu.com/it/u=757855534,1430352529&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=851" mode="aspectFill"></image>
-						<view class="item-time">
-							<text>2天前更新</text>
-						</view>
-						<view class="item-title">
-							<text>可爱萌宠</text>
-						</view>
-					</navigator>
-					<navigator url="/pages/sortList/sortList" class="list-item">
-						<image src="https://img1.baidu.com/it/u=2212222371,326919401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-						<view class="item-time">
-							<text>2天前更新</text>
-						</view>
-						<view class="item-title">
-							<text>可爱萌宠</text>
+							<text>{{item.name}}</text>
 						</view>
 					</navigator>
 				</scroll-view>
@@ -194,12 +156,30 @@ const toUserDetail = (item) => {
 	});
 };
 
+// 分类数据
+const sort = ref();
+// 分页获取分类的参数
+const sortParams = reactive({
+	type: 0,
+	status: 1,
+	page: 1,
+	pagesize: 5
+});
+//  分页获取分类方法
+const getSort = async () => {
+	const result = await selecCategoryPage(sortParams);
+	sort.value = result;
+	console.log('sort',sort.value)
+};
+
 // 挂载
 onLoad(() => {
 	// 获取专辑
 	getAlbum();
 	// 获取用户
 	getUserList();
+	// 获取分类
+	getSort()
 });
 </script>
 
@@ -210,21 +190,8 @@ onLoad(() => {
 	padding: 30rpx;
 	padding-top: 210rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.home-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 轮播图 */
 	.home-banner {
 		position: relative;
@@ -233,7 +200,6 @@ onLoad(() => {
 		border-radius: 20rpx;
 		overflow: hidden;
 		box-shadow: 0 1px 20px -6px #00000080;
-		border: 1px solid #fff;
 		::v-deep {
 			.wx-swiper-dot {
 				width: 20rpx !important;
@@ -263,7 +229,7 @@ onLoad(() => {
 				.item-info {
 					width: 100%;
 					height: 100%;
-					padding: 20rpx;
+					padding: 30rpx;
 					display: flex;
 					flex-direction: column;
 					justify-content: space-between;
@@ -323,7 +289,7 @@ onLoad(() => {
 				color: gray;
 				border-radius: 0.625rem;
 				padding: 0.14rem 0.4rem;
-				background-color: #e1dbd5;
+				background-color: #2f2a24;
 			}
 		}
 		.author-list {
@@ -365,7 +331,7 @@ onLoad(() => {
 				color: gray;
 				border-radius: 0.625rem;
 				padding: 0.14rem 0.4rem;
-				background-color: #e1dbd5;
+				background-color: #2f2a24;
 			}
 		}
 		.sort-list {
@@ -380,7 +346,6 @@ onLoad(() => {
 					margin-right: 20rpx;
 					display: inline-block;
 					border-radius: 20rpx;
-					border: 1px solid #fff;
 					position: relative;
 					&:last-child {
 						margin-right: 0;
@@ -443,7 +408,7 @@ onLoad(() => {
 				color: gray;
 				border-radius: 0.625rem;
 				padding: 0.14rem 0.4rem;
-				background-color: #e1dbd5;
+				background-color: #2f2a24;
 			}
 		}
 		.recommend-list {

@@ -121,7 +121,7 @@ const waterfallList = ref([
   margin-top: 192rpx; /* 适配navbar高度 */
   width: 100%;
   min-height: 100vh;
-  background-color: #262a50;
+  background-color: #141414;
   padding: 10rpx;
   box-sizing: border-box; /* 防止padding导致宽度溢出 */
   overflow-x: hidden; /* 隐藏横向滚动条 */
@@ -139,7 +139,7 @@ const waterfallList = ref([
   -webkit-break-inside: avoid; /* 兼容小程序 */
   margin-bottom: 10rpx; /* 子项底部间距 */
   border-radius: 10rpx;
-  background-color: #262a50;
+  background-color: #23232b;
   box-shadow: 0 1px 20px -6px rgba(0, 0, 0, 0.5);
   overflow: hidden; /* 裁剪超出圆角的内容 */
 }
