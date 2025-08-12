@@ -25,6 +25,10 @@ module.exports = function (app) {
     app.post('/selectUserWallpapers', (request, response) => {
         controller.selectUserWallpapers(request, response)
     })
+    // 更新壁纸的查看次数
+    app.post('/updateWallpaperViewCount', (request, response) => {
+        controller.updateWallpaperViewCount(request, response)
+    })
 
 
     /**

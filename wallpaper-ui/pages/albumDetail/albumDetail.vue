@@ -130,7 +130,6 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
-	console.log('click', item);
 	uni.navigateTo({
 		url: `/pages/preview/preview?id=${item.id}&index=${index}`
 	});

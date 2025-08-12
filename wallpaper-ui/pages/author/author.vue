@@ -13,260 +13,132 @@
 			<view class="list-item">
 				<view class="item-info">
 					<view class="info-left">
-						<view class="avator"></view>
+						<view class="avator">
+							<image src="https://img1.baidu.com/it/u=519289147,1337069645&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+						</view>
 						<view class="name">巴曙松</view>
 					</view>
 					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=1641712266,2762265348&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+						<image src="https://img0.baidu.com/it/u=861660600,1038167782&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1088" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=302876631,88041301&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
 					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
 				<view class="item-info">
 					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
+						<view class="avator">
+							<image src="https://img0.baidu.com/it/u=2193304985,460318092&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800" mode="aspectFill"></image>
+						</view>
+						<view class="name">我不吃牛肉</view>
 					</view>
 					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=3682569110,536656401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1111" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=3209017159,1938707540&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1082" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=737810839,1312378981&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1082" mode="aspectFill"></image>
 					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
 				<view class="item-info">
 					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
+						<view class="avator">
+							<image src="https://img1.baidu.com/it/u=1349127637,1867892533&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+						</view>
+						<view class="name">赏球大师</view>
 					</view>
 					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=3936786040,184538853&fm=253&fmt=auto?w=684&h=1216" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+						<image src="https://img0.baidu.com/it/u=1152471652,2293099946&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=891" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=3613427091,644173820&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422" mode="aspectFill"></image>
 					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
 				<view class="item-info">
 					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
+						<view class="avator">
+							<image src="https://img2.baidu.com/it/u=2063068289,3005074310&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+						</view>
+						<view class="name">下次见面有花吗</view>
 					</view>
 					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=860122283,2841880150&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1428" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+						<image src="https://img0.baidu.com/it/u=2802731063,3936581808&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=667" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=587298321,2304242314&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1109" mode="aspectFill"></image>
 					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
 				<view class="item-info">
 					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
+						<view class="avator">
+							<image src="https://img0.baidu.com/it/u=3196617431,1263013381&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+						</view>
+						<view class="name">画手小敏</view>
 					</view>
 					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=1328932290,2111252852&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=878" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=325424430,124495079&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1284" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+						<image src="https://img2.baidu.com/it/u=1280795599,1811519824&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422" mode="aspectFill"></image>
 					</navigator>
 				</view>
 			</view>
 			<view class="list-item">
 				<view class="item-info">
 					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
+						<view class="avator">
+							<image src="https://img0.baidu.com/it/u=2317612037,2363737113&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+						</view>
+						<view class="name">JOME SLNFE</view>
 					</view>
 					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
 				</view>
 				<view class="item-works">
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=328920287,824413323&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=814" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=1403236860,2808549138&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
 					</navigator>
 					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator"></view>
-						<view class="name">巴曙松</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1724237667,1967106694&fm=253&fmt=auto&app=138&f=JPEG?w=353&h=499" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1121191004,2820831222&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=961" mode="aspectFill"></image>
+						<image src="https://img1.baidu.com/it/u=889080309,738965488&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
 					</navigator>
 				</view>
 			</view>
@@ -351,18 +223,24 @@ import navbar from '../../components/navbar.vue';
 					.avator {
 						position: absolute;
 						top: -60rpx;
-						width: 15vw;
-						height: 15vw;
+						width: 112rpx;
+						height: 112rpx;
 						border-radius: 50%;
-						background-image: url(https://img2.baidu.com/it/u=93036002,4253821634&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500);
-						background-size: cover;
-						background-position: center;
+						image {
+							width: 100%;
+							height: 100%;
+							border-radius: 50%;
+						}
 						border: 2px solid #fff;
 					}
 					.name {
-						margin-left: 18vw;
+						margin-left: 140rpx;
 						font-size: 18px;
 						font-weight: 600;
+						max-width: 300rpx;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
 					}
 				}
 				.info-right {

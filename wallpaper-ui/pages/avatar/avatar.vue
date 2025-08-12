@@ -8,44 +8,107 @@
 		</view>
 		<!-- 分享列表 -->
 		<view class="avatar-list">
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=953640602,4047902931&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=615285359,1419138736&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=2129850704,309143223&fm=253&fmt=auto&app=138&f=JPEG?w=802&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=3167322707,1679056125&fm=253&fmt=auto&app=138&f=JPEG?w=533&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=2786903409,1732820867&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1638790034,3534418596&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=801644006,604878762&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=3087975985,2887273610&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=4263343468,1566665778&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/avatarDetail/avatarDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=2343135913,1697720286&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-			</navigator>
+			<view @click="toAvatarDetail(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
+				<image :src="item.url" mode="aspectFill"></image>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
+import { selecWallpaperPageByCategoryId } from '../../api/api';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+
+	// 仅在非首次显示时执行逻辑
+	if (!isFirstLoad.value) {
+		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
+		// 重置页码为 1，重新加载第一页数据（避免重复叠加）
+		avatarListParams.page = 1;
+		avatarList.value = []; // 清空原有列表
+		isEnd.value = false; // 重置到底状态
+		getAvatarList(); // 重新请求数据
+	}
+});
+
+// 专辑列表
+const avatarList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+
+// 获取专辑列表参数
+const avatarListParams = reactive({
+	current_userId: userInfo.value.id || '',
+	type: 4,
+	category_id: 'K3pR7sT9qL',
+	status: 1,
+	page: 1,
+	pagesize: 24
+});
+// 获取专辑列表方法
+const getAvatarList = async () => {
+	if (!isEnd.value) {
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		avatarListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+		const result = await selecWallpaperPageByCategoryId(avatarListParams);
+		console.log(result);
+		result.map((item) => {
+			// 安全解析 labels，避免格式错误导致崩溃
+			try {
+				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+			} catch (err) {
+				console.error('解析 labels 失败:', err);
+				item.labels = []; // 解析失败时用空数组兜底
+			}
+			return item;
+		});
+		// 存入数据
+		avatarList.value = [...avatarList.value, ...result];
+		uni.setStorageSync('wallpapers', JSON.stringify(avatarList.value));
+		// 是否到底
+		if (result.length === 0) {
+			isEnd.value = true;
+		}
+	}
+};
+// 挂载
+onLoad((options) => {
+	// 获取专辑列表数据
+	getAvatarList();
+
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
+});
+// 触底加载更加专辑数据
+onReachBottom(() => {
+	avatarListParams.page++;
+	getAvatarList();
+});
+
+// 跳转到壁纸预览界面
+const toAvatarDetail = (item, index) => {
+	uni.navigateTo({
+		url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}`
+	});
 };
 </script>
 

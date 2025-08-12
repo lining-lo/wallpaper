@@ -5,16 +5,16 @@
 			<uni-icons type="left" size="20" color="#fff"></uni-icons>
 		</view>
 		<!-- 图片轮播图 -->
-		<swiper circular>
-			<swiper-item>
+		<swiper circular @change="changeWallpaper" :current="currentWallpaperIndex">
+			<swiper-item v-for="(item, index) in wallpapers" :key="index">
 				<view class="tabletdetail-info">
 					<view class="info-current">
-						<text>预览图 1/20</text>
+						<text v-if="wallpapers">预览图 {{ currentWallpaperIndex + 1 }}/{{ wallpapers.length }}</text>
 					</view>
 					<view class="info-user">
 						<view class="inner">
-							<text>lining-lo</text>
-							<image src="https://img1.baidu.com/it/u=725082660,2619807363&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+							<text>{{ currentWallpaper.user_name }}</text>
+							<image :src="currentWallpaper.user_avatar" mode="aspectFill"></image>
 						</view>
 					</view>
 					<view class="info-time">
@@ -23,25 +23,25 @@
 					</view>
 				</view>
 				<view class="tabletdetail-img">
-					<image src="https://img1.baidu.com/it/u=725082660,2619807363&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+					<image v-if="readWallpaperIndexList.includes(index)" :src="item.url" mode="aspectFill"></image>
 				</view>
 				<!-- 底部功能按钮 -->
 				<view class="tabletdetail-bottom" @click.stop="">
 					<view class="bottom-detail btn" @click="changePopup(1)">
-						<uni-icons type="info-filled" color="#fff" size="22"></uni-icons>
+						<uni-icons type="info-filled" color="#03A9F4" size="22"></uni-icons>
 						<text>详情</text>
 					</view>
-					<view class="bottom-favorites btn">
-						<uni-icons type="star-filled" color="#fff" size="24"></uni-icons>
-						<text>343</text>
+					<view class="bottom-favorites btn" @click="toHandleFeedback(1)">
+						<uni-icons type="star-filled" :color="currentWallpaper.is_collected >= 1 ? '#f4ff14' : '#fff'" size="24"></uni-icons>
+						<text>{{ currentWallpaper.collect_count }}</text>
 					</view>
-					<view class="bottom-like btn">
-						<uni-icons type="heart-filled" color="#fff" size="22"></uni-icons>
-						<text>454</text>
+					<view class="bottom-like btn" @click="toHandleFeedback(0)">
+						<uni-icons type="heart-filled" :color="currentWallpaper.is_liked >= 1 ? '#ff3613' : '#fff'" size="22"></uni-icons>
+						<text>{{ currentWallpaper.like_count }}</text>
 					</view>
-					<view class="bottom-download btn">
-						<uni-icons type="download-filled" color="#fff" size="22"></uni-icons>
-						<text>4567</text>
+					<view class="bottom-download btn" @click="toHandleFeedback(2)">
+						<uni-icons type="download-filled" :color="currentWallpaper.is_downloaded >= 1 ? '#8d5fe0' : '#fff'" size="22"></uni-icons>
+						<text>{{ currentWallpaper.download_count }}</text>
 					</view>
 				</view>
 			</swiper-item>
@@ -58,24 +58,24 @@
 					<view class="content">
 						<view class="row">
 							<view class="label">壁纸ID：</view>
-							<text selectable class="value">sfsf</text>
+							<text selectable class="value">{{ currentWallpaper.id }}</text>
 						</view>
 						<view class="row">
 							<view class="label">分类：</view>
-							<text selectable class="value">etet</text>
+							<text selectable class="value">{{ currentWallpaper.category_name }}</text>
 						</view>
 						<view class="row">
 							<view class="label">发布者：</view>
-							<text selectable class="value">edgdg</text>
+							<text selectable class="value">{{ currentWallpaper.user_name }}</text>
 						</view>
 						<view class="row">
 							<view class="label">摘要：</view>
-							<text selectable class="value">dgsgs</text>
+							<text selectable class="value">{{ currentWallpaper.description }}</text>
 						</view>
 						<view class="row">
 							<view class="label">标签：</view>
 							<view selectable class="value tags">
-								<text class="tag" v-for="(label, index2) in 2" :key="index2">sfsaf</text>
+								<text class="tag" v-for="(label, index2) in currentWallpaper.labels" :key="index2">{{ label }}</text>
 							</view>
 						</view>
 					</view>
@@ -91,8 +91,9 @@
 </template>
 
 <script setup>
-import { onLoad } from '@dcloudio/uni-app';
-import { ref } from 'vue';
+import { handleFeedback } from '../../api/api';
+import { onLoad, onShow } from '@dcloudio/uni-app';
+import { reactive, ref } from 'vue';
 
 // 返回上一页
 const goBack = () => {
@@ -109,6 +110,209 @@ const changePopup = (option) => {
 		popupInfo.value.close();
 	}
 };
+
+// 壁纸列表
+const wallpapers = ref([]);
+// 当前壁纸id
+const currentWallpaperId = ref();
+// 当前壁纸的索引
+const currentWallpaperIndex = ref();
+// 当前的壁纸信息
+const currentWallpaper = ref({});
+// 看过的壁纸索引
+const readWallpaperIndexList = ref([]);
+// 挂载
+onLoad((options) => {
+	// 获取封面信息
+	wallpapers.value = JSON.parse(uni.getStorageSync('wallpapers'));
+	// 获取当前壁纸id
+	currentWallpaperId.value = options.id;
+	// 获取当前的索引
+	currentWallpaperIndex.value = Number(options.index);
+	// 获取当前壁纸信息
+	currentWallpaper.value = wallpapers.value[currentWallpaperIndex.value];
+
+	// 提取缓存三张图
+	readWallpaperIndexList.value.push(
+		currentWallpaperIndex.value <= 0 ? wallpapers.value.length - 1 : currentWallpaperIndex.value - 1,
+		currentWallpaperIndex.value,
+		currentWallpaperIndex.value >= wallpapers.value.length - 1 ? 0 : currentWallpaperIndex.value + 1
+	);
+	// 数组去重
+	readWallpaperIndexList.value = [...new Set(readWallpaperIndexList.value)];
+});
+// 更换壁纸的方法
+const changeWallpaper = (event) => {
+	const currentIndex = event.detail.current;
+	currentWallpaperIndex.value = currentIndex;
+	currentWallpaper.value = wallpapers.value[currentIndex];
+	readWallpaperIndexList.value.push(currentIndex);
+	console.log(currentWallpaper.value);
+
+	// 提取缓存三张图
+	readWallpaperIndexList.value.push(
+		currentWallpaperIndex.value <= 0 ? wallpapers.value.length - 1 : currentWallpaperIndex.value - 1,
+		currentWallpaperIndex.value,
+		currentWallpaperIndex.value >= wallpapers.value.length - 1 ? 0 : currentWallpaperIndex.value + 1
+	);
+	// 数组去重
+	readWallpaperIndexList.value = [...new Set(readWallpaperIndexList.value)];
+};
+
+// 用户信息
+const userInfo = ref();
+// token信息
+const token = ref();
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+});
+
+// 点赞|收藏|下载的参数
+const feedbackParams = reactive({
+	user_id: '',
+	wallpaper_id: '',
+	category_id: '',
+	type: 0,
+	status: 1
+});
+
+// 点赞|收藏|下载的方法
+const toHandleFeedback = async (type) => {
+	if (!token.value) {
+		return uni.navigateTo({
+			url: `/pages/login/login`
+		});
+	}
+
+	// 获取参数
+	feedbackParams.user_id = userInfo.value.id;
+	feedbackParams.wallpaper_id = currentWallpaper.value.id;
+	feedbackParams.category_id = currentWallpaper.value.category_id;
+	feedbackParams.type = type;
+	feedbackParams.status = 1;
+
+	// 根据反馈类型做出不同处理
+	// 点赞
+	if (type === 0) {
+		if (currentWallpaper.value.is_liked >= 1) {
+			return uni.showToast({
+				title: '您已点过赞了',
+				icon: 'none',
+				duration: 2000
+			});
+		} else {
+			const result = await handleFeedback(feedbackParams);
+			console.log(result);
+			currentWallpaper.value.is_liked += 1;
+			currentWallpaper.value.like_count += 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '点赞成功',
+					icon: 'success',
+					duration: 2000
+				});
+			}, 500);
+		}
+	}
+	// 收藏
+	if (type === 1) {
+		if (currentWallpaper.value.is_collected >= 1) {
+			await handleFeedback(feedbackParams);
+			currentWallpaper.value.is_collected -= 1;
+			currentWallpaper.value.collect_count -= 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '已取消收藏',
+					icon: 'none',
+					duration: 2000
+				});
+			}, 1000);
+		} else {
+			await handleFeedback(feedbackParams);
+			currentWallpaper.value.is_collected += 1;
+			currentWallpaper.value.collect_count += 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '收藏成功',
+					icon: 'success',
+					duration: 2000
+				});
+			}, 1000);
+		}
+	}
+	// 下载
+	if (type === 2) {
+		handleDownload();
+	}
+	// 同步更新缓存
+	updateWallpaperCache();
+	console.log('current', currentWallpaper.value);
+};
+// 同步更新壁纸列表缓存
+const updateWallpaperCache = () => {
+	if (wallpapers.value && wallpapers.value.length > currentWallpaperIndex.value) {
+		// 直接用当前最新的 currentWallpaper 覆盖数组中的旧数据
+		wallpapers.value[currentWallpaperIndex.value] = {
+			...wallpapers.value[currentWallpaperIndex.value], // 保留原始数据结构（避免丢失未修改的字段）
+			...currentWallpaper.value // 用最新的 currentWallpaper 覆盖所有字段
+		};
+	}
+	// 重新保存到缓存
+	uni.setStorageSync('wallpapers', JSON.stringify(wallpapers.value));
+};
+// 下载图片的方法
+const handleDownload = async () => {
+	uni.getImageInfo({
+		src: currentWallpaper.value.url,
+		success: (res) => {
+			uni.saveImageToPhotosAlbum({
+				filePath: res.path,
+				success: async (res) => {
+					await handleFeedback(feedbackParams);
+					currentWallpaper.value.is_downloaded += 1;
+					currentWallpaper.value.download_count += 1;
+					// 同步更新缓存
+					updateWallpaperCache();
+					uni.showToast({
+						title: '保存成功',
+						icon: 'success',
+						duration: 2000
+					});
+				},
+				fail: (err) => {
+					// 处理特殊错误：用户拒绝授权后引导到设置页
+					if (err.errMsg.includes('auth deny') || err.errMsg.includes('deny')) {
+						uni.showModal({
+							title: '权限不足',
+							content: '需要开启相册权限才能保存图片，是否去设置？',
+							confirmText: '去设置',
+							success: (modalRes) => {
+								if (modalRes.confirm) {
+									// 打开应用设置页
+									uni.openSetting();
+								}
+							}
+						});
+					} else {
+						uni.showToast({
+							title: '保存失败，请重试',
+							icon: 'none'
+						});
+					}
+				}
+			});
+		},
+		fail: (err) => {
+			console.error('获取图片信息失败:', err);
+			uni.showToast({
+				title: '图片加载失败，请重试',
+				icon: 'none'
+			});
+		}
+	});
+};
 </script>
 
 <style lang="scss">
@@ -116,7 +320,7 @@ const changePopup = (option) => {
 	width: 100%;
 	height: 100vh;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
 	/* 返回按钮 */
 	.tabletdetail-back {
@@ -204,8 +408,8 @@ const changePopup = (option) => {
 			.tabletdetail-img {
 				position: absolute;
 				width: 100%;
-				height: 751rpx;
-				top: 564rpx;
+				height: 468rpx;
+				top: 610rpx;
 				image {
 					width: 100%;
 					height: 100%;

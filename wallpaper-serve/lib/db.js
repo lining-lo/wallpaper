@@ -353,7 +353,18 @@ module.exports = {
             `;
         return query(sql, values)
     },
-
+    // 更新壁纸的查看次数
+    updateWallpaperViewCount: async (values) => {
+        const sql = `
+            UPDATE wallpaper 
+            SET count = count + 1,  -- 查看次数自增 1
+                updatedate = CURRENT_TIMESTAMP  -- 同步更新时间
+            WHERE 
+                id = ?  -- 目标壁纸 ID
+                AND is_delete = 0  -- 确保壁纸未删除
+                AND status = 1;    -- 确保壁纸已通过审核（可选）`
+        return query(sql, values)
+    },
     /**
      * 用户相关
      */

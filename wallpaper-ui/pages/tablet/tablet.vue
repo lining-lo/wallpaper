@@ -8,47 +8,107 @@
 		</view>
 		<!-- 分享列表 -->
 		<view class="tablet-list">
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=216582298,3602301589&fm=253&fmt=auto&app=138&f=JPEG?w=1280&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=1513068137,1646092566&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=2214390293,1743378790&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=3323616325,3326340828&fm=253&fmt=auto&app=120&f=JPEG?w=1422&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=544395028,1162978146&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img1.baidu.com/it/u=602726056,1588251948&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img1.baidu.com/it/u=2017298677,1232869669&fm=253&fmt=auto&app=120&f=JPEG?w=1422&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1168818121,1846403284&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=2977503666,3440827556&fm=253&fmt=auto&app=138&f=JPEG?w=833&h=500" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img1.baidu.com/it/u=1325007346,3701422741&fm=253&fmt=auto&app=138&f=JPEG?w=1422&h=800" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/tabletDetail/tabletDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=2286122249,2715711643&fm=253&fmt=auto&app=138&f=JPEG?w=874&h=500" mode="aspectFill"></image>
-			</navigator>
+			<view @click="toTabletDetail(item,index)" class="list-item" v-for="(item,index) in tabletList" :key="index">
+				<image :src="item.url" mode="aspectFill"></image>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
+import { selecWallpaperPageByCategoryId } from '../../api/api';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+
+	// 仅在非首次显示时执行逻辑
+	if (!isFirstLoad.value) {
+		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
+		// 重置页码为 1，重新加载第一页数据（避免重复叠加）
+		tabletListParams.page = 1;
+		tabletList.value = []; // 清空原有列表
+		isEnd.value = false; // 重置到底状态
+		gettabletList(); // 重新请求数据
+	}
+});
+
+// 专辑列表
+const tabletList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+
+// 获取专辑列表参数
+const tabletListParams = reactive({
+	current_userId: userInfo.value.id || '',
+	type: 3,
+	category_id: '8dF4mB6zG2',
+	status: 1,
+	page: 1,
+	pagesize: 24
+});
+// 获取专辑列表方法
+const gettabletList = async () => {
+	if (!isEnd.value) {
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		tabletListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+		const result = await selecWallpaperPageByCategoryId(tabletListParams);
+		console.log(result)
+		result.map((item) => {
+			// 安全解析 labels，避免格式错误导致崩溃
+			try {
+				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+			} catch (err) {
+				console.error('解析 labels 失败:', err);
+				item.labels = []; // 解析失败时用空数组兜底
+			}
+			return item;
+		});
+		// 存入数据
+		tabletList.value = [...tabletList.value, ...result];
+		uni.setStorageSync('wallpapers', JSON.stringify(tabletList.value));
+		// 是否到底
+		if (result.length === 0) {
+			isEnd.value = true;
+		}
+	}
+};
+// 挂载
+onLoad((options) => {
+	// 获取专辑列表数据
+	gettabletList();
+
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
+});
+// 触底加载更加专辑数据
+onReachBottom(() => {
+	tabletListParams.page++;
+	gettabletList();
+});
+
+// 跳转到壁纸预览界面
+const toTabletDetail = (item, index) => {
+	uni.navigateTo({
+		url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}`
+	});
 };
 </script>
 

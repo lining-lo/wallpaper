@@ -23,6 +23,11 @@ export const selecWallpaperPageByUserId = (data) => {
 export const selectUserWallpapers = (data) => {
 	return http('/selectUserWallpapers', data)
 }
+// 更新壁纸的查看次数
+export const updateWallpaperViewCount = (data) => {
+	return http('/updateWallpaperViewCount', data)
+}
+
 
 /**
  * 用户相关

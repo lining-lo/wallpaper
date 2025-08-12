@@ -8,44 +8,96 @@
 		</view>
 		<!-- 分享列表 -->
 		<view class="live-list">
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=3109327944,3353382792&fm=253&fmt=auto&app=120&f=JPEG?w=703&h=1216" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=802058814,788146649&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=711" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=1054759078,279081371&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=707" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img1.baidu.com/it/u=827314903,978560304&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=850" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=424471230,304579767&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=760" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=1291127,1468535221&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=855" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=899210046,474850241&fm=253&fmt=auto?w=800&h=1130" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=4148244255,1125607134&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1322" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img2.baidu.com/it/u=3908877121,407742069&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=874" mode="aspectFill"></image>
-			</navigator>
-			<navigator url="/pages/liveDetail/liveDetail" class="list-item">
-				<image src="https://img0.baidu.com/it/u=2967915771,3109062559&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=730" mode="aspectFill"></image>
-			</navigator>
+			<view @click="toLiveDetail(item)" class="list-item" v-for="(item, index) in liveList" :key="index">
+				<view class="item-img">
+					<image :src="item.url" mode="aspectFill"></image>
+				</view>
+				<view class="item-info">
+					<view class="title">{{ item.description }}</view>
+					<view class="count">
+						<uni-icons type="eye-filled" color="#545454" size="18"></uni-icons>
+						<text style="margin-left: 10rpx; color: #545454; font-weight: 600">{{ item.view_count }}</text>
+					</view>
+				</view>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
+import { selecWallpaperPageByCategoryId } from '../../api/api';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+});
+
+// 专辑列表
+const liveList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+
+// 获取专辑列表参数
+const liveListParams = reactive({
+	current_userId: userInfo.value.id || '',
+	type: 2,
+	category_id: 'Q5wE2rT7yU',
+	status: 1,
+	page: 1,
+	pagesize: 20
+});
+// 获取专辑列表方法
+const getliveList = async () => {
+	if (!isEnd.value) {
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		liveListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+		const result = await selecWallpaperPageByCategoryId(liveListParams);
+		// 存入数据
+		liveList.value = [...liveList.value, ...result];
+		uni.setStorageSync('wallpapers', JSON.stringify(liveList.value));
+		// 是否到底
+		if (result.length === 0) {
+			isEnd.value = true;
+		}
+	}
+};
+// 挂载
+onLoad((options) => {
+	// 获取专辑列表数据
+	getliveList();
+
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
+});
+// 触底加载更加专辑数据
+onReachBottom(() => {
+	liveListParams.page++;
+	getliveList();
+});
+
+// 跳转到详情页
+const toLiveDetail = (item) => {
+	const preview_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/liveDetail/liveDetail?item=${encodeURIComponent(preview_item)}`
+	});
 };
 </script>
 
@@ -80,14 +132,33 @@ const goBack = () => {
 		flex-wrap: wrap;
 		.list-item {
 			width: 48%;
-			height: 300px;
+			height: 720rpx;
 			border-radius: 30rpx;
+			background-color: #23232b;
 			box-shadow: 0 1px 20px -6px #00000080;
 			margin-bottom: 40rpx;
-			image {
+			.item-img {
 				width: 100%;
-				height: 100%;
-				border-radius: 30rpx;
+				height: 593rpx;
+				image {
+					width: 100%;
+					height: 100%;
+					border-radius: 30rpx 30rpx 0 0;
+				}
+			}
+			.item-info {
+				width: 100%;
+				height: 127rpx;
+				border-radius: 0 0 30rpx 30rpx;
+				padding: 0 24rpx;
+				.title {
+					margin: 14rpx 0 10rpx 0;
+				}
+				.count {
+					display: flex;
+					align-items: center;
+					font-size: 12px;
+				}
 			}
 		}
 	}

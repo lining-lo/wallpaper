@@ -101,7 +101,18 @@ exports.selecWallpaperPageByUserId = async (request, response) => {
 // 查找用户下载|收藏的壁纸
 exports.selectUserWallpapers = async (request, response) => {
     const data = request.body
-    await db.selectUserWallpapers([data.user_id, data.type , (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+    await db.selectUserWallpapers([data.user_id, data.type, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+        // 返回结果
+        response.send({
+            code: 200,
+            message: result
+        })
+    })
+}
+// 更新壁纸的查看次数
+exports.updateWallpaperViewCount = async (request, response) => {
+    const data = request.body
+    await db.updateWallpaperViewCount([data.wallpaper_id]).then(async result => {
         // 返回结果
         response.send({
             code: 200,
