@@ -1,4 +1,13 @@
 {
+	"easycom": {
+		"autoscan": true,
+		// 注意一定要放在custom里，否则无效，https://ask.dcloud.net.cn/question/131175
+		"custom": {
+			"^u--(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
+			"^up-(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
+	    "^u-([^-].*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue"
+		}
+	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
@@ -57,130 +66,114 @@
 			}
 		},
 		{
-			"path" : "pages/authorDetail/authorDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/authorDetail/authorDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/search/search",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/search/search",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/album/album",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/album/album",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/albumDetail/albumDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/albumDetail/albumDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/rank/rank",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/rank/rank",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/avatar/avatar",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/avatar/avatar",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/avatarDetail/avatarDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/avatarDetail/avatarDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/live/live",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/live/live",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/liveDetail/liveDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/liveDetail/liveDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/tablet/tablet",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/tablet/tablet",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/tabletDetail/tabletDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/tabletDetail/tabletDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/myDetail/myDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/myDetail/myDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/login/login",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/myInfo/myInfo",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/myInfo/myInfo",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/myDownload/myDownload",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/myDownload/myDownload",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/myCollection/myCollection",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/myCollection/myCollection",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		}

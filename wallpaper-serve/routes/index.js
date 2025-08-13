@@ -29,6 +29,14 @@ module.exports = function (app) {
     app.post('/updateWallpaperViewCount', (request, response) => {
         controller.updateWallpaperViewCount(request, response)
     })
+    // 根据排序类型（下载|点赞|收藏）分页查找壁纸
+    app.post('/selectWallpaperBySort', (request, response) => {
+        controller.selectWallpaperBySort(request, response)
+    })
+    // 随机分页查找所有类型壁纸
+    app.post('/selectAllWallpaperByRand', (request, response) => {
+        controller.selectAllWallpaperByRand(request, response)
+    })
 
 
     /**
@@ -46,6 +54,7 @@ module.exports = function (app) {
     app.post('/updateUser', (request, response) => {
         controller.updateUser(request, response)
     })
+
 
     /**
      * 反馈相关（点赞|收藏|下载）

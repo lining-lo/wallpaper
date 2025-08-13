@@ -3,18 +3,18 @@
 	<view class="sort">
 		<!-- 排行榜 -->
 		<view class="sort-ranking">
-			<navigator url="/pages/rank/rank" class="ranking-item">
+			<view @click="toRank(2)" class="ranking-item">
 				<text class="title">热门榜</text>
 				<text class="english">Hot ranking</text>
-			</navigator>
-			<navigator url="/pages/rank/rank" class="ranking-item">
+			</view>
+			<view @click="toRank(0)"class="ranking-item">
 				<text class="title">点赞榜</text>
 				<text class="english">Like ranking</text>
-			</navigator>
-			<navigator url="/pages/rank/rank" class="ranking-item">
+			</view>
+			<view @click="toRank(1)"class="ranking-item">
 				<text class="title">收藏榜</text>
 				<text class="english">Rating ranking</text>
-			</navigator>
+			</view>
 		</view>
 		<!-- 标题 -->
 		<view class="sort-title">🪁壁纸分类</view>
@@ -85,12 +85,19 @@ const sortParams = reactive({
 const getSort = async () => {
 	const result = await selecCategoryPage(sortParams);
 	sort.value = result;
-	console.log('sort',sort.value)
+	// console.log('sort',sort.value)
 };
 // 挂载
 onLoad(() => {
 	getSort();
 });
+
+// 跳转到排行榜页面
+const toRank = (type)=>{
+	uni.navigateTo({
+		url: `/pages/rank/rank?type=${type}`
+	});
+}
 </script>
 
 <style lang="scss">

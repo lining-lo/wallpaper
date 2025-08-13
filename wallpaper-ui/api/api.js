@@ -27,6 +27,15 @@ export const selectUserWallpapers = (data) => {
 export const updateWallpaperViewCount = (data) => {
 	return http('/updateWallpaperViewCount', data)
 }
+// 根据排序类型（下载|点赞|收藏）分页查找壁纸
+export const selectWallpaperBySort = (data) => {
+	return http('/selectWallpaperBySort', data)
+}
+// 随机分页查找所有类型壁纸
+export const selectAllWallpaperByRand = (data) => {
+	return http('/selectAllWallpaperByRand', data)
+}
+
 
 
 /**

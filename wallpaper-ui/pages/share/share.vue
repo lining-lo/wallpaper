@@ -1,209 +1,263 @@
 <template>
-  <navbar />
-  <view class="share">
-    <!-- 瀑布流列表 -->
-    <view class="waterfall-container">
-      <!-- 循环渲染列表项 -->
-      <navigator 
-        url="/pages/shareList/shareList" 
-        class="waterfall-item" 
-        v-for="(item, index) in waterfallList" 
-        :key="index"
-      >
-        <!-- 主图片（宽度固定，高度自适应） -->
-        <image 
-          :src="item.imgUrl" 
-          mode="widthFix" 
-          lazy-load 
-          class="main-img"
-        ></image>
-        
-        <!-- 标题（单行省略） -->
-        <view class="item-title">{{ item.title }}</view>
-        
-        <!-- 底部信息（用户+点赞） -->
-        <view class="item-footer">
-          <view class="user-info">
-            <image :src="item.avatar" mode="aspectFill" class="avatar"></image>
-            <text class="username">{{ item.username }}</text>
-          </view>
-          <view class="like-info">
-            <text class="like-icon">❤</text>
-            <text class="like-count">{{ item.likeCount }}</text>
-          </view>
-        </view>
-      </navigator>
-    </view>
-  </view>
+	<navbar />
+	<view class="share">
+		<!-- 加载提示 -->
+		<view class="loading" v-if="isLoading">加载中...</view>
+		
+		<view class="waterfall-container">
+			<up-waterfall v-model="shareList" ref="uWaterfallRef" columns="2">
+				<template v-slot:column="{ colList, colIndex }">
+					<view class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
+						<up-lazy-load threshold="-50" border-radius="10" :image="item.url" :index="index"></up-lazy-load>
+						<!-- 标题（单行省略） -->
+						<view class="item-title">{{ item.title }}</view>
+						<!-- 底部信息（用户+点赞） -->
+						<view class="item-footer">
+							<view class="user-info">
+								<image :src="item.user_avatar" mode="aspectFill" class="avatar"></image>
+								<text class="username">{{ item.user_name }}</text>
+							</view>
+							<view class="like-info">
+								<text class="like-icon">❤</text>
+								<text class="like-count">{{ item.like_count }}</text>
+							</view>
+						</view>
+					</view>
+				</template>
+			</up-waterfall>
+			
+			<!-- 到底提示 -->
+			<view class="end-tip" v-if="isEnd && shareList.length > 0">
+				已经到底啦~
+			</view>
+		</view>
+	</view>
 </template>
 
 <script setup>
 import navbar from '../../components/navbar.vue';
-import { ref } from 'vue';
+import { selectAllWallpaperByRand } from '../../api/api';
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
 
-// 瀑布流数据列表
-const waterfallList = ref([
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=3109327944,3353382792&fm=253&fmt=auto&app=120&f=JPEG?w=703&h=1216',
-    avatar: 'https://img2.baidu.com/it/u=488878239,4127536549&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 12
-  },
-  {
-    imgUrl: 'https://img0.baidu.com/it/u=802058814,788146649&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=711',
-    avatar: 'https://img2.baidu.com/it/u=3043984113,2592949962&fm=253&fmt=auto?w=800&h=895',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 0
-  },
-  {
-    imgUrl: 'https://img0.baidu.com/it/u=1054759078,279081371&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=707',
-    avatar: 'https://img2.baidu.com/it/u=1733343479,3574365247&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 135
-  },
-  {
-    imgUrl: 'https://img1.baidu.com/it/u=827314903,978560304&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=850',
-    avatar: 'https://img0.baidu.com/it/u=3750182325,1283999780&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 88
-  },
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=424471230,304579767&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=760',
-    avatar: 'https://img2.baidu.com/it/u=64493523,2922979769&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 55
-  },
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=1291127,1468535221&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=855',
-    avatar: 'https://img1.baidu.com/it/u=3230409480,3195207981&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=645',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 14255
-  },
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=899210046,474850241&fm=253&fmt=auto?w=800&h=1130',
-    avatar: 'https://img1.baidu.com/it/u=1591021256,1255870316&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 55
-  },
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=4148244255,1125607134&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1322',
-    avatar: 'https://img0.baidu.com/it/u=1398421535,2513760823&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 14
-  },
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=2608272535,2129312721&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    avatar: 'https://img0.baidu.com/it/u=1398421535,2513760823&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 14
-  },
-  {
-    imgUrl: 'https://img2.baidu.com/it/u=3072419864,134434832&fm=253&fmt=auto&app=138&f=JPEG?w=1146&h=800',
-    avatar: 'https://img0.baidu.com/it/u=1398421535,2513760823&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500',
-    title: '新作品已发布，快来看看吧!',
-    username: '书法家噢',
-    likeCount: 14
-  }
-]);
+const styleData = ref({ backgroundColor: '#141414' });
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
+
+onShow(() => {
+	// 每次页面显示时，将滚动位置重置到顶部
+	uni.pageScrollTo({
+		scrollTop: 0,
+		duration: 0
+	});
+
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+
+	// 仅在非首次显示时执行逻辑
+	if (!isFirstLoad.value) {
+		// 重置并重新请求数据
+		shareListParams.page = 1;
+		shareList.value = [];
+		isEnd.value = false;
+		getShareList();
+	}
+});
+
+// 排序列表
+const shareList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+// 加载状态控制
+const isLoading = ref(false);
+
+// 获取排序列表参数
+const shareListParams = reactive({
+	user_id: userInfo.value.id || '',
+	page: 1,
+	pagesize: 24
+});
+
+// 获取排序列表方法
+const getShareList = async () => {
+	// 防止重复请求和无效请求
+	if (!isEnd.value && !isLoading.value) {
+		isLoading.value = true; // 锁定加载状态
+		
+		try {
+			// 从本地存储重新读取一次，确保使用最新值
+			userInfo.value = uni.getStorageSync('userInfo');
+			shareListParams.user_id = userInfo.value.id || '';
+			
+			const result = await selectAllWallpaperByRand(shareListParams);
+			
+			// 处理数据
+			const processedResult = result.map((item) => {
+				// 安全解析 labels
+				try {
+					const labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+					item.labels = labels;
+					item.title = labels.join('·');
+				} catch (err) {
+					console.error('解析 labels 失败:', err);
+					item.labels = [];
+				}
+				return item;
+			});
+			
+			// 核心：数据去重 - 过滤掉已存在的项目
+			const newItems = processedResult.filter(newItem => 
+				!shareList.value.some(existItem => existItem.id === newItem.id)
+			);
+			
+			// 合并新数据
+			shareList.value = [...shareList.value, ...newItems];
+			uni.setStorageSync('wallpapers', JSON.stringify(shareList.value));
+			
+			// 判断是否到底（基于过滤后的新数据）
+			if (newItems.length === 0) {
+				isEnd.value = true;
+			}
+		} catch (error) {
+			console.error('获取数据失败:', error);
+			// 失败时回退页码，方便重试
+			shareListParams.page--;
+		} finally {
+			isLoading.value = false; // 解锁加载状态
+		}
+	}
+};
+
+// 触底加载更多数据
+onReachBottom(() => {
+	// 只有不在加载中且未到底时才加载更多
+	if (!isLoading.value && !isEnd.value) {
+		shareListParams.page++;
+		getShareList();
+	}
+});
+
+// 跳转到壁纸预览界面
+const toPreview = (item, index) => {
+	uni.navigateTo({
+		url: `/pages/preview/preview?id=${item.id}&index=${index}`
+	});
+};
+
+// 页面加载时初始化
+onLoad(() => {
+	getShareList();
+	
+	// 延迟标记非首次加载
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
+});
 </script>
 
 <style lang="scss">
 .share {
-  margin-top: 192rpx; /* 适配navbar高度 */
-  width: 100%;
-  min-height: 100vh;
-  background-color: #141414;
-  padding: 10rpx;
-  box-sizing: border-box; /* 防止padding导致宽度溢出 */
-  overflow-x: hidden; /* 隐藏横向滚动条 */
+	margin-top: 192rpx;
+	width: 100%;
+	min-height: 100vh;
+	background-color: #141414;
+	padding: 10rpx;
+	box-sizing: border-box;
+	overflow-x: hidden;
 }
 
-/* 瀑布流容器：核心样式 */
+/* 加载提示样式 */
+.loading {
+	color: #fff;
+	text-align: center;
+	padding: 20rpx 0;
+	font-size: 14px;
+}
+
+/* 到底提示样式 */
+.end-tip {
+	color: #888;
+	text-align: center;
+	padding: 30rpx 0;
+	font-size: 14px;
+}
+
+/* 瀑布流容器 */
 .waterfall-container {
-  column-count: 2; /* 固定2列 */
-  column-gap: 10rpx; /* 列间距 */
+	width: 100%;
 }
 
 /* 瀑布流子项 */
 .waterfall-item {
-  break-inside: avoid; /* 防止内容被分割 */
-  -webkit-break-inside: avoid; /* 兼容小程序 */
-  margin-bottom: 10rpx; /* 子项底部间距 */
-  border-radius: 10rpx;
-  background-color: #23232b;
-  box-shadow: 0 1px 20px -6px rgba(0, 0, 0, 0.5);
-  overflow: hidden; /* 裁剪超出圆角的内容 */
-}
-
-/* 主图片样式 */
-.main-img {
-  width: 100%;
-  display: block; /* 消除图片底部默认间距 */
+	break-inside: avoid;
+	-webkit-break-inside: avoid;
+	margin-bottom: 10rpx;
+	border-radius: 10rpx;
+	background-color: #23232b;
+	box-shadow: 0 1px 20px -6px rgba(0, 0, 0, 0.5);
+	overflow: hidden;
 }
 
 /* 标题样式 */
 .item-title {
-  font-size: 13px;
-  color: #fff; /* 补充文字颜色，适配深色背景 */
-  padding: 20rpx;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+	font-size: 13px;
+	color: #fff;
+	padding: 20rpx;
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* 底部信息区 */
 .item-footer {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20rpx 20rpx; /* 仅底部和左右有padding */
-  box-sizing: border-box;
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 20rpx 20rpx;
+	box-sizing: border-box;
 }
 
 /* 用户信息 */
 .user-info {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .avatar {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 50%;
-  display: block; /* 消除图片默认间距 */
+	width: 40rpx;
+	height: 40rpx;
+	border-radius: 50%;
+	display: block;
 }
 
 .username {
-  color: #fff;
-  font-size: 12px;
-  margin-left: 8rpx;
+	color: #fff;
+	font-size: 12px;
+	margin-left: 8rpx;
 }
 
 /* 点赞信息 */
 .like-info {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .like-icon {
-  color: #ff4d4f; /* 点赞图标红色 */
-  font-size: 14px;
+	color: #ff4d4f;
+	font-size: 14px;
 }
 
 .like-count {
-  color: #fff;
-  font-size: 12px;
-  margin-left: 8rpx;
+	color: #fff;
+	font-size: 12px;
+	margin-left: 8rpx;
 }
 </style>

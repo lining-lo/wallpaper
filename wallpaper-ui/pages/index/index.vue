@@ -38,13 +38,13 @@
 			</view>
 			<view class="sort-list">
 				<scroll-view scroll-x>
-					<navigator url="/pages/sortList/sortList" class="list-item" v-for="(item,index) in sort" :key="index">
+					<navigator url="/pages/sortList/sortList" class="list-item" v-for="(item, index) in sort" :key="index">
 						<image :src="item.cover" mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
 						</view>
 						<view class="item-title">
-							<text>{{item.name}}</text>
+							<text>{{ item.name }}</text>
 						</view>
 					</navigator>
 				</scroll-view>
@@ -54,54 +54,12 @@
 		<view class="home-recommend">
 			<view class="recommend-title">
 				<view class="title">优选推荐</view>
-				<view class="more">More+</view>
+				<view @click="toRank(2)" class="more">More+</view>
 			</view>
 			<view class="recommend-list">
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=1385187587,3636080608&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=4015338242,787950689&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1085" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=2737969190,1661739575&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1004" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=4263426615,941366807&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1000" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=808317043,911558675&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=967723385,2563996465&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1086" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=2777636240,3699060457&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1109" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=2731060646,3609875482&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3197135656,4184515407&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=1577364197,2525632164&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1085" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=2865979413,4138188230&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1430" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3040379321,586538598&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1085" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=366492549,1054282565&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3116809257,1863643066&fm=253&fmt=auto&app=138&f=JPEG?w=231&h=500" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=789324612,3843744592&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1100" mode="aspectFill"></image>
-				</navigator>
+				<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in rankList" :key="index">
+					<image :src="item.url" mode="aspectFill"></image>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -109,9 +67,9 @@
 
 <script setup>
 import navbar from '../../components/navbar.vue';
-import { selecCategoryPage, selecUserPage, login } from '../../api/api';
-import { onLoad } from '@dcloudio/uni-app';
-import { reactive, ref } from 'vue';
+import { selecCategoryPage, selecUserPage, login, selectWallpaperBySort } from '../../api/api';
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
 
 // 专辑数据
 const album = ref();
@@ -169,7 +127,85 @@ const sortParams = reactive({
 const getSort = async () => {
 	const result = await selecCategoryPage(sortParams);
 	sort.value = result;
-	console.log('sort',sort.value)
+};
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+
+	// 仅在非首次显示时执行逻辑
+	if (!isFirstLoad.value) {
+		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
+		rankListParams.page = 1;
+		rankList.value = []; // 清空原有列表
+		isEnd.value = false; // 重置到底状态
+		getRankList(); // 重新请求数据
+	}
+});
+
+// 排序列表
+const rankList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+
+// 获取排序列表参数
+const rankListParams = reactive({
+	user_id: userInfo.value.id || '',
+	type: 2,
+	page: 1,
+	pagesize: 24
+});
+// 获取排序列表方法
+const getRankList = async () => {
+	if (!isEnd.value) {
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		rankListParams.user_id = userInfo.value.id || ''; // 优先用最新存储值
+		const result = await selectWallpaperBySort(rankListParams);
+		result.map((item) => {
+			// 安全解析 labels，避免格式错误导致崩溃
+			try {
+				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+			} catch (err) {
+				console.error('解析 labels 失败:', err);
+				item.labels = []; // 解析失败时用空数组兜底
+			}
+			return item;
+		});
+		// 存入数据
+		rankList.value = [...rankList.value, ...result];
+		uni.setStorageSync('wallpapers', JSON.stringify(rankList.value));
+		// 是否到底
+		if (result.length === 0) {
+			isEnd.value = true;
+		}
+	}
+};
+
+// 触底加载更加排序数据
+onReachBottom(() => {
+	rankListParams.page++;
+	getRankList();
+});
+
+// 跳转到排行榜页面
+const toRank = (type)=>{
+	uni.navigateTo({
+		url: `/pages/rank/rank?type=${type}`
+	});
+}
+// 跳转到壁纸预览界面
+const toPreview = (item, index) => {
+	uni.navigateTo({
+		url: `/pages/preview/preview?id=${item.id}&index=${index}`
+	});
 };
 
 // 挂载
@@ -179,7 +215,14 @@ onLoad(() => {
 	// 获取用户
 	getUserList();
 	// 获取分类
-	getSort()
+	getSort();
+	// 获取排序列表数据
+	getRankList();
+
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
 });
 </script>
 

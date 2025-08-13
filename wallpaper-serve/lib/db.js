@@ -365,6 +365,122 @@ module.exports = {
                 AND status = 1;    -- 确保壁纸已通过审核（可选）`
         return query(sql, values)
     },
+    // 根据排序类型（下载|点赞|收藏）分页查找壁纸
+    selectWallpaperBySort: async (values) => {
+        // values参数顺序：[userId, sortType, offset, limit]
+        // sortType: 0-点赞量 1-收藏量 2-下载量
+
+        // 根据排序类型动态生成排序字段
+        const sortFieldMap = {
+            0: 'like_count DESC',       // 按点赞量降序
+            1: 'collect_count DESC',    // 按收藏量降序
+            2: 'download_count DESC'    // 按下载量降序
+        };
+
+        // 默认按下载量排序
+        const sortField = sortFieldMap[values[1]] || 'download_count DESC';
+
+        const sql = `
+            SELECT 
+                w.id,
+                w.description,
+                w.url,
+                w.video_url,
+                w.type,
+                w.category_id,
+                c.name AS category_name,
+                w.labels,
+                w.user_id,
+                u.name AS user_name,
+                u.avatar_url AS user_avatar,
+                w.count AS view_count,
+                w.createdate,
+                -- 总互动统计（所有用户）
+                COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
+                -- 当前用户行为判断
+                MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
+                MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected,
+                MAX(CASE WHEN f_user.type = 2 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_downloaded
+            FROM 
+                wallpaper w
+            LEFT JOIN 
+                category c ON w.category_id = c.id
+            LEFT JOIN 
+                user u ON w.user_id = u.id
+            LEFT JOIN 
+                feedback f_all ON w.id = f_all.wallpaper_id
+            LEFT JOIN 
+                feedback f_user ON w.id = f_user.wallpaper_id AND f_user.user_id = ?  -- 当前用户ID
+            WHERE 
+                w.type IN (0, 1)  -- 限制壁纸类型：普通、专辑
+                AND w.status = 1  -- 已通过审核
+                AND w.is_delete = 0  -- 未删除
+            GROUP BY 
+                w.id, w.description, w.url, w.video_url, w.category_id, c.name,
+                w.labels, w.user_id, u.name, u.avatar_url, w.count, w.createdate
+            ORDER BY 
+                ${sortField},  -- 动态排序字段
+                w.createdate DESC  -- 次要排序：时间降序
+            LIMIT ?, ?;  -- 分页参数
+        `;
+
+        return query(sql, [
+            values[0],  // 用户ID
+            values[2],  // 偏移量（offset）
+            values[3]   // 每页数量（limit）
+        ]);
+    },
+    // 随机分页查找所有类型壁纸
+    selectAllWallpaperByRand: async (values) => {
+        const sql = `
+            SELECT 
+                w.id,
+                w.description,
+                w.url,
+                w.video_url,
+                w.type,
+                w.category_id,
+                c.name AS category_name,
+                w.labels,
+                w.user_id,
+                u.name AS user_name,
+                u.avatar_url AS user_avatar,
+                w.count AS view_count,
+                w.createdate,
+                -- 总互动统计（所有用户）
+                COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
+                -- 当前用户行为判断
+                MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
+                MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected,
+                MAX(CASE WHEN f_user.type = 2 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_downloaded
+            FROM 
+                wallpaper w
+            LEFT JOIN 
+                category c ON w.category_id = c.id
+            LEFT JOIN 
+                user u ON w.user_id = u.id
+            LEFT JOIN 
+                feedback f_all ON w.id = f_all.wallpaper_id
+            LEFT JOIN 
+                feedback f_user ON w.id = f_user.wallpaper_id AND f_user.user_id = ?  -- 当前用户ID
+            WHERE 
+                w.status = 1  -- 已通过审核
+                AND w.is_delete = 0  -- 未删除
+            GROUP BY 
+                w.id, w.description, w.url, w.video_url, w.category_id, c.name,
+                w.labels, w.user_id, u.name, u.avatar_url, w.count, w.createdate
+            ORDER BY 
+                RAND()  -- 随机排序
+            LIMIT ?,?;  -- 分页参数
+        `;
+        return query(sql, values)
+    },
+
+
     /**
      * 用户相关
      */
@@ -425,3 +541,4 @@ module.exports = {
         return query(sql, values)
     },
 };
+

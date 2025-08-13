@@ -1,7 +1,5 @@
 <template>
 	<view class="rank">
-		<!-- 毛玻璃背景 -->
-		<view class="sortlist-background"></view>
 		<!-- 头部导航 -->
 		<view class="sortlist-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
@@ -10,77 +8,128 @@
 		</view>
 		<!-- 榜单类型 -->
 		<view class="rank-type">
-			<view class="type-item selected">
-				<text class="title">热门榜</text>
-				<text class="english">Hot ranking</text>
-			</view>
-			<view class="type-item">
-				<text class="title">点赞榜</text>
-				<text class="english">Like ranking</text>
-			</view>
-			<view class="type-item">
-				<text class="title">收藏榜</text>
-				<text class="english">Rating ranking</text>
-			</view>
+			<view @click="changeRank(2)" class="title" :class="{selected:rankListParams.type === 2}">热门榜</view>
+			<view @click="changeRank(0)" class="title" :class="{selected:rankListParams.type === 0}">点赞榜</view>
+			<view @click="changeRank(1)" class="title" :class="{selected:rankListParams.type === 1}">收藏榜</view>
 		</view>
 		<!-- 榜单列表 -->
-		<view class="rank-list">
-			<navigator url="/pages/preview/preview" class="list-item">
-				<view class="number">No.1</view>
-				<image src="https://img1.baidu.com/it/u=527057941,1875065910&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1409" mode="aspectFill"></image>
-				<view class="progress">
-					<progress percent="100" active active-mode="forwards" border-radius="8" activeColor="#ee6666" backgroundColor="#ebebeb" />
-				</view>
-				<view class="count">23</view>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="list-item">
-				<view class="number">No.2</view>
-				<image src="https://img1.baidu.com/it/u=871510114,929433989&fm=253&fmt=auto?w=800&h=1123" mode="aspectFill"></image>
-				<view class="progress">
-					<progress percent="90" active active-mode="forwards" border-radius="8" activeColor="#fc8452" backgroundColor="#ebebeb" />
-				</view>
-				<view class="count">23</view>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="list-item">
-				<view class="number">No.3</view>
-				<image src="https://img1.baidu.com/it/u=2720441681,1775581951&fm=253&fmt=auto?w=800&h=1200" mode="aspectFill"></image>
-				<view class="progress">
-					<progress percent="80" active active-mode="forwards" border-radius="8" activeColor="#fac858" backgroundColor="#ebebeb" />
-				</view>
-				<view class="count">23</view>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="list-item">
-				<view class="number">No.4</view>
-				<image src="https://img2.baidu.com/it/u=550290641,1185847939&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=677" mode="aspectFill"></image>
-				<view class="progress">
-					<progress percent="60" active active-mode="forwards" border-radius="8" activeColor="#b1b5b3" backgroundColor="#ebebeb" />
-				</view>
-				<view class="count">23</view>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="list-item">
-				<view class="number">No.5</view>
-				<image src="https://img1.baidu.com/it/u=2387884014,4283587875&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1426" mode="aspectFill"></image>
-				<view class="progress">
-					<progress percent="50" active active-mode="forwards" border-radius="8" activeColor="#b1b5b3" backgroundColor="#ebebeb" />
-				</view>
-				<view class="count">23</view>
-			</navigator>
-			<navigator url="/pages/preview/preview" class="list-item">
-				<view class="number">No.6</view>
-				<image src="https://img0.baidu.com/it/u=638471292,1538956271&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1160" mode="aspectFill"></image>
-				<view class="progress">
-					<progress percent="40" active active-mode="forwards" border-radius="8" activeColor="#b1b5b3" backgroundColor="#ebebeb" />
-				</view>
-				<view class="count">23</view>
-			</navigator>
+		<view class="recommend-list">
+			<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in rankList" :key="index">
+				<image :src="item.url" mode="aspectFill"></image>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
+import { selectWallpaperBySort } from '../../api/api';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+
+	// 仅在非首次显示时执行逻辑
+	if (!isFirstLoad.value) {
+		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
+		rankListParams.page = 1;
+		rankList.value = []; // 清空原有列表
+		isEnd.value = false; // 重置到底状态
+		getRankList(); // 重新请求数据
+	}
+});
+
+// 排序列表
+const rankList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+
+// 获取排序列表参数
+const rankListParams = reactive({
+	user_id: userInfo.value.id || '',
+	type: 2,
+	page: 1,
+	pagesize: 24
+});
+// 获取排序列表方法
+const getRankList = async () => {
+	if (!isEnd.value) {
+		// 从本地存储重新读取一次，避免依赖onShow的时机
+		userInfo.value = uni.getStorageSync('userInfo');
+		rankListParams.user_id = userInfo.value.id || ''; // 优先用最新存储值
+		const result = await selectWallpaperBySort(rankListParams);
+		result.map((item) => {
+			// 安全解析 labels，避免格式错误导致崩溃
+			try {
+				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+			} catch (err) {
+				console.error('解析 labels 失败:', err);
+				item.labels = []; // 解析失败时用空数组兜底
+			}
+			return item;
+		});
+		// 存入数据
+		rankList.value = [...rankList.value, ...result];
+		uni.setStorageSync('wallpapers', JSON.stringify(rankList.value));
+		// 是否到底
+		if (result.length === 0) {
+			isEnd.value = true;
+		}
+	}
+};
+// 挂载
+onLoad((options) => {
+	// 获取封面信息
+	rankListParams.type = Number.parseInt(options.type);
+	// 获取排序列表数据
+	getRankList();
+
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
+});
+
+// 切换榜单
+const changeRank = (type) => {
+  if (rankListParams.type !== type) {
+    // 1. 重置列表数据（清空旧榜单数据）
+    rankList.value = [];
+    // 2. 重置分页参数（从第1页开始加载新榜单）
+    rankListParams.page = 1;
+    // 3. 重置到底状态（允许加载新数据）
+    isEnd.value = false;
+    // 4. 更新排序类型
+    rankListParams.type = type;
+    // 5. 重新请求新榜单数据
+    getRankList();
+  }
+};
+
+// 触底加载更加排序数据
+onReachBottom(() => {
+	rankListParams.page++;
+	getRankList();
+});
+
+// 跳转到壁纸预览界面
+const toPreview = (item, index) => {
+	uni.navigateTo({
+		url: `/pages/preview/preview?id=${item.id}&index=${index}`
+	});
 };
 </script>
 
@@ -89,28 +138,15 @@ const goBack = () => {
 	width: 100%;
 	min-height: 100vh;
 	padding: 30rpx;
-	padding-top: 200rpx;
+	padding-top: 320rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.sortlist-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 头部导航栏 */
 	.sortlist-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -122,99 +158,46 @@ const goBack = () => {
 	}
 	/* 榜单类型 */
 	.rank-type {
+		position: fixed;
+		top: 92px;
+		z-index: 2;
+		left: 0;
 		width: 100%;
-		height: 120rpx;
-		position: relative;
+		height: 130rpx;
+		background-color: #141414;
+		padding: 0 50rpx;
+		margin-bottom: 20rpx;
 		display: flex;
 		justify-content: space-between;
-		margin-bottom: 30rpx;
-		.type-item {
-			width: 31%;
-			height: 100%;
-			padding: 12rpx 0;
-			background-color: #262a50;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: space-around;
-			border-radius: 20rpx;
-			box-shadow: 0 1px 20px -6px #00000080;
+		align-items: center;
+		.title {
+			padding: 10rpx 50rpx;
+			background-color: #23232b;
+			border-radius: 40rpx;
 			&.selected {
-				background-color: #2b25a5;
-				.title,
-				.english {
-					color: #fff;
-				}
-			}
-			.title {
-				font-weight: 600;
-				font-size: 20px;
-				color: #cfc7c7;
-			}
-			.english {
-				font-size: 12px;
-				color: #cfc7c7;
+				background-color: #444452;
 			}
 		}
 	}
 	/* 榜单列表 */
-	.rank-list {
-		position: relative;
+	.recommend-list {
 		width: 100%;
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-
+		flex-wrap: wrap;
 		.list-item {
-			width: 100%;
-			height: 200rpx;
-			background-color: rgb(114 114 130 / 50%);
-			border-radius: 16rpx;
-			margin-bottom: 20rpx;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 0 20rpx;
-			&:nth-child(1) {
-				.number {
-					color: #ee6666;
-				}
+			width: calc(34% - 20rpx);
+			height: 450rpx;
+			margin-right: 20rpx;
+			margin-bottom: 30rpx;
+			border-radius: 20rpx;
+			position: relative;
+			&:nth-child(3n) {
+				margin-right: 0;
 			}
-			&:nth-child(2) {
-				.number {
-					color: #fc8452;
-				}
-			}
-			&:nth-child(3) {
-				.number {
-					color: #fac858;
-				}
-			}
-
-			.number {
-				font-size: 30rpx;
-				font-weight: bold;
-				width: 74rpx;
-				margin-right: 10rpx;
-				color: #b1b5b3;
-			}
-
 			image {
-				height: 180rpx;
-				width: 100rpx;
-				border-radius: 12rpx;
-				margin: 0 20rpx;
-			}
-
-			.progress {
-				flex: 1;
-				margin: 0 20rpx;
-			}
-
-			.count {
-				width: 60rpx;
-				text-align: right;
+				width: 100%;
+				height: 100%;
+				border-radius: 20rpx;
 			}
 		}
 	}
