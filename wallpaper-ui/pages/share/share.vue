@@ -7,8 +7,8 @@
 		<view class="waterfall-container">
 			<up-waterfall v-model="shareList" ref="uWaterfallRef" columns="2">
 				<template v-slot:column="{ colList, colIndex }">
-					<view class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
-						<up-lazy-load threshold="-50" border-radius="10" :image="item.url" :index="index"></up-lazy-load>
+					<view @click="toShareList(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
+						<image :src="item.url" class="main-img" mode="widthFix" lazy-load></image>
 						<!-- 标题（单行省略） -->
 						<view class="item-title">{{ item.title }}</view>
 						<!-- 底部信息（用户+点赞） -->
@@ -143,10 +143,10 @@ onReachBottom(() => {
 	}
 });
 
-// 跳转到壁纸预览界面
-const toPreview = (item, index) => {
+// 跳转到壁纸查看界面
+const toShareList = (item) => {
 	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}`
+		url: `/pages/shareList/shareList?id=${item.id}`
 	});
 };
 
@@ -203,7 +203,9 @@ onLoad(() => {
 	box-shadow: 0 1px 20px -6px rgba(0, 0, 0, 0.5);
 	overflow: hidden;
 }
-
+.main-img{
+	width: 100%;
+}
 /* 标题样式 */
 .item-title {
 	font-size: 13px;
