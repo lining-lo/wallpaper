@@ -8,50 +8,37 @@
 		</view>
 		<!-- 账号信息 -->
 		<view class="authordetail-info">
-			<view class="info-left">
-				<image v-if="authorInfo.avatar_url" :src="authorInfo.avatar_url" mode="aspectFill"></image>
+			<view class="info-user">
+				<view class="user-left">
+					<image v-if="authorInfo.avatar_url" :src="authorInfo.avatar_url" mode="aspectFill"></image>
+				</view>
+				<view class="user-right">
+					<view class="name" v-if="authorInfo.name">{{ authorInfo.name }}</view>
+					<view class="label" v-if="authorInfo">
+						<view class="row">
+							<view class="count">21</view>
+							<view class="title">作品</view>
+						</view>
+						<view class="row">
+							<view class="count">149</view>
+							<view class="title">获赞</view>
+						</view>
+						<view class="row">
+							<view class="count">4847</view>
+							<view class="title">下载</view>
+						</view>
+					</view>
+				</view>
 			</view>
-			<view class="info-right">
-				<view class="name" v-if="authorInfo.name">{{ authorInfo.name }}</view>
-				<view class="userid" v-if="authorInfo.id">id：{{ authorInfo.id }}</view>
-				<view class="sex" v-if="authorInfo">性别：{{ getGender(authorInfo.gender) }}</view>
+			<view class="info-type">
+				<view class="title selected">手机</view>
+				<view class="title">平板</view>
+				<view class="title">头像</view>
 			</view>
-		</view>
-		<!-- 标语 -->
-		<view class="authordetail-slogan" v-if="authorInfo.motto">{{ authorInfo.motto }}</view>
-		<!-- 反馈信息 -->
-		<view class="authordetail-feedback">
-			<view class="feedback-follow feedback">
-				<view class="count">525</view>
-				<view class="label">关注</view>
-			</view>
-			<view class="feedback-fans feedback">
-				<view class="count">35</view>
-				<view class="label">粉丝</view>
-			</view>
-			<view class="feedback-like feedback">
-				<view class="count">1525</view>
-				<view class="label">获赞</view>
-			</view>
-			<view class="feedback-favorites feedback">
-				<view class="count">2525</view>
-				<view class="label">下载</view>
-			</view>
-			<view class="feedback-followbtn">关注</view>
-			<view class="feedback-call">
-				<uni-icons type="search" color="#fff"></uni-icons>
-			</view>
-		</view>
-		<!-- 选项按钮 -->
-		<view class="authordetail-selects">
-			<view class="work selected">手机(6)</view>
-			<view class="album">平板(0)</view>
-			<view class="avatar">头像(0)</view>
-			<view class="live">动态(0)</view>
 		</view>
 		<!-- 作品列表 -->
-		<view class="authordetail-works">
-			<view @click="toPreview(item, index)" v-for="(item, index) in works" :key="index" class="works-item">
+		<view class="authordetail-list">
+			<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in works" :key="index">
 				<image :src="item.url" mode="aspectFill"></image>
 			</view>
 		</view>
@@ -146,7 +133,6 @@ const toPreview = (item, index) => {
 	width: 100%;
 	min-height: 100vh;
 	background-color: #141414;
-	padding: 30rpx;
 	padding-top: 200rpx;
 	overflow: auto;
 	/* 头部导航栏 */
@@ -165,118 +151,95 @@ const toPreview = (item, index) => {
 	}
 	/* 账号信息 */
 	.authordetail-info {
-		position: relative;
+		padding-top: 30rpx;
 		width: 100%;
-		display: flex;
-		align-items: center;
-		margin-bottom: 30rpx;
-		.info-left {
-			width: 150rpx;
-			height: 150rpx;
-			border-radius: 50%;
-			border: 2px solid #fff;
-			image {
-				width: 100%;
-				height: 100%;
+		position: fixed;
+		top: 178rpx;
+		z-index: 1;
+		background-color: #141414;
+		.info-user {
+			padding: 0 30rpx;
+			width: 100%;
+			margin-bottom: 50rpx;
+			display: flex;
+			align-items: center;
+			.user-left {
+				width: 150rpx;
+				height: 150rpx;
 				border-radius: 50%;
+				border: 2px solid #fff;
+				image {
+					width: 100%;
+					height: 100%;
+					border-radius: 50%;
+				}
+			}
+			.user-right {
+				margin-left: 30rpx;
+				width: calc(100% - 192rpx);
+				height: 130rpx;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-around;
+				.name {
+					font-size: 20px;
+					font-weight: 600;
+					margin-bottom: 20rpx;
+				}
+				.label {
+					width: 100%;
+					display: flex;
+					align-items: center;
+					font-weight: 600;
+					.row {
+						display: flex;
+						align-items: center;
+						margin-right: 20rpx;
+						.count {
+							margin-right: 10rpx;
+						}
+						.title {
+							color: #797979;
+						}
+					}
+				}
 			}
 		}
-		.info-right {
-			margin-left: 30rpx;
-			width: calc(100% - 180rpx);
+		.info-type {
+			width: 100%;
 			height: 130rpx;
+			background-color: #1e1d1d;
+			border-radius: 40rpx 40rpx 0 0;
+			padding: 0 50rpx;
 			display: flex;
-			flex-direction: column;
-			justify-content: space-around;
-			.name {
-				font-weight: 600;
-			}
-			.userid {
-				color: #797979;
-				font-size: 12px;
-			}
-			.sex {
-				color: #797979;
-				font-size: 12px;
-			}
-		}
-	}
-	/* 标语 */
-	.authordetail-slogan {
-		position: relative;
-		font-size: 14px;
-		color: #797979;
-		margin-bottom: 30rpx;
-	}
-	/* 反馈信息 */
-	.authordetail-feedback {
-		width: 100%;
-		height: 120rpx;
-		margin-bottom: 4rpx;
-		position: relative;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		.feedback {
-			display: flex;
-			flex-direction: column;
+			justify-content: space-between;
 			align-items: center;
-			.count {
+			.title {
+				padding: 10rpx 70rpx;
+				background-color: #23232b;
+				border-radius: 40rpx;
+				&.selected {
+					background-color: #444452;
+				}
 			}
-			.label {
-				font-size: 14px;
-				color: #797979;
-			}
-		}
-		.feedback-followbtn {
-			background-color: #ff6243;
-			padding: 8rpx 24rpx;
-			border-radius: 20rpx;
-			font-size: 14px;
-		}
-		.feedback-call {
-			padding: 5rpx 16rpx;
-			border-radius: 20rpx;
-			border: 1px solid #fff;
-		}
-	}
-	/* 选项按钮 */
-	.authordetail-selects {
-		position: relative;
-		width: 100%;
-		height: 100rpx;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		border-bottom: 1px dotted #fff;
-		padding-bottom: 20rpx;
-		margin-bottom: 30rpx;
-		.work,
-		.album {
-			padding: 10rpx 31rpx;
-			border-radius: 40rpx;
-			&.selected {
-				background-color: #6849ff;
-			}
-		}
-		.share,
-		.statement {
-			display: flex;
-			align-items: center;
 		}
 	}
 	/* 作品列表 */
-	.authordetail-works {
-		position: relative;
+	.authordetail-list {
+		padding: 0 30rpx;
+		padding-top: 340rpx;
 		width: 100%;
+		min-height: calc(100vh - 200rpx);
+		background-color: #1e1d1d;
 		display: flex;
 		flex-wrap: wrap;
-		.works-item {
+		.list-item {
 			width: calc(34% - 20rpx);
 			height: 450rpx;
 			margin-right: 20rpx;
 			margin-bottom: 30rpx;
 			border-radius: 20rpx;
+			position: relative;
 			&:nth-child(3n) {
 				margin-right: 0;
 			}

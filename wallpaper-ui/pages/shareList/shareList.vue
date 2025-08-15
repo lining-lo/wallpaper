@@ -91,63 +91,21 @@
 				</view>
 			</view>
 		</view>
-		<!-- 相关推荐 -->
-		<view class="sharelist-recommend">
-			<view class="recommend-title">相关推荐</view>
-			<view class="recommend-list">
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=1385187587,3636080608&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=4015338242,787950689&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1085" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=2737969190,1661739575&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1004" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=4263426615,941366807&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1000" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=808317043,911558675&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1083" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=967723385,2563996465&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1086" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=2777636240,3699060457&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1109" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=2731060646,3609875482&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3197135656,4184515407&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=1577364197,2525632164&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1085" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img1.baidu.com/it/u=2865979413,4138188230&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1430" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3040379321,586538598&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1085" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=366492549,1054282565&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img2.baidu.com/it/u=3116809257,1863643066&fm=253&fmt=auto&app=138&f=JPEG?w=231&h=500" mode="aspectFill"></image>
-				</navigator>
-				<navigator url="/pages/preview/preview" class="list-item">
-					<image src="https://img0.baidu.com/it/u=789324612,3843744592&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1100" mode="aspectFill"></image>
-				</navigator>
-			</view>
+		<!-- 广告位 -->
+		<view class="sharelist-advertisement">
+			<image src="https://lining-lo.top/avatar/1755237311090-6m5zg3lo77.jpg" mode="aspectFill"></image>
 		</view>
+		<!-- 相关推荐 -->
+<!-- 		<view class="sharelist-recommend">
+			<view class="recommend-title">相关推荐</view>
+			<view class="recommend-list"></view>
+		</view> -->
 	</view>
 </template>
 
 <script setup>
 import { handleFeedback } from '../../api/api';
-import { onLoad, onShow } from '@dcloudio/uni-app';
+import { onLoad, onShow,onReachBottom } from '@dcloudio/uni-app';
 import { reactive, ref, nextTick } from 'vue';
 
 // 返回上一页
@@ -461,6 +419,7 @@ const handleDownloadVideo = async () => {
 		}
 	});
 };
+
 </script>
 
 <style lang="scss">
@@ -583,7 +542,7 @@ const handleDownloadVideo = async () => {
 	/* 壁纸信息 */
 	.sharelist-info {
 		width: 100%;
-		padding: 60rpx 30rpx;
+		padding: 60rpx 30rpx 0 30rpx;
 		.info-labels {
 			width: 100%;
 			display: flex;
@@ -648,6 +607,18 @@ const handleDownloadVideo = async () => {
 					}
 				}
 			}
+		}
+	}
+	/* 广告位 */
+	.sharelist-advertisement {
+		margin-bottom: 40rpx;
+		padding: 0 30rpx;
+		width: 100%;
+		height: 400rpx;
+		background-color: #222222;
+		image {
+			width: 100%;
+			height: 100%;
 		}
 	}
 	/* 相关推荐 */
