@@ -151,43 +151,6 @@ const toTabletDetail = (item, index) => {
 				height: 100%;
 				border-radius: 30rpx;
 			}
-			.item-title {
-				font-size: 13px;
-				padding: 20rpx;
-				font-weight: 600;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-			.item-info {
-				width: 100%;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				font-size: 12px;
-				padding: 0 20rpx;
-				.info-user {
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					image {
-						width: 40rpx;
-						height: 40rpx;
-						border-radius: 50%;
-					}
-					text {
-						display: block;
-						margin-left: 8rpx;
-					}
-				}
-				.info-like {
-					display: flex;
-					align-items: center;
-					.count {
-						margin-left: 8rpx;
-					}
-				}
-			}
 		}
 	}
 }

@@ -84,6 +84,7 @@ const createTables = async () => {
                     KEY idx_category (type, category_id, status, is_delete, createdate),
                     KEY idx_user (type, user_id, status, is_delete, createdate),
                     KEY idx_createdate (is_delete, createdate),
+                    KEY idx_wallpaper_user_type_status (user_id, type, is_delete, status, createdate),
                     FULLTEXT KEY ft_labels (labels) COMMENT '标签全文索引'
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='壁纸表';`
         },
@@ -131,7 +132,8 @@ const createTables = async () => {
                     status TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '行为状态: 1-有效、0-无效（如取消点赞/收藏）',
                     createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                     updatedate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                    KEY idx_user_type (user_id ,wallpaper_id , type)
+                    KEY idx_user_type (user_id ,wallpaper_id , type),
+                    KEY idx_feedback_wallpaper_type_status (wallpaper_id, type, status)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户反馈表（点赞/收藏/下载）';`
         },
     ];
@@ -295,7 +297,7 @@ module.exports = {
             LEFT JOIN 
                 feedback f_user ON w.id = f_user.wallpaper_id AND f_user.user_id = ?  -- 当前登录用户ID（参数1）
             WHERE 
-                w.type = ?  -- 壁纸类型（参数2）
+                w.type IN (?, ?)  -- 参数2、3：类型值（普通+专辑传0,1；其他类型传单个值如2,2）
                 AND w.user_id = ?  -- 指定上传用户的壁纸（参数3）
                 AND w.status = ?  -- 壁纸状态（参数4，如1-已通过）
                 AND w.is_delete = 0  -- 未删除
@@ -486,7 +488,67 @@ module.exports = {
      */
     // 分页查询用户数据
     selecUserPage: async (values) => {
-        const sql = `SELECT id,name,avatar_url,gender,motto,createdate FROM user WHERE status!=0 LIMIT ?,?; `
+        const sql = `
+            SELECT 
+                u.id,
+                u.name,
+                u.avatar_url,
+                u.gender,
+                u.motto,
+                u.createdate,
+                -- 作品总数（仅有效作品）
+                (SELECT COUNT(*) FROM wallpaper w WHERE w.user_id = u.id AND w.is_delete = 0 AND w.status = 1) AS total_works,
+                -- 专辑+普通作品数量
+                (SELECT COUNT(*) FROM wallpaper w WHERE w.user_id = u.id AND w.type IN (0,1) AND w.is_delete = 0 AND w.status = 1) AS normal_album_works,
+                -- 头像/平板数量
+                (SELECT COUNT(*) FROM wallpaper w WHERE w.user_id = u.id AND w.type = 4 AND w.is_delete = 0 AND w.status = 1) AS avatar_works,
+                (SELECT COUNT(*) FROM wallpaper w WHERE w.user_id = u.id AND w.type = 3 AND w.is_delete = 0 AND w.status = 1) AS tablet_works,
+                -- 总获赞/下载数（包含已删除作品）
+                (SELECT COUNT(f.id) FROM feedback f JOIN wallpaper w ON f.wallpaper_id = w.id 
+                WHERE w.user_id = u.id AND f.type = 0 AND f.status = 1) AS total_likes,
+                (SELECT COUNT(f.id) FROM feedback f JOIN wallpaper w ON f.wallpaper_id = w.id 
+                WHERE w.user_id = u.id AND f.type = 2 AND f.status = 1) AS total_downloads,
+                -- 前三张作品URL（按sort排序）
+                MAX(CASE WHEN r.rank = 1 THEN r.url END) AS work_url_1,
+                MAX(CASE WHEN r.rank = 2 THEN r.url END) AS work_url_2,
+                MAX(CASE WHEN r.rank = 3 THEN r.url END) AS work_url_3
+            FROM 
+                user u
+            -- 关联按sort排序的作品（每个用户前3张）
+            LEFT JOIN (
+                -- 子查询：按sort+createdate生成排序序号
+                SELECT 
+                    w1.user_id,
+                    w1.url,
+                    -- 排序逻辑：先按sort升序（值越小越靠前），再按createdate降序（最新在前）
+                    (SELECT COUNT(*) FROM wallpaper w2 
+                    WHERE w2.user_id = w1.user_id 
+                    AND w2.type IN (0,1) 
+                    AND w2.is_delete = 0 
+                    AND w2.status = 1 
+                    -- 核心：w2的sort优先级高于w1，或sort相等时w2的createdate更新
+                    AND (
+                        w2.sort < w1.sort OR 
+                        (w2.sort = w1.sort AND w2.createdate >= w1.createdate)
+                    )
+                    ) AS rank  -- 符合条件的作品数量即当前作品的排序序号
+                FROM 
+                    wallpaper w1
+                WHERE 
+                    w1.type IN (0,1) 
+                    AND w1.is_delete = 0 
+                    AND w1.status = 1
+            ) r ON u.id = r.user_id AND r.rank <= 3  -- 只取前3张
+            WHERE 
+                u.status != 0 
+                AND (SELECT COUNT(*) FROM wallpaper w WHERE w.user_id = u.id AND w.type IN (0,1) AND w.is_delete = 0 AND w.status = 1) != 0
+            GROUP BY 
+                u.id, u.name, u.avatar_url, u.gender, u.motto, u.createdate
+            ORDER BY 
+                total_works DESC
+            LIMIT 
+                ?,?;
+        `
         return query(sql, values)
     },
     // 根据openid查询用户

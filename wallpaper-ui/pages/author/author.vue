@@ -10,148 +10,76 @@
 		</view>
 		<!-- 创作者列表 -->
 		<view class="author-list">
-			<view class="list-item">
+			<view @click="toUserDetail(item)" class="list-item" v-for="(item, index) in userList" :key="index">
 				<view class="item-info">
 					<view class="info-left">
 						<view class="avator">
-							<image src="https://img1.baidu.com/it/u=519289147,1337069645&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
+							<image :src="item.avatar_url" mode="aspectFill"></image>
 						</view>
-						<view class="name">巴曙松</view>
+						<view class="name">{{ item.name }}</view>
 					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
+					<view url="/pages/authorDetail/authorDetail" class="info-right">查看全部</view>
 				</view>
 				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=1641712266,2762265348&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=861660600,1038167782&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1088" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=302876631,88041301&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator">
-							<image src="https://img0.baidu.com/it/u=2193304985,460318092&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=800" mode="aspectFill"></image>
-						</view>
-						<view class="name">我不吃牛肉</view>
+					<view class="works-item">
+						<image :src="item.work_url_1" mode="aspectFill"></image>
 					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=3682569110,536656401&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1111" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=3209017159,1938707540&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1082" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=737810839,1312378981&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1082" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator">
-							<image src="https://img1.baidu.com/it/u=1349127637,1867892533&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-						</view>
-						<view class="name">赏球大师</view>
+					<view class="works-item">
+						<image :src="item.work_url_2" mode="aspectFill"></image>
 					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=3936786040,184538853&fm=253&fmt=auto?w=684&h=1216" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=1152471652,2293099946&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=891" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=3613427091,644173820&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator">
-							<image src="https://img2.baidu.com/it/u=2063068289,3005074310&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-						</view>
-						<view class="name">下次见面有花吗</view>
+					<view class="works-item">
+						<image :src="item.work_url_3" mode="aspectFill"></image>
 					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=860122283,2841880150&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1428" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img0.baidu.com/it/u=2802731063,3936581808&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=667" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=587298321,2304242314&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1109" mode="aspectFill"></image>
-					</navigator>
 				</view>
 			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator">
-							<image src="https://img0.baidu.com/it/u=3196617431,1263013381&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-						</view>
-						<view class="name">画手小敏</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=1328932290,2111252852&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=878" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=325424430,124495079&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1284" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img2.baidu.com/it/u=1280795599,1811519824&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="item-info">
-					<view class="info-left">
-						<view class="avator">
-							<image src="https://img0.baidu.com/it/u=2317612037,2363737113&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500" mode="aspectFill"></image>
-						</view>
-						<view class="name">JOME SLNFE</view>
-					</view>
-					<navigator url="/pages/authorDetail/authorDetail" class="info-right">查看全部</navigator>
-				</view>
-				<view class="item-works">
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=328920287,824413323&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=814" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=1403236860,2808549138&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-					</navigator>
-					<navigator url="/pages/preview/preview" class="works-item">
-						<image src="https://img1.baidu.com/it/u=889080309,738965488&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084" mode="aspectFill"></image>
-					</navigator>
-				</view>
-			</view>
-		</view>
-		<!-- 添加按钮 -->
-		<view class="author-add">
-			<text>+</text>
 		</view>
 	</view>
 </template>
 
 <script setup>
 import navbar from '../../components/navbar.vue';
+import { selecUserPage } from '../../api/api';
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
+
+// 是否加载全部
+const isEnd = ref(false);
+// 用户数据
+const userList = ref([]);
+// 分页获取用户参数
+const userParams = reactive({
+	page: 1,
+	pagesize: 8
+});
+// 获取排序列表方法
+const getUserList = async () => {
+	if (!isEnd.value) {
+		const result = await selecUserPage(userParams);
+		userList.value = [...userList.value, ...result];
+		console.log(userList.value);
+		// 是否到底
+		if (result.length === 0) {
+			isEnd.value = true;
+		}
+	}
+};
+// 跳转到用户详情
+const toUserDetail = (item) => {
+	const author_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}`
+	});
+};
+// 挂载
+onLoad(() => {
+	// 获取用户
+	getUserList();
+});
+// 触底加载更加排序数据
+onReachBottom(() => {
+	userParams.page++;
+	getUserList();
+});
 </script>
 
 <style lang="scss">
@@ -257,6 +185,7 @@ import navbar from '../../components/navbar.vue';
 					width: 32%;
 					height: 100%;
 					border-radius: 10rpx;
+					background-color: #2c2c2c;
 					image {
 						width: 100%;
 						height: 100%;
@@ -264,26 +193,6 @@ import navbar from '../../components/navbar.vue';
 					}
 				}
 			}
-		}
-	}
-	/* 添加按钮 */
-	.author-add {
-		width: calc(100% - 60rpx);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		position: fixed;
-		z-index: 1;
-		bottom: 0;
-		text {
-			display: inline-block;
-			font-size: 60rpx;
-			width: 30vw;
-			height: 78rpx;
-			line-height: 78rpx;
-			text-align: center;
-			background-color: #5548f7;
-			border-radius: 20rpx 20rpx 0 0;
 		}
 	}
 }

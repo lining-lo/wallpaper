@@ -16,30 +16,47 @@
 					<view class="name" v-if="authorInfo.name">{{ authorInfo.name }}</view>
 					<view class="label" v-if="authorInfo">
 						<view class="row">
-							<view class="count">21</view>
+							<view class="count">{{ authorInfo.total_works }}</view>
 							<view class="title">作品</view>
 						</view>
 						<view class="row">
-							<view class="count">149</view>
+							<view class="count">{{ authorInfo.total_likes }}</view>
 							<view class="title">获赞</view>
 						</view>
 						<view class="row">
-							<view class="count">4847</view>
+							<view class="count">{{ authorInfo.total_downloads }}</view>
 							<view class="title">下载</view>
 						</view>
 					</view>
 				</view>
 			</view>
 			<view class="info-type">
-				<view class="title selected">手机</view>
-				<view class="title">平板</view>
-				<view class="title">头像</view>
+				<view @click="changeWorks(0)" :class="{ selected: worksParams.type === 0 }" class="title">手机</view>
+				<view @click="changeWorks(3)" :class="{ selected: worksParams.type === 3 }" class="title">平板</view>
+				<view @click="changeWorks(4)" :class="{ selected: worksParams.type === 4 }" class="title">头像</view>
 			</view>
 		</view>
 		<!-- 作品列表 -->
-		<view class="authordetail-list">
+		<view
+			:class="{
+				phonelist: worksParams.type === 0,
+				tabletlist: worksParams.type === 3,
+				avatarlist: worksParams.type === 4
+			}"
+		>
 			<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in works" :key="index">
-				<image :src="item.url" mode="aspectFill"></image>
+				<image :src="item.url" lazy-load mode="aspectFill"></image>
+			</view>
+			<!-- 空数据提示 -->
+			<view
+				class="authordetail-nonetip"
+				v-if="
+					(worksParams.type === 0 && authorInfo.normal_album_works === 0) ||
+					(worksParams.type === 3 && authorInfo.tablet_works === 0) ||
+					(worksParams.type === 4 && authorInfo.avatar_works === 0)
+				"
+			>
+				<image src="/static/images/none_tip.png" mode="widthFix"></image>
 			</view>
 		</view>
 	</view>
@@ -73,7 +90,7 @@ const works = ref([]);
 // 获取作者作品的参数
 const worksParams = reactive({
 	current_userId: '',
-	type: 1,
+	type: 0,
 	user_id: '',
 	status: 1,
 	page: 1,
@@ -81,14 +98,40 @@ const worksParams = reactive({
 });
 // 是否加载全部
 const isEnd = ref(false);
+// 切换作品
+const changeWorks = (type) => {
+	if (worksParams.type === type) return; // 类型未变化则直接返回
+	// 重置状态
+	works.value = [];
+	worksParams.page = 1;
+	isEnd.value = false;
+	worksParams.type = type;
+	// 根据类型判断是否需要请求数据
+	let workCount = 0;
+	switch (type) {
+		case 0:
+			workCount = authorInfo.value.normal_album_works;
+			break;
+		case 3:
+			workCount = authorInfo.value.tablet_works;
+			break;
+		default: // 默认为头像类型（type=4等）
+			workCount = authorInfo.value.avatar_works;
+	}
+
+	// 只有当作品数量 > 0 时才请求数据
+	if (workCount > 0) {
+		getWorks();
+	}
+};
 // 获取作者作品的方法
-const getWorks = async () => {
+const getWorks = async (type) => {
 	if (!isEnd.value) {
 		worksParams.user_id = authorInfo.value.id;
 		// 从本地存储重新读取一次，避免依赖onShow的时机
 		userInfo.value = uni.getStorageSync('userInfo');
 		worksParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
-		console.log(worksParams);
+		// console.log(worksParams);
 		const result = await selecWallpaperPageByUserId(worksParams);
 		result.map((item) => {
 			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
@@ -112,6 +155,7 @@ onLoad((options) => {
 	// 获取作者信息
 	const author_item = JSON.parse(decodeURIComponent(options.item));
 	authorInfo.value = author_item;
+	console.log(authorInfo.value);
 	// 获取作者作品
 	getWorks();
 });
@@ -225,7 +269,8 @@ const toPreview = (item, index) => {
 		}
 	}
 	/* 作品列表 */
-	.authordetail-list {
+	// 普通|专辑
+	.phonelist {
 		padding: 0 30rpx;
 		padding-top: 340rpx;
 		width: 100%;
@@ -248,6 +293,62 @@ const toPreview = (item, index) => {
 				height: 100%;
 				border-radius: 20rpx;
 			}
+		}
+	}
+	// 平板
+	.tabletlist {
+		padding: 0 20rpx;
+		padding-top: 340rpx;
+		width: 100%;
+		min-height: calc(100vh - 200rpx);
+		background-color: #1e1d1d;
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		.list-item {
+			width: 48%;
+			height: 120px;
+			box-shadow: 0 1px 20px -6px #00000080;
+			margin-bottom: 40rpx;
+			image {
+				width: 100%;
+				height: 100%;
+				border-radius: 30rpx;
+			}
+		}
+	}
+	// 头像
+	.avatarlist {
+		padding: 0 30rpx;
+		padding-top: 340rpx;
+		width: 100%;
+		min-height: calc(100vh - 200rpx);
+		background-color: #1e1d1d;
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		.list-item {
+			width: 48%;
+			height: 172px;
+			border-radius: 40rpx;
+			box-shadow: 0 1px 20px -6px #00000080;
+			margin-bottom: 40rpx;
+			image {
+				width: 100%;
+				height: 100%;
+				border-radius: 40rpx;
+			}
+		}
+	}
+
+	/* 空数据提示 */
+	.authordetail-nonetip {
+		width: 100%;
+		display: flex;
+		margin-top: 200rpx;
+		justify-content: center;
+		image {
+			width: 340rpx;
 		}
 	}
 }

@@ -90,13 +90,23 @@ exports.selecWallpaperPageByCategoryId = async (request, response) => {
 // 根据用户名和壁纸类型分页获取数据
 exports.selecWallpaperPageByUserId = async (request, response) => {
     const data = request.body
-    await db.selecWallpaperPageByUserId([data.current_userId, data.type, data.user_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
-        // 返回结果
-        response.send({
-            code: 200,
-            message: result
+    if (data.type === 0 || data.type === 1) {
+        await db.selecWallpaperPageByUserId([data.current_userId, 0, 1, data.user_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+            // 返回结果
+            response.send({
+                code: 200,
+                message: result
+            })
         })
-    })
+    } else {
+        await db.selecWallpaperPageByUserId([data.current_userId, data.type, data.type, data.user_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
+            // 返回结果
+            response.send({
+                code: 200,
+                message: result
+            })
+        })
+    }
 }
 // 查找用户下载|收藏的壁纸
 exports.selectUserWallpapers = async (request, response) => {
@@ -131,8 +141,8 @@ exports.selectWallpaperBySort = async (request, response) => {
         })
     })
 }
- // 随机分页查找所有类型壁纸
- exports.selectAllWallpaperByRand = async (request, response) => {
+// 随机分页查找所有类型壁纸
+exports.selectAllWallpaperByRand = async (request, response) => {
     const data = request.body
     await db.selectAllWallpaperByRand([data.user_id, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
         // 返回结果
