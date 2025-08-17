@@ -84,8 +84,7 @@ const createTables = async () => {
                     KEY idx_category (type, category_id, status, is_delete, createdate),
                     KEY idx_user (type, user_id, status, is_delete, createdate),
                     KEY idx_createdate (is_delete, createdate),
-                    KEY idx_wallpaper_user_type_status (user_id, type, is_delete, status, createdate),
-                    FULLTEXT KEY ft_labels (labels) COMMENT '标签全文索引'
+                    KEY idx_wallpaper_user_type_status (user_id, type, is_delete, status, createdate)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='壁纸表';`
         },
         {
@@ -479,6 +478,86 @@ module.exports = {
                 RAND()  -- 随机排序
             LIMIT ?,?;  -- 分页参数
         `;
+        return query(sql, values)
+    },
+    // 根据关键字查找各类型壁纸数量
+    selectSearchCount: async (values) => {
+        const sql = `
+            SELECT 
+                COUNT(w.id) AS total_count,
+                COALESCE(SUM(CASE WHEN w.type IN (0, 1) THEN 1 ELSE 0 END), 0) AS normal_album_count,
+                COALESCE(SUM(CASE WHEN w.type = 4 THEN 1 ELSE 0 END), 0) AS avatar_count,
+                COALESCE(SUM(CASE WHEN w.type = 3 THEN 1 ELSE 0 END), 0) AS tablet_count
+            FROM 
+                (SELECT 1) AS dummy  -- 常量表，确保至少一行
+            LEFT JOIN 
+                wallpaper w ON 
+                    w.status = 1 
+                    AND w.is_delete = 0 
+                    AND w.labels LIKE CONCAT('%', ?, '%');
+        `
+        return query(sql, values)
+    },
+    // 根据关键词分页查找壁纸
+    selectWallpaperBySearch: async(values) =>{
+        const sql  = `
+            SELECT 
+                w.id,
+                w.description,
+                w.url,
+                w.video_url,
+                w.type,
+                w.category_id,
+                c.name AS category_name,
+                w.labels,
+                w.user_id,
+                u.name AS user_name,
+                u.avatar_url AS user_avatar,
+                w.count AS view_count,
+                w.createdate,
+                -- 总互动统计
+                COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
+                COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
+                -- 当前用户行为判断
+                MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
+                MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected,
+                MAX(CASE WHEN f_user.type = 2 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_downloaded
+            FROM 
+                wallpaper w
+            LEFT JOIN 
+                category c ON w.category_id = c.id
+            LEFT JOIN 
+                user u ON w.user_id = u.id
+            LEFT JOIN 
+                feedback f_all ON w.id = f_all.wallpaper_id
+            LEFT JOIN 
+                feedback f_user ON w.id = f_user.wallpaper_id AND f_user.user_id = ?  -- 参数1：当前用户ID
+            WHERE 
+                w.status = 1 
+                AND w.is_delete = 0 
+                -- 关键字搜索条件
+                AND w.labels LIKE CONCAT('%', ?, '%')  -- 参数2：搜索关键字
+                -- 类型筛选条件（根据传入参数动态匹配）
+                AND (
+                    -- 当参数为-1时，查询全部类型；否则按指定类型筛选
+                    ? = -1 OR  -- 参数3：类型筛选标识（-1=全部，10=普通+专辑，4=头像，3=平板）
+                    (
+                        -- 普通+专辑（type=0或1）
+                        (? = 10 AND w.type IN (0, 1)) OR
+                        -- 头像（type=4）
+                        (? = 4 AND w.type = 4) OR
+                        -- 平板（type=3）
+                        (? = 3 AND w.type = 3)
+                    )
+                )
+            GROUP BY 
+                w.id, w.description, w.url, w.video_url, w.category_id, c.name,
+                w.labels, w.user_id, u.name, u.avatar_url, w.count, w.createdate
+            ORDER BY 
+                w.createdate DESC  -- 按创建时间倒序（最新在前）
+            LIMIT ?, ?;  -- 参数4：分页偏移量；参数5：每页条数
+        `
         return query(sql, values)
     },
 

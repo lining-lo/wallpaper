@@ -37,7 +37,10 @@ module.exports = function (app) {
     app.post('/selectAllWallpaperByRand', (request, response) => {
         controller.selectAllWallpaperByRand(request, response)
     })
-
+    // 根据关键词分页查找壁纸
+    app.post('/selectWallpaperBySearch', (request, response) => {
+        controller.selectWallpaperBySearch(request, response)
+    })
 
     /**
      * 用户相关

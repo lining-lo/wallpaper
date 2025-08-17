@@ -35,7 +35,10 @@ export const selectWallpaperBySort = (data) => {
 export const selectAllWallpaperByRand = (data) => {
 	return http('/selectAllWallpaperByRand', data)
 }
-
+// 根据关键词分页查找壁纸
+export const selectWallpaperBySearch = (data) => {
+	return http('/selectWallpaperBySearch', data)
+}
 
 
 /**

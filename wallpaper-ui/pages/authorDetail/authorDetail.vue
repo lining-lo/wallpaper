@@ -166,9 +166,22 @@ onReachBottom(() => {
 });
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
-	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}`
-	});
+	switch (item.type) {
+		case 3:
+			uni.navigateTo({
+				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}`
+			});
+			break;
+		case 4:
+			uni.navigateTo({
+				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}`
+			});
+			break;
+		default:
+			uni.navigateTo({
+				url: `/pages/preview/preview?id=${item.id}&index=${index}`
+			});
+	}
 };
 </script>
 

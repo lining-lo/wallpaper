@@ -152,6 +152,22 @@ exports.selectAllWallpaperByRand = async (request, response) => {
         })
     })
 }
+// 根据关键词分页查找壁纸
+exports.selectWallpaperBySearch = async (request, response) => {
+    const data = request.body
+    const result1 = await db.selectSearchCount([data.keyword])
+    const result2 = await db.selectWallpaperBySearch([data.user_id, data.keyword, data.type, data.type, data.type, data.type, (data.page - 1) * data.pagesize, data.pagesize])
+    // 返回结果
+    response.send({
+        code: 200,
+        message: {
+            countInfo: result1,
+            data: result2
+        }
+    })
+    console.log(result1);
+    
+}
 
 
 

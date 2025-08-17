@@ -1,9 +1,20 @@
 <template>
-	<navbar />
 	<view class="share">
+		<!-- 头部导航 -->
+		<view class="sortlist-navbar">
+			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
+			<text>{{ shareListParams.keyword }}</text>
+			<view style="width: 100rpx"></view>
+		</view>
+		<!-- 榜单类型 -->
+		<view class="rank-type">
+			<view class="title" @click="changeType(-1)" :class="{ selected: shareListParams.type === -1 }">全部</view>
+			<view class="title" @click="changeType(10)" :class="{ selected: shareListParams.type === 10 }">手机</view>
+			<view class="title" @click="changeType(3)" :class="{ selected: shareListParams.type === 3 }">平板</view>
+			<view class="title" @click="changeType(4)" :class="{ selected: shareListParams.type === 4 }">头像</view>
+		</view>
 		<!-- 加载提示 -->
 		<view class="loading" v-if="isLoading">加载中...</view>
-
 		<view class="waterfall-container">
 			<up-waterfall v-model="shareList" ref="uWaterfallRef" columns="2">
 				<template v-slot:column="{ colList, colIndex }">
@@ -25,20 +36,35 @@
 					</view>
 				</template>
 			</up-waterfall>
-
-			<!-- 到底提示 -->
-			<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
+		</view>
+		<!-- 到底提示 -->
+		<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
+		<!-- 空数据提示 -->
+		<view
+			class="authordetail-nonetip"
+			v-if="
+				(shareListParams.type === -1 && countInfo.total_count == 0) ||
+				(shareListParams.type === 10 && countInfo.normal_album_count == 0) ||
+				(shareListParams.type === 3 && countInfo.tablet_count == 0) ||
+				(shareListParams.type === 4 && countInfo.avatar_count == 0)
+			"
+		>
+			<image src="/static/images/none_tip.png" mode="widthFix"></image>
 		</view>
 	</view>
 </template>
 
 <script setup>
-import navbar from '../../components/navbar.vue';
-import { selectAllWallpaperByRand } from '../../api/api';
+import { selectWallpaperBySearch } from '../../api/api';
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
 const styleData = ref({ backgroundColor: '#141414' });
+
+// 返回上一页
+const goBack = () => {
+	uni.navigateBack();
+};
 
 // 用户信息
 const userInfo = ref({});
@@ -70,6 +96,7 @@ onShow(() => {
 
 // 排序列表
 const shareList = ref([]);
+const countInfo = ref({});
 // 是否加载全部
 const isEnd = ref(false);
 // 加载状态控制
@@ -78,6 +105,8 @@ const isLoading = ref(false);
 // 获取排序列表参数
 const shareListParams = reactive({
 	user_id: userInfo.value.id || '',
+	type: -1,
+	keyword: '',
 	page: 1,
 	pagesize: 24
 });
@@ -93,7 +122,9 @@ const getShareList = async () => {
 			userInfo.value = uni.getStorageSync('userInfo');
 			shareListParams.user_id = userInfo.value.id || '';
 
-			const result = await selectAllWallpaperByRand(shareListParams);
+			const data = await selectWallpaperBySearch(shareListParams);
+			const result = data.data;
+			countInfo.value = data.countInfo[0];
 
 			// 处理数据
 			const processedResult = result.map((item) => {
@@ -114,6 +145,7 @@ const getShareList = async () => {
 
 			// 合并新数据
 			shareList.value = [...shareList.value, ...newItems];
+			console.log(shareList.value);
 			uni.setStorageSync('wallpapers', JSON.stringify(shareList.value));
 
 			// 判断是否到底（基于过滤后的新数据）
@@ -127,6 +159,36 @@ const getShareList = async () => {
 		} finally {
 			isLoading.value = false; // 解锁加载状态
 		}
+	}
+};
+// 切换榜单
+const changeType = (type) => {
+	console.log(countInfo.value);
+	if (shareListParams.type === type) return; // 类型未变化则直接返回
+	// 重置状态
+	shareList.value = [];
+	shareListParams.page = 1;
+	isEnd.value = false;
+	shareListParams.type = type;
+	// 根据类型判断是否需要请求数据
+	let workCount = 0;
+	switch (type) {
+		case -1:
+			workCount = countInfo.value.total_count;
+			break;
+		case 3:
+			workCount = countInfo.value.tablet_count;
+			break;
+		case 4:
+			workCount = countInfo.value.avatar_count;
+			break;
+		default:
+			workCount = countInfo.value.normal_album_count;
+	}
+
+	// 只有当作品数量 > 0 时才请求数据
+	if (workCount > 0) {
+		getShareList();
 	}
 };
 
@@ -147,7 +209,8 @@ const toShareList = (item) => {
 };
 
 // 页面加载时初始化
-onLoad(() => {
+onLoad((options) => {
+	shareListParams.keyword = decodeURIComponent(options.keyword);
 	getShareList();
 
 	// 延迟标记非首次加载
@@ -159,13 +222,51 @@ onLoad(() => {
 
 <style lang="scss">
 .share {
-	margin-top: 192rpx;
 	width: 100%;
 	min-height: 100vh;
 	background-color: #141414;
 	padding: 10rpx;
+	padding-top: 310rpx;
 	box-sizing: border-box;
 	overflow-x: hidden;
+	/* 头部导航栏 */
+	.sortlist-navbar {
+		width: 100%;
+		height: 180rpx;
+		background-color: #141414;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		padding: 30rpx;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+	/* 榜单类型 */
+	.rank-type {
+		position: fixed;
+		top: 92px;
+		z-index: 2;
+		left: 0;
+		width: 100%;
+		height: 130rpx;
+		background-color: #141414;
+		padding: 0 20rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.title {
+			font-size: 15px;
+			padding: 10rpx 46rpx;
+			background-color: #23232b;
+			border-radius: 40rpx;
+			&.selected {
+				background-color: #444452;
+			}
+		}
+	}
 	/* 加载提示样式 */
 	.loading {
 		color: #fff;
@@ -245,6 +346,16 @@ onLoad(() => {
 		text-align: center;
 		padding: 30rpx 0;
 		font-size: 14px;
+	}
+	/* 空数据提示 */
+	.authordetail-nonetip {
+		width: 100%;
+		display: flex;
+		margin-top: 200rpx;
+		justify-content: center;
+		image {
+			width: 340rpx;
+		}
 	}
 }
 </style>

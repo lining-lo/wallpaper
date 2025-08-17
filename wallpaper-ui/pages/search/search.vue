@@ -1,7 +1,5 @@
 <template>
 	<view class="search">
-		<!-- 毛玻璃背景 -->
-		<view class="search-background"></view>
 		<!-- 头部导航 -->
 		<view class="search-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
@@ -10,25 +8,26 @@
 		</view>
 		<!-- 搜索部分 -->
 		<view class="search-input">
-			<view class="type">壁纸</view>
-			<input type="text" placeholder="请输入关键词" />
-			<view class="submit">搜索</view>
+			<up-search
+				v-model="keyword"
+				height="34"
+				bgColor="#2c2c2c"
+				color="#fff"
+				:actionStyle="{
+					color: '#fff',
+					fontSize: '16px'
+				}"
+				@search="toSearch"
+			></up-search>
 		</view>
 		<!-- 搜索历史 -->
-		<view class="search-history">
+		<view class="search-history" v-if="keywords.length !== 0">
 			<view class="history-title">
 				<view class="title">搜索历史</view>
-				<uni-icons type="trash" size="22" color="#fff"></uni-icons>
+				<uni-icons @click="clearKeywords" type="trash" size="22" color="#fff"></uni-icons>
 			</view>
 			<view class="history-keywords">
-				<view class="keywork">火影</view>
-				<view class="keywork">蜡笔小新</view>
-				<view class="keywork">简约</view>
-				<view class="keywork">动漫</view>
-				<view class="keywork">美女</view>
-				<view class="keywork">风景</view>
-				<view class="keywork">斗罗大陆</view>
-				<view class="keywork">聊天背景</view>
+				<view @click="toSearch(item)" class="keywork" v-for="(item, index) in keywords" :key="index">{{ item }}</view>
 			</view>
 		</view>
 		<!-- 热门搜索 -->
@@ -38,23 +37,93 @@
 				<view class="fill"></view>
 			</view>
 			<view class="hot-keywords">
-				<view class="keywork">火影</view>
-				<view class="keywork">蜡笔小新</view>
-				<view class="keywork">简约</view>
-				<view class="keywork">动漫</view>
-				<view class="keywork">美女</view>
-				<view class="keywork">风景</view>
-				<view class="keywork">斗罗大陆</view>
-				<view class="keywork">聊天背景</view>
+				<view @click="toSearch(item)" class="keywork" v-for="(item, index) in hotKeywords" :key="index">{{ item }}</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { onLoad, onShow } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
+
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
+};
+
+
+// 搜索关键字
+const keyword = ref('');
+// 历史记录
+const keywords = ref(uni.getStorageSync('keywords') || []);
+// 热门搜索
+const hotKeywords = ['火影','蜡笔小新','简约','动漫','美女','风景','斗罗大陆','聊天背景']
+// 添加历史记录
+const addKeyword = () => {
+	// 1. 过滤空值（避免存入空字符串）
+	if (!keyword.value.trim()) return;
+	// 2. 去重并保持数组类型（使用Set去重后转回数组）
+	const newKeywords = [...new Set([keyword.value, ...keywords.value])];
+	// 3. 限制历史记录数量（可选，避免无限增长）
+	if (newKeywords.length > 10) {
+		newKeywords.pop(); // 超过10条时删除最后一条
+	}
+	// 4. 更新响应式数据并同步到本地存储
+	keywords.value = newKeywords;
+	uni.setStorageSync('keywords', newKeywords);
+};
+// 清除历史记录
+const clearKeywords = () => {
+	// 1. 先判断是否有历史记录，无记录则直接提示
+	if (keywords.value.length === 0) return;
+	// 2. 显示确认弹窗
+	uni.showModal({
+		title: ' 提示 ',
+		content: ' 是否要删除所有搜索历史？',
+		cancelText: ' 取消 ',
+		confirmText: ' 确认 ',
+		success: (res) => {
+			// 3. 用户点击 “确认” 则执行清除
+			if (res.confirm) {
+				// 清空响应式数据
+				keywords.value = [];
+				// 清空本地存储
+				uni.removeStorageSync('keywords');
+			}
+			// 4. 用户点击 “取消” 则不做操作
+		}
+	});
+};
+
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的搜索记录
+	keywords.value = uni.getStorageSync('keywords');
+});
+
+// 搜索事件
+const toSearch = (inputKeyword = '') => {
+	// 定义最终使用的关键字变量
+	let finalKeyword;
+	// 处理参数：如果传入了inputKeyword（如从热门/历史点击），优先使用
+	if (inputKeyword) {
+		finalKeyword = inputKeyword.trim();
+		// 同步更新输入框的值
+		keyword.value = finalKeyword;
+	} else {
+		// 否则使用输入框的绑定值
+		finalKeyword = keyword.value.trim();
+	}
+	// 过滤空值
+	if (!finalKeyword) {
+		return uni.showToast({ title: '请输入内容', icon: 'none' });
+	}
+	// 添加搜索记录
+	addKeyword();
+	// 跳转到搜索详情页（使用encodeURIComponent处理特殊字符）
+	uni.navigateTo({
+		url: `/pages/searchDetail/searchDetail?keyword=${encodeURIComponent(finalKeyword)}`
+	});
 };
 </script>
 
@@ -65,26 +134,13 @@ const goBack = () => {
 	padding: 30rpx;
 	padding-top: 200rpx;
 	position: relative;
-	background-color: #2c333e;
+	background-color: #141414;
 	overflow: auto;
-	/* 毛玻璃背景 */
-	.search-background {
-		width: 100%;
-		height: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		filter: blur(40px);
-		-webkit-backdrop-filter: blur(40rpx);
-		background-image: url(https://img2.baidu.com/it/u=2681334238,2875512996&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=625);
-		background-size: cover;
-		background-position: center;
-	}
 	/* 头部导航栏 */
 	.search-navbar {
 		width: 100%;
 		height: 180rpx;
-		background-color: #353962;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
 		top: 0;
@@ -97,28 +153,7 @@ const goBack = () => {
 	/* 搜索部分 */
 	.search-input {
 		width: 100%;
-		height: 80rpx;
-		position: relative;
-		display: flex;
-		align-items: center;
-		.type {
-			width: 100rpx;
-			padding: 10rpx 20rpx;
-			background-color: rgb(167 161 161 / 13%);
-			border-radius: 20rpx 0 0 20rpx;
-		}
-		input {
-			width: calc(100% - 300rpx);
-			padding: 10rpx 20rpx;
-			background-color: rgba(12, 10, 10, 0.4);
-		}
-		.submit {
-			padding: 10rpx 20rpx;
-			background-color: rgb(54 53 56 / 80%);
-			border-radius: 0 30rpx 30rpx 0;
-			width: 140rpx;
-			text-align: center;
-		}
+		padding: 0 10rpx;
 	}
 	/* 搜索历史 */
 	.search-history {
@@ -126,20 +161,21 @@ const goBack = () => {
 		width: 100%;
 		margin: 60rpx 0;
 		.history-title {
+			padding: 0 10rpx;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin-bottom: 30rpx;
+			margin-bottom: 40rpx;
 		}
 		.history-keywords {
 			display: flex;
 			flex-wrap: wrap;
 			.keywork {
-				margin-right: 16rpx;
-				margin-bottom: 16rpx;
-				border-radius: 20rpx;
-				padding: 8rpx 25rpx;
-				background-color: rgb(12 10 10 / 40%);
+				margin-right: 24rpx;
+				margin-bottom: 24rpx;
+				border-radius: 30rpx;
+				padding: 8rpx 36rpx;
+				background-color: rgba(255, 255, 255, 0.1);
 				font-size: 14px;
 			}
 		}
@@ -150,20 +186,21 @@ const goBack = () => {
 		width: 100%;
 		margin: 60rpx 0;
 		.hot-title {
+			padding: 0 10rpx;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			margin-bottom: 30rpx;
+			margin-bottom: 40rpx;
 		}
 		.hot-keywords {
 			display: flex;
 			flex-wrap: wrap;
 			.keywork {
-				margin-right: 16rpx;
-				margin-bottom: 16rpx;
-				border-radius: 20rpx;
-				padding: 8rpx 25rpx;
-				background-color: rgb(12 10 10 / 40%);
+				margin-right: 24rpx;
+				margin-bottom: 24rpx;
+				border-radius: 30rpx;
+				padding: 8rpx 36rpx;
+				background-color: rgba(255, 255, 255, 0.1);
 				font-size: 14px;
 			}
 		}
