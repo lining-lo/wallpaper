@@ -67,4 +67,12 @@ module.exports = function (app) {
         controller.handleFeedback(request, response)
     })
 
+
+    /**
+     * 问题反馈相关（需求壁纸、问题反馈）
+     */
+    // 新增问题反馈
+    app.post('/addProblem', (request, response) => {
+        controller.addProblem(request, response)
+    })
 }

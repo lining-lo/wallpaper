@@ -68,7 +68,6 @@ const getAvatarList = async () => {
 		userInfo.value = uni.getStorageSync('userInfo');
 		avatarListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
 		const result = await selecWallpaperPageByCategoryId(avatarListParams);
-		console.log(result);
 		result.map((item) => {
 			// 安全解析 labels，避免格式错误导致崩溃
 			try {

@@ -165,8 +165,6 @@ exports.selectWallpaperBySearch = async (request, response) => {
             data: result2
         }
     })
-    console.log(result1);
-    
 }
 
 
@@ -382,3 +380,19 @@ exports.handleFeedback = async (request, response) => {
         });
     }
 };
+
+
+/**
+ * 问题反馈相关（需求壁纸、问题反馈）
+ */
+// 新增问题反馈
+exports.addProblem = async (request, response) => {
+    const data = request.body
+    await db.addProblem([data.user_id, data.type, data.content]).then(async result => {
+        // 返回结果
+        response.send({
+            code: 200,
+            message: result
+        })
+    })
+}

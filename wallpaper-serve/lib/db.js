@@ -135,6 +135,17 @@ const createTables = async () => {
                     KEY idx_feedback_wallpaper_type_status (wallpaper_id, type, status)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户反馈表（点赞/收藏/下载）';`
         },
+        {
+            name: 'problem',
+            sql: `CREATE TABLE IF NOT EXISTS problem (
+                    ID INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '反馈记录唯一ID',
+                    type TINYINT NOT NULL COMMENT '0表示问题反馈，1表示壁纸需求',
+                    content TEXT NOT NULL COMMENT '反馈的具体内容',
+                    user_id CHAR(21) NOT NULL COMMENT '用户ID',
+                    createdate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                    PRIMARY KEY (ID)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='问题反馈表，用于记录壁纸需求和问题反馈';`
+        },
     ];
 
     for (const table of tables) {
@@ -499,8 +510,8 @@ module.exports = {
         return query(sql, values)
     },
     // 根据关键词分页查找壁纸
-    selectWallpaperBySearch: async(values) =>{
-        const sql  = `
+    selectWallpaperBySearch: async (values) => {
+        const sql = `
             SELECT 
                 w.id,
                 w.description,
@@ -679,6 +690,16 @@ module.exports = {
             AND wallpaper_id = ?         -- 壁纸ID条件
             AND type = ?             -- 行为类型条件（0-点赞、1-收藏、2-下载）
         `;
+        return query(sql, values)
+    },
+
+
+    /**
+     * 问题反馈相关（需求壁纸、问题反馈）
+     */
+    // 新增问题反馈
+    addProblem: async (values) => {
+        const sql = `INSERT INTO problem (user_id, type, content) VALUES (?, ?, ?)`;
         return query(sql, values)
     },
 };

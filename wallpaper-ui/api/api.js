@@ -72,3 +72,12 @@ export const getQiniuToken = () => {
 export const handleFeedback = (data) => {
 	return http('/handleFeedback', data)
 }
+
+
+/**
+ * 问题反馈相关（需求壁纸、问题反馈）
+ */
+// 新增问题反馈
+export const addProblem = (data) => {
+	return http('/addProblem', data)
+}

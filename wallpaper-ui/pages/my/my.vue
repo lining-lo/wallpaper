@@ -58,14 +58,14 @@
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
 			</navigator>
-			<navigator url="/pages/subscribe/subscribe" class="row">
+			<navigator url="/pages/problem/problem" class="row">
 				<view class="label">
 					<uni-icons type="chat-filled" size="32" color="#b53898"></uni-icons>
 					<text class="title">意见反馈</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
 			</navigator>
-			<navigator url="/pages/questions/questions" class="row">
+			<navigator url="/pages/help/help" class="row">
 				<view class="label">
 					<uni-icons type="help-filled" size="32" color="#b26105"></uni-icons>
 					<text class="title">常见问题</text>
