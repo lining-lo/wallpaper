@@ -9,10 +9,9 @@
 				<view class="avatar-right">
 					<view class="name">{{ userInfo ? userInfo.name || '分享室用户' : '分享室用户' }}</view>
 					<view class="userid">id：{{ userInfo ? userInfo.id : '615615154' }}</view>
-					<view class="sex">性别：{{ userInfo ? getGender(userInfo.gender) : '未知' }}</view>
 				</view>
 			</view>
-			<view class="info-slogan">{{ userInfo ? userInfo.motto || '尚未填写简介，点击完善' : '点这里完善简介资料' }}</view>
+				<uni-icons type="gear-filled" size="36" color="#7d6cdd"></uni-icons>
 		</view>
 		<!-- logo信息 -->
 		<view class="my-logo">
@@ -38,48 +37,48 @@
 		</view>
 		<!-- 底部功能 -->
 		<view class="my-footer">
-			<view class="row">
-				<navigator url="/pages/myDownload/myDownload" class="label">
+			<navigator url="/pages/myDownload/myDownload" class="row">
+				<view class="label">
 					<uni-icons type="cloud-download-filled" size="32" color="#109be7"></uni-icons>
 					<text class="title">下载记录</text>
-				</navigator>
+				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</view>
-			<view class="row">
+			</navigator>
+			<navigator url="/pages/subscribe/subscribe" class="row">
 				<view class="label">
 					<uni-icons type="weixin" size="32" color="#07b55a"></uni-icons>
 					<text class="title">订阅更新</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</view>
-			<view class="row">
+			</navigator>
+			<navigator url="/pages/subscribe/subscribe" class="row">
 				<view class="label">
 					<uni-icons type="auth-filled" size="32" color="#68a5e1"></uni-icons>
 					<text class="title">在线客服</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</view>
-			<view class="row">
+			</navigator>
+			<navigator url="/pages/subscribe/subscribe" class="row">
 				<view class="label">
 					<uni-icons type="chat-filled" size="32" color="#b53898"></uni-icons>
 					<text class="title">意见反馈</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</view>
-			<view class="row">
+			</navigator>
+			<navigator url="/pages/questions/questions" class="row">
 				<view class="label">
 					<uni-icons type="help-filled" size="32" color="#b26105"></uni-icons>
 					<text class="title">常见问题</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</view>
-			<view class="row">
+			</navigator>
+			<navigator url="/pages/agreement/agreement" class="row">
 				<view class="label">
 					<uni-icons type="info-filled" size="32" color="#b43aff"></uni-icons>
 					<text class="title">用户协议</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</view>
+			</navigator>
 		</view>
 	</view>
 </template>
@@ -124,16 +123,18 @@ onShow(() => {
 	/* 账号信息 */
 	.my-info {
 		width: 100%;
-		padding: 0 80rpx;
+		padding: 0 50rpx;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 		margin-bottom: 60rpx;
 		.info-avatar {
 			width: 100%;
 			display: flex;
 			align-items: center;
-			margin-bottom: 40rpx;
 			.avatar-left {
-				width: 150rpx;
-				height: 150rpx;
+				width: 130rpx;
+				height: 130rpx;
 				border-radius: 50%;
 				border: 2px solid #fff;
 				image {
@@ -145,22 +146,17 @@ onShow(() => {
 			.avatar-right {
 				margin-left: 30rpx;
 				width: calc(100% - 180rpx);
-				height: 160rpx;
+				height: 130rpx;
 				display: flex;
 				flex-direction: column;
 				justify-content: space-around;
 				.name {
 					font-weight: 600;
-					font-size: 18px;
+					font-size: 20px;
 				}
 				.userid {
 					color: #797979;
-					font-size: 14px;
-					font-weight: 600;
-				}
-				.sex {
-					color: #797979;
-					font-size: 14px;
+					font-size: 17px;
 					font-weight: 600;
 				}
 			}
@@ -219,14 +215,15 @@ onShow(() => {
 	/* 底部功能 */
 	.my-footer {
 		width: 100%;
-		padding: 0 30rpx;
 		.row {
 			width: 100%;
-			padding: 24rpx 0;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			border-bottom: 1px dotted #797979;
+			margin-bottom: 20rpx;
+			padding: 10px 30rpx;
+			border-radius: 20rpx;
+			box-shadow: 0 0px 0px 0.5px #45434c;
 			.label {
 				display: flex;
 				align-items: center;

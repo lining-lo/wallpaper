@@ -18,6 +18,7 @@
 					fontSize: '16px'
 				}"
 				@search="toSearch"
+				@custom="toSearch"
 			></up-search>
 		</view>
 		<!-- 搜索历史 -->
@@ -52,13 +53,12 @@ const goBack = () => {
 	uni.navigateBack();
 };
 
-
 // 搜索关键字
 const keyword = ref('');
 // 历史记录
 const keywords = ref(uni.getStorageSync('keywords') || []);
 // 热门搜索
-const hotKeywords = ['火影','蜡笔小新','简约','动漫','美女','风景','斗罗大陆','聊天背景']
+const hotKeywords = ['火影', '蜡笔小新', '简约', '动漫', '美女', '风景', '斗罗大陆', '聊天背景'];
 // 添加历史记录
 const addKeyword = () => {
 	// 1. 过滤空值（避免存入空字符串）
@@ -77,23 +77,10 @@ const addKeyword = () => {
 const clearKeywords = () => {
 	// 1. 先判断是否有历史记录，无记录则直接提示
 	if (keywords.value.length === 0) return;
-	// 2. 显示确认弹窗
-	uni.showModal({
-		title: ' 提示 ',
-		content: ' 是否要删除所有搜索历史？',
-		cancelText: ' 取消 ',
-		confirmText: ' 确认 ',
-		success: (res) => {
-			// 3. 用户点击 “确认” 则执行清除
-			if (res.confirm) {
-				// 清空响应式数据
-				keywords.value = [];
-				// 清空本地存储
-				uni.removeStorageSync('keywords');
-			}
-			// 4. 用户点击 “取消” 则不做操作
-		}
-	});
+	// 清空响应式数据
+	keywords.value = [];
+	// 清空本地存储
+	uni.removeStorageSync('keywords');
 };
 
 onShow(() => {

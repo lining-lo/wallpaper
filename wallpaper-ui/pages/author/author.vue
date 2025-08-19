@@ -136,7 +136,7 @@ onReachBottom(() => {
 			border-radius: 30rpx;
 			padding: 0 20rpx 20rpx 20rpx;
 			margin-bottom: 100rpx;
-			box-shadow: 0 1px 20px -6px #45434c;
+			box-shadow: 0 0px 0px 2px #343335;
 			.item-info {
 				width: 100%;
 				height: 78rpx;

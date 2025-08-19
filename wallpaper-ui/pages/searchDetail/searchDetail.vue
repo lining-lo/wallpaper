@@ -1,24 +1,24 @@
 <template>
-	<view class="share">
+	<view class="searchdetail">
 		<!-- 头部导航 -->
-		<view class="sortlist-navbar">
+		<view class="searchdetail-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
-			<text>{{ shareListParams.keyword }}</text>
+			<text>{{ searchListParams.keyword }}</text>
 			<view style="width: 100rpx"></view>
 		</view>
 		<!-- 榜单类型 -->
 		<view class="rank-type">
-			<view class="title" @click="changeType(-1)" :class="{ selected: shareListParams.type === -1 }">全部</view>
-			<view class="title" @click="changeType(10)" :class="{ selected: shareListParams.type === 10 }">手机</view>
-			<view class="title" @click="changeType(3)" :class="{ selected: shareListParams.type === 3 }">平板</view>
-			<view class="title" @click="changeType(4)" :class="{ selected: shareListParams.type === 4 }">头像</view>
+			<view class="title" @click="changeType(-1)" :class="{ selected: searchListParams.type === -1 }">全部</view>
+			<view class="title" @click="changeType(10)" :class="{ selected: searchListParams.type === 10 }">手机</view>
+			<view class="title" @click="changeType(3)" :class="{ selected: searchListParams.type === 3 }">平板</view>
+			<view class="title" @click="changeType(4)" :class="{ selected: searchListParams.type === 4 }">头像</view>
 		</view>
 		<!-- 加载提示 -->
 		<view class="loading" v-if="isLoading">加载中...</view>
 		<view class="waterfall-container">
-			<up-waterfall v-model="shareList" ref="uWaterfallRef" columns="2">
+			<up-waterfall v-model="searchList" ref="uWaterfallRef" columns="2">
 				<template v-slot:column="{ colList, colIndex }">
-					<view @click="toShareList(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
+					<view @click="toSearchList(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
 						<image :src="item.url" class="main-img" mode="widthFix" lazy-load></image>
 						<!-- 标题（单行省略） -->
 						<view class="item-title">{{ item.title }}</view>
@@ -38,15 +38,15 @@
 			</up-waterfall>
 		</view>
 		<!-- 到底提示 -->
-		<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
+		<view class="end-tip" v-if="isEnd && searchList.length > 0">已经到底啦~</view>
 		<!-- 空数据提示 -->
 		<view
 			class="authordetail-nonetip"
 			v-if="
-				(shareListParams.type === -1 && countInfo.total_count == 0) ||
-				(shareListParams.type === 10 && countInfo.normal_album_count == 0) ||
-				(shareListParams.type === 3 && countInfo.tablet_count == 0) ||
-				(shareListParams.type === 4 && countInfo.avatar_count == 0)
+				(searchListParams.type === -1 && countInfo.total_count == 0) ||
+				(searchListParams.type === 10 && countInfo.normal_album_count == 0) ||
+				(searchListParams.type === 3 && countInfo.tablet_count == 0) ||
+				(searchListParams.type === 4 && countInfo.avatar_count == 0)
 			"
 		>
 			<image src="/static/images/none_tip.png" mode="widthFix"></image>
@@ -87,15 +87,15 @@ onShow(() => {
 	// 仅在非首次显示时执行逻辑
 	if (!isFirstLoad.value) {
 		// 重置并重新请求数据
-		shareListParams.page = 1;
-		shareList.value = [];
+		searchListParams.page = 1;
+		searchList.value = [];
 		isEnd.value = false;
-		getShareList();
+		getSearchList();
 	}
 });
 
 // 排序列表
-const shareList = ref([]);
+const searchList = ref([]);
 const countInfo = ref({});
 // 是否加载全部
 const isEnd = ref(false);
@@ -103,7 +103,7 @@ const isEnd = ref(false);
 const isLoading = ref(false);
 
 // 获取排序列表参数
-const shareListParams = reactive({
+const searchListParams = reactive({
 	user_id: userInfo.value.id || '',
 	type: -1,
 	keyword: '',
@@ -112,7 +112,7 @@ const shareListParams = reactive({
 });
 
 // 获取排序列表方法
-const getShareList = async () => {
+const getSearchList = async () => {
 	// 防止重复请求和无效请求
 	if (!isEnd.value && !isLoading.value) {
 		isLoading.value = true; // 锁定加载状态
@@ -120,9 +120,9 @@ const getShareList = async () => {
 		try {
 			// 从本地存储重新读取一次，确保使用最新值
 			userInfo.value = uni.getStorageSync('userInfo');
-			shareListParams.user_id = userInfo.value.id || '';
+			searchListParams.user_id = userInfo.value.id || '';
 
-			const data = await selectWallpaperBySearch(shareListParams);
+			const data = await selectWallpaperBySearch(searchListParams);
 			const result = data.data;
 			countInfo.value = data.countInfo[0];
 
@@ -141,12 +141,12 @@ const getShareList = async () => {
 			});
 
 			// 核心：数据去重 - 过滤掉已存在的项目
-			const newItems = processedResult.filter((newItem) => !shareList.value.some((existItem) => existItem.id === newItem.id));
+			const newItems = processedResult.filter((newItem) => !searchList.value.some((existItem) => existItem.id === newItem.id));
 
 			// 合并新数据
-			shareList.value = [...shareList.value, ...newItems];
-			console.log(shareList.value);
-			uni.setStorageSync('wallpapers', JSON.stringify(shareList.value));
+			searchList.value = [...searchList.value, ...newItems];
+			console.log(searchList.value);
+			uni.setStorageSync('wallpapers', JSON.stringify(searchList.value));
 
 			// 判断是否到底（基于过滤后的新数据）
 			if (newItems.length === 0) {
@@ -155,7 +155,7 @@ const getShareList = async () => {
 		} catch (error) {
 			console.error('获取数据失败:', error);
 			// 失败时回退页码，方便重试
-			shareListParams.page--;
+			searchListParams.page--;
 		} finally {
 			isLoading.value = false; // 解锁加载状态
 		}
@@ -164,12 +164,12 @@ const getShareList = async () => {
 // 切换榜单
 const changeType = (type) => {
 	console.log(countInfo.value);
-	if (shareListParams.type === type) return; // 类型未变化则直接返回
+	if (searchListParams.type === type) return; // 类型未变化则直接返回
 	// 重置状态
-	shareList.value = [];
-	shareListParams.page = 1;
+	searchList.value = [];
+	searchListParams.page = 1;
 	isEnd.value = false;
-	shareListParams.type = type;
+	searchListParams.type = type;
 	// 根据类型判断是否需要请求数据
 	let workCount = 0;
 	switch (type) {
@@ -188,7 +188,7 @@ const changeType = (type) => {
 
 	// 只有当作品数量 > 0 时才请求数据
 	if (workCount > 0) {
-		getShareList();
+		getSearchList();
 	}
 };
 
@@ -196,13 +196,13 @@ const changeType = (type) => {
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
 	if (!isLoading.value && !isEnd.value) {
-		shareListParams.page++;
-		getShareList();
+		searchListParams.page++;
+		getSearchList();
 	}
 });
 
 // 跳转到壁纸查看界面
-const toShareList = (item) => {
+const toSearchList = (item) => {
 	uni.navigateTo({
 		url: `/pages/shareList/shareList?id=${item.id}`
 	});
@@ -210,8 +210,8 @@ const toShareList = (item) => {
 
 // 页面加载时初始化
 onLoad((options) => {
-	shareListParams.keyword = decodeURIComponent(options.keyword);
-	getShareList();
+	searchListParams.keyword = decodeURIComponent(options.keyword);
+	getSearchList();
 
 	// 延迟标记非首次加载
 	nextTick(() => {
@@ -221,7 +221,7 @@ onLoad((options) => {
 </script>
 
 <style lang="scss">
-.share {
+.searchdetail {
 	width: 100%;
 	min-height: 100vh;
 	background-color: #141414;
@@ -230,7 +230,7 @@ onLoad((options) => {
 	box-sizing: border-box;
 	overflow-x: hidden;
 	/* 头部导航栏 */
-	.sortlist-navbar {
+	.searchdetail-navbar {
 		width: 100%;
 		height: 180rpx;
 		background-color: #141414;

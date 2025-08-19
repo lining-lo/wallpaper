@@ -1,3 +1,7 @@
+page {
+	 /* 设置为你想要的背景颜色，与你的小程序背景色一致，防止上拉|下拉到底出现白色部分 */
+  background-color: #141414 !important;
+}
 view,swiper,swiper-item,image,text,navigator,textarea{
 	box-sizing: border-box;
 	color: #fff;
