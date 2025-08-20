@@ -11,7 +11,7 @@
 					<view class="userid">id：{{ userInfo ? userInfo.id : '615615154' }}</view>
 				</view>
 			</view>
-				<uni-icons type="gear-filled" size="36" color="#7d6cdd"></uni-icons>
+			<uni-icons type="gear-filled" size="36" color="#7d6cdd"></uni-icons>
 		</view>
 		<!-- logo信息 -->
 		<view class="my-logo">
@@ -51,13 +51,13 @@
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
 			</navigator>
-			<navigator url="/pages/subscribe/subscribe" class="row">
+			<button open-type="contact" hover-class='button-active' class="row">
 				<view class="label">
 					<uni-icons type="auth-filled" size="32" color="#68a5e1"></uni-icons>
 					<text class="title">在线客服</text>
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
-			</navigator>
+			</button>
 			<navigator url="/pages/problem/problem" class="row">
 				<view class="label">
 					<uni-icons type="chat-filled" size="32" color="#b53898"></uni-icons>
@@ -217,6 +217,7 @@ onShow(() => {
 		width: 100%;
 		.row {
 			width: 100%;
+			height: 101rpx;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -234,5 +235,26 @@ onShow(() => {
 			}
 		}
 	}
+}
+
+button {
+	/* 清除默认背景和边框 */
+	background-color: transparent;
+	border: none;
+	/* 清除默认圆角 */
+	border-radius: 0;
+	/* 清除默认内边距（根据需要调整） */
+	padding: 0;
+	/* 清除点击效果 */
+	-webkit-tap-highlight-color: transparent !important;
+	tap-highlight-color: transparent !important;
+}
+
+/* 清除按钮默认文字样式 */
+button::after {
+	border: none !important; /* 清除按钮点击时的边框效果 */
+}
+.button-active{
+	opacity: 0.7;
 }
 </style>

@@ -213,7 +213,7 @@
 			"path" : "pages/problem/problem",
 			"style" : 
 			{
-				"navigationBarTitleText" : """",
+				"navigationBarTitleText" : "",
 				"navigationStyle": "custom"
 			}
 		}
