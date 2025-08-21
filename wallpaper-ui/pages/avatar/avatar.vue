@@ -10,6 +10,7 @@
 		<view class="avatar-type">
 			<view class="inner">
 				<up-tabs
+					@click="changeType"
 					:list="sort"
 					lineWidth="0"
 					lineColor="#141414"
@@ -41,7 +42,7 @@
 <script setup>
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
-import { selecWallpaperPageByCategoryId, selecCategoryPage } from '../../api/api';
+import { selecWallpaperPageByCategoryId, selecCategoryPage, selectAllWallpaperByType } from '../../api/api';
 
 // 返回上一页
 const goBack = () => {
@@ -70,7 +71,6 @@ onShow(() => {
 	}
 });
 
-
 // 头像类型
 const sort = ref([]);
 // 分页获取分类的参数
@@ -83,15 +83,31 @@ const sortParams = reactive({
 //  分页获取分类方法
 const getSort = async () => {
 	const result = await selecCategoryPage(sortParams);
+	const all = {
+		id: '',
+		name: '最新',
+		cover: '',
+		updatedate: '',
+		wallpaper_count: 0,
+		total_likes: 0
+	};
+	result.unshift(all);
 	sort.value = result;
-	console.log('sort', sort.value);
+	// console.log('sort', sort.value);
 };
 
 // 当前类型下标
 const currentIndex = ref(0);
 // 切换类型
-const changeType = (index) => {
+const changeType = (item, index) => {
+	if (currentIndex.value === index) return; // 类型未变化则直接返回
 	currentIndex.value = index;
+	// 重置状态
+	avatarList.value = [];
+	avatarListParams.page = 1;
+	isEnd.value = false;
+	avatarListParams.category_id = item.id;
+	getAvatarList();
 };
 
 // 专辑列表
@@ -103,7 +119,7 @@ const isEnd = ref(false);
 const avatarListParams = reactive({
 	current_userId: userInfo.value.id || '',
 	type: 4,
-	category_id: 'K3pR7sT9qL',
+	category_id: '',
 	status: 1,
 	page: 1,
 	pagesize: 24
@@ -114,7 +130,7 @@ const getAvatarList = async () => {
 		// 从本地存储重新读取一次，避免依赖onShow的时机
 		userInfo.value = uni.getStorageSync('userInfo');
 		avatarListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
-		const result = await selecWallpaperPageByCategoryId(avatarListParams);
+		const result = currentIndex.value === 0 ? await selectAllWallpaperByType(avatarListParams) : await selecWallpaperPageByCategoryId(avatarListParams);
 		result.map((item) => {
 			// 安全解析 labels，避免格式错误导致崩溃
 			try {

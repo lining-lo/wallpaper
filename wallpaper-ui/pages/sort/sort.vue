@@ -7,11 +7,11 @@
 				<text class="title">热门榜</text>
 				<text class="english">Hot ranking</text>
 			</view>
-			<view @click="toRank(0)"class="ranking-item">
+			<view @click="toRank(0)" class="ranking-item">
 				<text class="title">点赞榜</text>
 				<text class="english">Like ranking</text>
 			</view>
-			<view @click="toRank(1)"class="ranking-item">
+			<view @click="toRank(1)" class="ranking-item">
 				<text class="title">收藏榜</text>
 				<text class="english">Rating ranking</text>
 			</view>
@@ -28,14 +28,14 @@
 				<image src="/static/images/sort_live.png" mode="aspectFill"></image>
 			</view>
 			<view class="type-live type" style="background-color: #27274c">
-				<navigator url="/pages/album/album"  class="content">
+				<navigator url="/pages/album/album" class="content">
 					<view class="title">专辑</view>
 					<view class="english">Special subject</view>
 				</navigator>
 				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
 			</view>
 			<view class="type-live type" style="background-color: #655636">
-				<navigator url="/pages/tablet/tablet"  class="content">
+				<navigator url="/pages/tablet/tablet" class="content">
 					<view class="title">平板</view>
 					<view class="english">Tablet computer</view>
 				</navigator>
@@ -53,15 +53,15 @@
 		<view class="sort-title">🎖️分类精选</view>
 		<!-- 分类精选 -->
 		<view class="sort-list">
-			<navigator url="/pages/sortList/sortList" class="list-item" v-for="(item,index) in sort" :key="index">
+			<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in sort" :key="index">
 				<image :src="item.cover" mode="aspectFill"></image>
 				<view class="item-time">
 					<text>2天前更新</text>
 				</view>
 				<view class="item-title">
-					<text>{{item.name}}</text>
+					<text>{{ item.name }}</text>
 				</view>
-			</navigator>
+			</view>
 		</view>
 	</view>
 </template>
@@ -93,11 +93,18 @@ onLoad(() => {
 });
 
 // 跳转到排行榜页面
-const toRank = (type)=>{
+const toRank = (type) => {
 	uni.navigateTo({
 		url: `/pages/rank/rank?type=${type}`
 	});
-}
+};
+// 跳转到壁纸分类页
+const toSortList = (item, index) => {
+	const sort_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/sortList/sortList?item=${encodeURIComponent(sort_item)}&index=${index + 1}`
+	});
+};
 </script>
 
 <style lang="scss">

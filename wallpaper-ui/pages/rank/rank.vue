@@ -59,7 +59,7 @@ const isEnd = ref(false);
 
 // 获取排序列表参数
 const rankListParams = reactive({
-	user_id: userInfo.value.id || '',
+	current_userId: userInfo.value.id || '',
 	type: 2,
 	page: 1,
 	pagesize: 24
