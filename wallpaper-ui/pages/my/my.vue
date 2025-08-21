@@ -51,7 +51,7 @@
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
 			</navigator>
-			<button open-type="contact" hover-class='button-active' class="row">
+			<button open-type="contact" hover-class="button-active" class="row">
 				<view class="label">
 					<uni-icons type="auth-filled" size="32" color="#68a5e1"></uni-icons>
 					<text class="title">在线客服</text>
@@ -254,7 +254,7 @@ button {
 button::after {
 	border: none !important; /* 清除按钮点击时的边框效果 */
 }
-.button-active{
+.button-active {
 	opacity: 0.7;
 }
 </style>

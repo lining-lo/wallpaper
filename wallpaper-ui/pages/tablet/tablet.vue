@@ -6,9 +6,32 @@
 			<text>平板</text>
 			<view style="width: 100rpx"></view>
 		</view>
+		<!-- 平板类型 -->
+		<view class="tablet-type">
+			<view class="inner">
+				<up-tabs
+					:list="sort"
+					lineWidth="0"
+					lineColor="#141414"
+					:activeStyle="{
+						color: '#fff',
+						padding: ' 10rpx 50rpx',
+						backgroundColor: '#444452',
+						borderRadius: '40rpx'
+					}"
+					:inactiveStyle="{
+						color: '#fff',
+						padding: ' 10rpx 50rpx',
+						backgroundColor: '#23232b',
+						borderRadius: '40rpx'
+					}"
+					itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
+				></up-tabs>
+			</view>
+		</view>
 		<!-- 分享列表 -->
 		<view class="tablet-list">
-			<view @click="toTabletDetail(item,index)" class="list-item" v-for="(item,index) in tabletList" :key="index">
+			<view @click="toTabletDetail(item, index)" class="list-item" v-for="(item, index) in tabletList" :key="index">
 				<image :src="item.url" mode="aspectFill"></image>
 			</view>
 		</view>
@@ -18,7 +41,7 @@
 <script setup>
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
-import { selecWallpaperPageByCategoryId } from '../../api/api';
+import { selecWallpaperPageByCategoryId, selecCategoryPage } from '../../api/api';
 
 // 返回上一页
 const goBack = () => {
@@ -47,6 +70,22 @@ onShow(() => {
 	}
 });
 
+// 头像类型
+const sort = ref([]);
+// 分页获取分类的参数
+const sortParams = reactive({
+	type: 3,
+	status: 1,
+	page: 1,
+	pagesize: 100
+});
+//  分页获取分类方法
+const getSort = async () => {
+	const result = await selecCategoryPage(sortParams);
+	sort.value = result;
+	console.log('sort', sort.value);
+};
+
 // 专辑列表
 const tabletList = ref([]);
 // 是否加载全部
@@ -68,7 +107,6 @@ const gettabletList = async () => {
 		userInfo.value = uni.getStorageSync('userInfo');
 		tabletListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
 		const result = await selecWallpaperPageByCategoryId(tabletListParams);
-		console.log(result)
 		result.map((item) => {
 			// 安全解析 labels，避免格式错误导致崩溃
 			try {
@@ -90,6 +128,8 @@ const gettabletList = async () => {
 };
 // 挂载
 onLoad((options) => {
+	// 获取头像分类
+	getSort();
 	// 获取专辑列表数据
 	gettabletList();
 
@@ -118,7 +158,7 @@ const toTabletDetail = (item, index) => {
 	height: 100%;
 	background-color: #141414;
 	padding: 20rpx;
-	padding-top: 192rpx;
+	padding-top: 320rpx;
 	overflow: auto;
 	/* 头部导航栏 */
 	.tablet-navbar {
@@ -133,6 +173,21 @@ const toTabletDetail = (item, index) => {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
+	}
+	/* 平板类型 */
+	.tablet-type {
+		position: fixed;
+		top: 92px;
+		z-index: 2;
+		left: 0;
+		width: 100%;
+		height: 130rpx;
+		background-color: #141414;
+		.inner {
+			width: 100%;
+			height: 100%;
+			padding-top: 48rpx;
+		}
 	}
 	/* 分享列表 */
 	.tablet-list {

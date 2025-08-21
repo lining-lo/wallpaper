@@ -39,6 +39,11 @@ export const selectAllWallpaperByRand = (data) => {
 export const selectWallpaperBySearch = (data) => {
 	return http('/selectWallpaperBySearch', data)
 }
+// 根据壁纸类型分页获取所有壁纸
+export const selectAllWallpaperByType = (data) => {
+	return http('/selectAllWallpaperByType', data)
+}
+
 
 
 /**

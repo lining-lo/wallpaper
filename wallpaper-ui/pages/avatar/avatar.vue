@@ -6,6 +6,29 @@
 			<text>头像</text>
 			<view style="width: 100rpx"></view>
 		</view>
+		<!-- 头像类型 -->
+		<view class="avatar-type">
+			<view class="inner">
+				<up-tabs
+					:list="sort"
+					lineWidth="0"
+					lineColor="#141414"
+					:activeStyle="{
+						color: '#fff',
+						padding: ' 10rpx 50rpx',
+						backgroundColor: '#444452',
+						borderRadius: '40rpx'
+					}"
+					:inactiveStyle="{
+						color: '#fff',
+						padding: ' 10rpx 50rpx',
+						backgroundColor: '#23232b',
+						borderRadius: '40rpx'
+					}"
+					itemStyle="padding-left: 15px; padding-right: 15px; height: 34px;"
+				></up-tabs>
+			</view>
+		</view>
 		<!-- 分享列表 -->
 		<view class="avatar-list">
 			<view @click="toAvatarDetail(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
@@ -18,7 +41,7 @@
 <script setup>
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
-import { selecWallpaperPageByCategoryId } from '../../api/api';
+import { selecWallpaperPageByCategoryId, selecCategoryPage } from '../../api/api';
 
 // 返回上一页
 const goBack = () => {
@@ -46,6 +69,30 @@ onShow(() => {
 		getAvatarList(); // 重新请求数据
 	}
 });
+
+
+// 头像类型
+const sort = ref([]);
+// 分页获取分类的参数
+const sortParams = reactive({
+	type: 4,
+	status: 1,
+	page: 1,
+	pagesize: 100
+});
+//  分页获取分类方法
+const getSort = async () => {
+	const result = await selecCategoryPage(sortParams);
+	sort.value = result;
+	console.log('sort', sort.value);
+};
+
+// 当前类型下标
+const currentIndex = ref(0);
+// 切换类型
+const changeType = (index) => {
+	currentIndex.value = index;
+};
 
 // 专辑列表
 const avatarList = ref([]);
@@ -89,6 +136,9 @@ const getAvatarList = async () => {
 };
 // 挂载
 onLoad((options) => {
+	// 获取头像分类
+	getSort();
+
 	// 获取专辑列表数据
 	getAvatarList();
 
@@ -117,7 +167,7 @@ const toAvatarDetail = (item, index) => {
 	height: 100%;
 	background-color: #141414;
 	padding: 30rpx;
-	padding-top: 192rpx;
+	padding-top: 320rpx;
 	overflow: auto;
 	/* 头部导航栏 */
 	.avatar-navbar {
@@ -132,6 +182,21 @@ const toAvatarDetail = (item, index) => {
 		display: flex;
 		align-items: flex-end;
 		justify-content: space-between;
+	}
+	/* 头像类型 */
+	.avatar-type {
+		position: fixed;
+		top: 92px;
+		z-index: 2;
+		left: 0;
+		width: 100%;
+		height: 130rpx;
+		background-color: #141414;
+		.inner {
+			width: 100%;
+			height: 100%;
+			padding-top: 48rpx;
+		}
 	}
 	/* 分享列表 */
 	.avatar-list {

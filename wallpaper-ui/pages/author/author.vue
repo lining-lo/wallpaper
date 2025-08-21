@@ -2,12 +2,12 @@
 	<navbar />
 	<view class="author">
 		<!-- 欢迎及介绍 -->
-		<view class="author-welcome">
+		<navigator url="/pages/poster/poster" class="author-welcome">
 			<view class="welcome-title">欢迎创作者分享您的壁纸</view>
 			<view class="welcome-tip">
 				<text>点击查看详情</text>
 			</view>
-		</view>
+		</navigator>
 		<!-- 创作者列表 -->
 		<view class="author-list">
 			<view @click="toUserDetail(item)" class="list-item" v-for="(item, index) in userList" :key="index">

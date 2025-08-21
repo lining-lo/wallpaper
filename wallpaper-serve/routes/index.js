@@ -41,6 +41,11 @@ module.exports = function (app) {
     app.post('/selectWallpaperBySearch', (request, response) => {
         controller.selectWallpaperBySearch(request, response)
     })
+    // 根据壁纸类型分页获取所有壁纸
+    app.post('/selectAllWallpaperByType', (request, response) => {
+        controller.selectAllWallpaperByType(request, response)
+    })
+
 
     /**
      * 用户相关

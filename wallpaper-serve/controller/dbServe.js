@@ -166,6 +166,17 @@ exports.selectWallpaperBySearch = async (request, response) => {
         }
     })
 }
+// 根据壁纸类型分页获取所有壁纸
+exports.selectAllWallpaperByType = async (request, response) => {
+    const data = request.body
+    await db.selectAllWallpaperByType(data).then(async result => {
+        // 返回结果
+        response.send({
+            code: 200,
+            message: result
+        })
+    })
+}
 
 
 

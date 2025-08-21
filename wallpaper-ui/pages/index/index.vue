@@ -67,7 +67,7 @@
 
 <script setup>
 import navbar from '../../components/navbar.vue';
-import { selecCategoryPage, selecUserPage, login, selectWallpaperBySort } from '../../api/api';
+import { selecCategoryPage, selecUserPage, login, selectAllWallpaperByType } from '../../api/api';
 import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
@@ -158,7 +158,7 @@ const isEnd = ref(false);
 // 获取排序列表参数
 const rankListParams = reactive({
 	user_id: userInfo.value.id || '',
-	type: 2,
+	type: 0,
 	page: 1,
 	pagesize: 24
 });
@@ -168,7 +168,7 @@ const getRankList = async () => {
 		// 从本地存储重新读取一次，避免依赖onShow的时机
 		userInfo.value = uni.getStorageSync('userInfo');
 		rankListParams.user_id = userInfo.value.id || ''; // 优先用最新存储值
-		const result = await selectWallpaperBySort(rankListParams);
+		const result = await selectAllWallpaperByType(rankListParams);
 		result.map((item) => {
 			// 安全解析 labels，避免格式错误导致崩溃
 			try {

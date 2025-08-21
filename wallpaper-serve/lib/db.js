@@ -571,6 +571,72 @@ module.exports = {
         `
         return query(sql, values)
     },
+    // 根据壁纸类型分页获取所有壁纸
+    selectAllWallpaperByType: async (data) => {
+        const { user_id, type, page, pagesize } = data;
+        const offset = (page - 1) * pagesize; // 计算偏移量，单独提取更清晰
+        let typeCondition = '';
+        let values = [];
+
+        // 处理类型条件和参数
+        if (type === 0 || type === 1) {
+            // 合并查询普通(0)和专辑(1)
+            typeCondition = 'w.type IN (0, 1)';
+            values = [user_id, offset, pagesize];
+        } else {
+            // 单独查询其他类型（2-动态、3-平板、4-头像等）
+            typeCondition = 'w.type = ?';
+            values = [user_id, type, offset, pagesize];
+        }
+
+        const sql = `
+        SELECT 
+            w.id,
+            w.description,
+            w.url,
+            w.video_url,
+            w.type,
+            w.category_id,
+            c.name AS category_name,
+            w.labels,
+            w.user_id,
+            u.name AS user_name,
+            u.avatar_url AS user_avatar,
+            w.count AS view_count,
+            w.createdate,
+            -- 总互动统计
+            COUNT(DISTINCT CASE WHEN f_all.type = 0 AND f_all.status = 1 THEN f_all.id END) AS like_count,
+            COUNT(DISTINCT CASE WHEN f_all.type = 1 AND f_all.status = 1 THEN f_all.id END) AS collect_count,
+            COUNT(DISTINCT CASE WHEN f_all.type = 2 AND f_all.status = 1 THEN f_all.id END) AS download_count,
+            -- 当前用户行为判断
+            MAX(CASE WHEN f_user.type = 0 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_liked,
+            MAX(CASE WHEN f_user.type = 1 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_collected,
+            MAX(CASE WHEN f_user.type = 2 AND f_user.status = 1 THEN 1 ELSE 0 END) AS is_downloaded
+        FROM 
+            wallpaper w
+        LEFT JOIN 
+            category c ON w.category_id = c.id
+        LEFT JOIN 
+            user u ON w.user_id = u.id
+        LEFT JOIN 
+            feedback f_all ON w.id = f_all.wallpaper_id
+        LEFT JOIN 
+            feedback f_user ON w.id = f_user.wallpaper_id AND f_user.user_id = ?  -- 用户ID参数
+        WHERE 
+            ${typeCondition}  -- 动态类型条件
+            AND w.status = 1  -- 已通过审核
+            AND w.is_delete = 0  -- 未删除
+        GROUP BY 
+            w.id, w.description, w.url, w.video_url, w.type,  -- 补充w.type字段
+            w.category_id, c.name, w.labels, w.user_id, 
+            u.name, u.avatar_url, w.count, w.createdate
+        ORDER BY 
+            w.createdate DESC  -- 时间降序
+        LIMIT ?, ?;  -- 分页参数（offset, pagesize）
+    `;
+
+        return query(sql, values);
+    },
 
 
     /**
