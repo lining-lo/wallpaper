@@ -1,92 +1,56 @@
 <template>
 	<view class="avatardetail" @click="changeShow">
-		<!-- 返回按钮 -->
-		<view class="avatardetail-back" @click="goBack">
-			<uni-icons type="left" size="20" color="#fff"></uni-icons>
+		<!-- 头部导航 -->
+		<view class="avatar-navbar">
+			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
+			<text>头像</text>
+			<view style="width: 56rpx"></view>
 		</view>
 		<!-- 图片轮播图 -->
-		<swiper circular @change="changeWallpaper" :current="currentWallpaperIndex">
-			<swiper-item v-for="(item, index) in wallpapers" :key="index">
-				<view class="avatardetail-info">
-					<view class="info-current">
-						<text v-if="wallpapers">预览图 {{ currentWallpaperIndex + 1 }}/{{ wallpapers.length }}</text>
+		<view class="avatardetail-mian">
+			<view class="currenindx">
+				<text>{{ currentWallpaperIndex + 1 }}&nbsp;/&nbsp;{{ wallpapers.length }}</text>
+			</view>
+			<swiper circular @change="changeWallpaper" :current="currentWallpaperIndex">
+				<swiper-item v-for="(item, index) in wallpapers" :key="index">
+					<view class="avatardetail-img">
+						<image v-if="readWallpaperIndexList.includes(index)" :src="item.url" mode="aspectFill"></image>
 					</view>
-					<view class="info-user">
-						<view class="inner">
-							<text>{{ currentWallpaper.user_name }}</text>
-							<image :src="currentWallpaper.user_avatar" mode="aspectFill"></image>
-						</view>
-					</view>
-					<view class="info-time">
-						<text class="time">18:23</text>
-						<text class="date">7月20日</text>
-					</view>
+				</swiper-item>
+			</swiper>
+		</view>
+		<!-- 壁纸信息 -->
+		<view class="sharelist-info">
+			<view class="info-labels">
+				<text class="label">{{ ['壁纸', '专辑', '动态', '平板', '头像'][currentWallpaper.type] }}</text>
+				<text class="label" v-for="(label, index2) in currentWallpaper.labels" :key="index2">{{ label }}</text>
+			</view>
+			<view class="info-base">
+				<view class="base-avatar base">
+					<image :src="currentWallpaper.user_avatar" mode="aspectFill"></image>
+					<text>{{ currentWallpaper.user_name }}</text>
 				</view>
-				<view class="avatardetail-img">
-					<image v-if="readWallpaperIndexList.includes(index)" :src="item.url" mode="aspectFill"></image>
+				<view class="base-avatar base" @click="toHandleFeedback(2)">
+					<uni-icons v-if="currentWallpaper.is_downloaded >= 1" type="cloud-download-filled" size="30" color="#109be8"></uni-icons>
+					<uni-icons v-else type="cloud-download" size="30" color="#109be8"></uni-icons>
+					<text>下载： {{ currentWallpaper.download_count }}</text>
 				</view>
-				<!-- 底部功能按钮 -->
-				<view class="avatardetail-bottom" @click.stop="">
-					<view class="bottom-detail btn" @click="changePopup(1)">
-						<uni-icons type="info-filled" color="#03A9F4" size="22"></uni-icons>
-						<text>详情</text>
-					</view>
-					<view class="bottom-favorites btn" @click="toHandleFeedback(1)">
-						<uni-icons type="star-filled" :color="currentWallpaper.is_collected >= 1 ? '#f4ff14' : '#fff'" size="24"></uni-icons>
-						<text>{{ currentWallpaper.collect_count }}</text>
-					</view>
-					<view class="bottom-like btn" @click="toHandleFeedback(0)">
-						<uni-icons type="heart-filled" :color="currentWallpaper.is_liked >= 1 ? '#ff3613' : '#fff'" size="22"></uni-icons>
-						<text>{{ currentWallpaper.like_count }}</text>
-					</view>
-					<view class="bottom-download btn" @click="toHandleFeedback(2)">
-						<uni-icons type="download-filled" :color="currentWallpaper.is_downloaded >= 1 ? '#8d5fe0' : '#fff'" size="22"></uni-icons>
-						<text>{{ currentWallpaper.download_count }}</text>
-					</view>
+				<view class="base-avatar base" @click="toHandleFeedback(0)">
+					<uni-icons v-if="currentWallpaper.is_liked >= 1" type="heart-filled" size="30" color="#d4381d"></uni-icons>
+					<uni-icons v-else type="heart" size="30" color="#d4381d"></uni-icons>
+					<text>点赞： {{ currentWallpaper.like_count }}</text>
 				</view>
-			</swiper-item>
-		</swiper>
-		<!-- 详情弹窗 -->
-		<uni-popup type="bottom" ref="popupInfo" :safe-area="false" borderRadius="20rpx 20rpx 0 0" background-color="#353962">
-			<view class="inner" @click.stop="">
-				<view class="popup-title">
-					<view class="fill"></view>
-					<view class="title">壁纸信息</view>
-					<uni-icons @click="changePopup(0)" type="closeempty" color="#fff" size="18"></uni-icons>
-				</view>
-				<scroll-view scroll-y>
-					<view class="content">
-						<view class="row">
-							<view class="label">壁纸ID：</view>
-							<text selectable class="value">{{ currentWallpaper.id }}</text>
-						</view>
-						<view class="row">
-							<view class="label">分类：</view>
-							<text selectable class="value">{{ currentWallpaper.category_name }}</text>
-						</view>
-						<view class="row">
-							<view class="label">发布者：</view>
-							<text selectable class="value">{{ currentWallpaper.user_name }}</text>
-						</view>
-						<view class="row">
-							<view class="label">摘要：</view>
-							<text selectable class="value">{{ currentWallpaper.description }}</text>
-						</view>
-						<view class="row">
-							<view class="label">标签：</view>
-							<view selectable class="value tags">
-								<text class="tag" v-for="(label, index2) in currentWallpaper.labels" :key="index2">{{ label }}</text>
-							</view>
-						</view>
-					</view>
-				</scroll-view>
-				<view class="popup-footer">
-					<view class="content">
-						声明：本图片来自用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸 ID 到邮箱 2092576148@qq.com，管理将删除侵权壁纸，维护您的权益。
-					</view>
+				<view class="base-avatar base" @click="toHandleFeedback(1)">
+					<uni-icons v-if="currentWallpaper.is_collected >= 1" type="star-filled" size="30" color="#e1ea25"></uni-icons>
+					<uni-icons v-else type="star" size="30" color="#e1ea25"></uni-icons>
+					<text>收藏： {{ currentWallpaper.collect_count }}</text>
 				</view>
 			</view>
-		</uni-popup>
+		</view>
+		<!-- 广告位 -->
+		<view class="sharelist-advertisement">
+			<image src="https://lining-lo.top/avatar/1755237311090-6m5zg3lo77.jpg" mode="aspectFill"></image>
+		</view>
 	</view>
 </template>
 
@@ -121,10 +85,12 @@ const currentWallpaperIndex = ref();
 const currentWallpaper = ref({});
 // 看过的壁纸索引
 const readWallpaperIndexList = ref([]);
+const from = ref();
 // 挂载
 onLoad((options) => {
-	// 获取封面信息
-	wallpapers.value = JSON.parse(uni.getStorageSync('wallpapers'));
+	// 获取当前壁纸来源
+	from.value = decodeURIComponent(options.from);
+	wallpapers.value = JSON.parse(uni.getStorageSync(`${from.value}`));
 	// 获取当前壁纸id
 	currentWallpaperId.value = options.id;
 	// 获取当前的索引
@@ -260,7 +226,7 @@ const updateWallpaperCache = () => {
 		};
 	}
 	// 重新保存到缓存
-	uni.setStorageSync('wallpapers', JSON.stringify(wallpapers.value));
+	uni.setStorageSync(from.value, JSON.stringify(wallpapers.value));
 };
 // 下载图片的方法
 const handleDownload = async () => {
@@ -318,184 +284,142 @@ const handleDownload = async () => {
 <style lang="scss">
 .avatardetail {
 	width: 100%;
-	height: 100vh;
+	min-height: 100vh;
 	position: relative;
 	background-color: #141414;
 	overflow: auto;
-	/* 返回按钮 */
-	.avatardetail-back {
-		width: 40px;
-		height: 40px;
-		border-radius: 50%;
-		background-color: rgba(40, 40, 40, 0.8);
+	padding-top: 192rpx;
+	/* 头部导航栏 */
+	.avatar-navbar {
+		width: 100%;
+		height: 180rpx;
+		background-color: #141414;
 		position: fixed;
 		z-index: 1;
-		top: 92rpx;
-		left: 20rpx;
+		top: 0;
+		left: 0;
+		padding: 30rpx;
 		display: flex;
-		align-items: center;
-		justify-content: center;
+		align-items: flex-end;
+		justify-content: space-between;
 	}
 	/* 轮播图 */
-	swiper {
-		position: relative;
+	.avatardetail-mian {
 		width: 100%;
-		height: 100%;
-		swiper-item {
+		height: 836rpx;
+		background-color: #141414;
+		.currenindx {
 			width: 100%;
-			height: 100%; /* 当前图片信息 */
-			.avatardetail-info {
-				position: absolute;
-				top: 120rpx;
-				width: 100%;
-				height: 54vw;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				.info-current {
-					width: 100%;
-					text-align: center;
-					text {
-						padding: 8rpx 40rpx;
-						background-color: rgba(40, 40, 40, 0.6);
-						border-radius: 30rpx;
-						font-size: 13px;
-					}
-				}
-				.info-user {
-					width: 100%;
-					display: flex;
-					justify-content: flex-end;
-					padding-right: 20rpx;
-					.inner {
-						display: flex;
-						align-items: center;
-						gap: 20rpx;
-						padding: 2px 4px 2px 20px;
-						background-color: rgba(40, 40, 40, 0.5);
-						border-radius: 50rpx;
-						text {
-							font-size: 16px;
-							color: #fff;
-						}
-						image {
-							width: 40px;
-							height: 40px;
-							border-radius: 50%;
-							border: 2px solid #fff;
-						}
-					}
-				}
-				.info-time {
-					width: 100%;
-					text-align: center;
-					display: flex;
-					flex-direction: column;
-					.time {
-						font-size: 46px;
-						font-weight: 600;
-						letter-spacing: 0.2em;
-						margin-bottom: 8px;
-					}
-					.date {
-						font-size: 24px;
-						font-weight: 400;
-						letter-spacing: 0.2em;
-					}
-				}
+			text-align: center;
+			padding: 30rpx;
+			text {
+				padding: 8rpx 40rpx;
+				background-color: rgba(255, 255, 255, 0.1);
+				border-radius: 30rpx;
+				font-size: 13px;
 			}
-
-			.avatardetail-img {
-				position: absolute;
+		}
+		swiper {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			swiper-item {
 				width: 100%;
-				height: 750rpx;
-				top: 554rpx;
-				image {
+				height: 100%; /* 当前图片信息 */
+				.avatardetail-img {
 					width: 100%;
-					height: 100%;
-				}
-			}
-
-			/* 底部功能按钮 */
-			.avatardetail-bottom {
-				position: absolute;
-				left: 50%;
-				transform: translate(-50%, -50%);
-				bottom: 50px;
-				width: 80%;
-				height: 16vw;
-				border-radius: 100rpx;
-				background-color: rgba(40, 40, 40, 0.8);
-				display: flex;
-				justify-content: space-around;
-				align-items: center;
-				.btn {
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-					align-items: center;
-					font-size: 12px;
-					padding: 0 14rpx;
+					height: 750rpx;
+					margin: 0 auto;
+					padding: 20rpx;
+					image {
+						width: 100%;
+						height: 100%;
+						border-radius: 40rpx;
+					}
 				}
 			}
 		}
 	}
-	/* 详情弹窗 */
-	uni-popup {
+	/* 壁纸信息 */
+	.sharelist-info {
 		width: 100%;
-		.inner {
-			.popup-title {
-				width: 100%;
+		padding: 60rpx 30rpx 0 30rpx;
+		.info-labels {
+			width: 100%;
+			display: flex;
+			margin-bottom: 30rpx;
+			flex-wrap: wrap;
+
+			.label {
+				padding: 4rpx 30rpx;
+				border-radius: 20rpx;
+				margin-right: 20rpx;
+				white-space: nowrap;
+				margin-bottom: 20rpx;
+				border: 1px solid;
+			}
+
+			.label:nth-child(1) {
+				color: #109be8;
+				border-color: #109be8;
+			}
+
+			.label:nth-child(2) {
+				color: #9d4d64;
+				border-color: #9d4d64;
+			}
+			.label:nth-child(3) {
+				color: #af8933;
+				border-color: #af8933;
+			}
+			.label:nth-child(4) {
+				color: #8b8bef;
+				border-color: #8b8bef;
+			}
+		}
+		.info-base {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			.base {
+				width: calc(50% - 15rpx);
+				height: 108rpx;
+				border-radius: 12rpx;
+				background-color: #222222;
+				margin-bottom: 30rpx;
 				display: flex;
 				align-items: center;
-				justify-content: space-between;
-				padding: 40rpx 30rpx;
-			}
-			scroll-view {
-				width: 100%;
-				max-height: 60vh;
-				padding: 0 60rpx 20rpx 60rpx;
-				.content {
-					.row {
-						display: flex;
-						padding: 16rpx 0;
-						font-size: 32rpx;
-						line-height: 1.7rem;
-						.label {
-							color: #9c9c9c;
-							width: 140rpx;
-							text-align: right;
-							font-size: 30rpx;
-						}
-						.value {
-							width: calc(100% - 240rpx);
-							padding: 0 20rpx;
-						}
-						.tags {
-							display: flex;
-							flex-wrap: wrap;
-							.tag {
-								border: 1px solid #fff;
-								font-size: 22rpx;
-								padding: 10rpx 30rpx;
-								border-radius: 40rpx;
-								line-height: 1em;
-								margin: 0 10rpx 10rpx 0;
-							}
-						}
+				padding: 0 20rpx;
+				&.base-avatar {
+					display: flex;
+					align-items: center;
+					image {
+						width: 80rpx;
+						height: 80rpx;
+						border-radius: 50%;
+					}
+					text {
+						margin-left: 12rpx;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						max-width: 205rpx;
 					}
 				}
 			}
-			.popup-footer {
-				width: 100%;
-				padding: 0 20rpx 80rpx 20rpx;
-				.content {
-					padding: 30rpx;
-					background-color: rgba(40, 40, 40, 0.3);
-					border-radius: 10rpx;
-					line-height: 1.64;
-				}
-			}
+		}
+	}
+	/* 广告位 */
+	.sharelist-advertisement {
+		margin-bottom: 40rpx;
+		padding: 0 30rpx;
+		width: 100%;
+		height: 400rpx;
+		background-color: #222222;
+		image {
+			width: 100%;
+			height: 100%;
 		}
 	}
 }

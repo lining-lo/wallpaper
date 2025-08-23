@@ -7,7 +7,7 @@
 		<!-- 图片预览 -->
 		<uni-popup type="center" ref="popupInfo" :safe-area="false" background-color="#141414">
 			<view v-if="isOpen" @click="changePopup(0)" @touchmove.stop.prevent class="inner">
-				<view class="inner-time">
+				<view class="inner-time" v-if="!(plat === 1 && currentWallpaper.type === 4)">
 					<text class="time">18:23</text>
 					<text class="date">7月20日</text>
 				</view>
@@ -54,7 +54,7 @@
 								tablet: item.type === 3,
 								avatar: item.type === 4
 							}"
-							v-show="readWallpaperIndexList.includes(index)"
+							v-if="readWallpaperIndexList.includes(index)"
 							:src="item.url"
 							mode="aspectFill"
 							lazy-load
@@ -96,7 +96,7 @@
 			<image src="https://lining-lo.top/avatar/1755237311090-6m5zg3lo77.jpg" mode="aspectFill"></image>
 		</view>
 		<!-- 相关推荐 -->
-<!-- 		<view class="sharelist-recommend">
+		<!-- 		<view class="sharelist-recommend">
 			<view class="recommend-title">相关推荐</view>
 			<view class="recommend-list"></view>
 		</view> -->
@@ -105,7 +105,7 @@
 
 <script setup>
 import { handleFeedback } from '../../api/api';
-import { onLoad, onShow,onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
 import { reactive, ref, nextTick } from 'vue';
 
 // 返回上一页
@@ -168,10 +168,23 @@ const currentWallpaperIndex = ref();
 const currentWallpaper = ref({});
 // 看过的壁纸索引
 const readWallpaperIndexList = ref([]);
+const from = ref();
+// 当前设备（0手机,1电脑）
+const plat = ref(0);
 // 挂载
 onLoad((options) => {
-	// 获取封面信息
-	wallpapers.value = JSON.parse(uni.getStorageSync('wallpapers'));
+	// 获取当前设备
+	const systemInfo = uni.getSystemInfoSync();
+	const platform = systemInfo.platform;
+	if (platform === 'android' || platform === 'ios') {
+		plat.value = 0;
+	} else if (platform === 'devtools' || platform === 'windows' || platform === 'mac') {
+		plat.value = 1;
+	}
+
+	// 获取当前壁纸来源
+	from.value = decodeURIComponent(options.from);
+	wallpapers.value = JSON.parse(uni.getStorageSync(`${from.value}`));
 	// 获取当前壁纸id
 	currentWallpaperId.value = options.id;
 	// 获取当前的索引
@@ -306,7 +319,7 @@ const updateWallpaperCache = () => {
 		};
 	}
 	// 重新保存到缓存
-	uni.setStorageSync('wallpapers', JSON.stringify(wallpapers.value));
+	uni.setStorageSync(from.value, JSON.stringify(wallpapers.value));
 };
 // 下载图片的方法
 const handleDownloadWallpaper = async () => {
@@ -419,7 +432,6 @@ const handleDownloadVideo = async () => {
 		}
 	});
 };
-
 </script>
 
 <style lang="scss">

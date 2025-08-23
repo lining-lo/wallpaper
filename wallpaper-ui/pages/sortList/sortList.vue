@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId, selecCategoryPage, selectAllWallpaperByType } from '../../api/api';
 
@@ -60,16 +60,6 @@ onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
-
-	// 仅在非首次显示时执行逻辑
-	if (!isFirstLoad.value) {
-		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
-		// 重置页码为 1，重新加载第一页数据（避免重复叠加）
-		avatarListParams.page = 1;
-		avatarList.value = []; // 清空原有列表
-		isEnd.value = false; // 重置到底状态
-		getAvatarList(); // 重新请求数据
-	}
 });
 
 // 头像类型
@@ -86,7 +76,7 @@ const getSort = async () => {
 	const result = await selecCategoryPage(sortParams);
 	const all = {
 		id: '',
-		name: '最新',
+		name: '优选推荐',
 		cover: '',
 		updatedate: '',
 		wallpaper_count: 0,
@@ -144,7 +134,7 @@ const getAvatarList = async () => {
 		});
 		// 存入数据
 		avatarList.value = [...avatarList.value, ...result];
-		uni.setStorageSync('wallpapers', JSON.stringify(avatarList.value));
+		uni.setStorageSync('sortlist-wallpapers', JSON.stringify(avatarList.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
@@ -155,16 +145,15 @@ const getAvatarList = async () => {
 onLoad((options) => {
 	// 获取参数
 	const item = JSON.parse(decodeURIComponent(options.item));
-	const index = parseInt(options.index, 10)
+	const index = parseInt(options.index, 10);
 	changeType(item, index);
 
 	// 获取头像分类
 	getSort();
-
-	// 延迟标记非首次，确保在 onShow 之后执行
-	nextTick(() => {
-		isFirstLoad.value = false;
-	});
+});
+// 销毁页面时
+onUnload(() => {
+	uni.removeStorageSync('sortlist-wallpapers');
 });
 // 触底加载更加专辑数据
 onReachBottom(() => {
@@ -174,8 +163,9 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toAvatarDetail = (item, index) => {
+	const from = 'sortlist-wallpapers';
 	uni.navigateTo({
-		url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}`
+		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
 	});
 };
 </script>
@@ -205,7 +195,7 @@ const toAvatarDetail = (item, index) => {
 	/* 头像类型 */
 	.avatar-type {
 		position: fixed;
-		top: 92px;
+		top: 80px;
 		z-index: 2;
 		left: 0;
 		width: 100%;

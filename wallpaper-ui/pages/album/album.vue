@@ -4,12 +4,12 @@
 		<view class="album-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>壁纸专辑</text>
-			<view style="width: 100rpx"></view>
+			<view></view>
 		</view>
 		<!-- 专辑列表 -->
 		<view class="album-list">
 			<view @click="toAlbumDetail(item)" class="list-item" v-for="(item, index) in album" :key="index">
-				<image :src="item.cover" mode="aspectFill"></image>
+				<image :src="item.cover" lazy-load mode="aspectFill"></image>
 				<view class="item-info">
 					<view class="info-title">
 						<text class="name">{{ item.name }}</text>

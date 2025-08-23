@@ -5,7 +5,7 @@
 		<view class="home-banner">
 			<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
 				<swiper-item @click="toAlbumDetail(item)" v-for="(item, index) in album" :key="index">
-					<image :src="item.cover" mode="aspectFill"></image>
+					<image :src="item.cover" lazy-load mode="aspectFill"></image>
 					<view class="item-info">
 						<view class="info-title">
 							<text class="name">{{ item.name }}</text>
@@ -38,15 +38,15 @@
 			</view>
 			<view class="sort-list">
 				<scroll-view scroll-x>
-					<navigator url="/pages/sortList/sortList" class="list-item" v-for="(item, index) in sort" :key="index">
-						<image :src="item.cover" mode="aspectFill"></image>
+					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in sort" :key="index">
+						<image :src="item.cover" lazy-load mode="aspectFill"></image>
 						<view class="item-time">
 							<text>2天前更新</text>
 						</view>
 						<view class="item-title">
 							<text>{{ item.name }}</text>
 						</view>
-					</navigator>
+					</view>
 				</scroll-view>
 			</view>
 		</view>
@@ -56,11 +56,15 @@
 				<view class="title">优选推荐</view>
 				<view @click="toRank(2)" class="more">More+</view>
 			</view>
+			<!-- 加载提示 -->
+			<view class="loading" v-if="isLoading">加载中...</view>
 			<view class="recommend-list">
 				<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in rankList" :key="index">
-					<image :src="item.url" mode="aspectFill"></image>
+					<image :src="item.url" lazy-load mode="aspectFill"></image>
 				</view>
 			</view>
+			<!-- 到底提示 -->
+			<view class="end-tip" v-if="isEnd && rankList.length > 0">已经到底啦~</view>
 		</view>
 	</view>
 </template>
@@ -128,33 +132,30 @@ const getSort = async () => {
 	const result = await selecCategoryPage(sortParams);
 	sort.value = result;
 };
+// 跳转到壁纸分类页
+const toSortList = (item, index) => {
+	const sort_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/sortList/sortList?item=${encodeURIComponent(sort_item)}&index=${index + 1}`
+	});
+};
 
 // 用户信息
 const userInfo = ref({});
 // token信息
 const token = ref();
-// 定义首次加载标记
-const isFirstLoad = ref(true);
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
-
-	// 仅在非首次显示时执行逻辑
-	if (!isFirstLoad.value) {
-		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
-		rankListParams.page = 1;
-		rankList.value = []; // 清空原有列表
-		isEnd.value = false; // 重置到底状态
-		getRankList(); // 重新请求数据
-	}
 });
 
 // 排序列表
 const rankList = ref([]);
 // 是否加载全部
 const isEnd = ref(false);
-
+// 加载状态控制
+const isLoading = ref(false);
 // 获取排序列表参数
 const rankListParams = reactive({
 	current_userId: userInfo.value.id || '',
@@ -164,47 +165,62 @@ const rankListParams = reactive({
 });
 // 获取排序列表方法
 const getRankList = async () => {
-	if (!isEnd.value) {
-		// 从本地存储重新读取一次，避免依赖onShow的时机
-		userInfo.value = uni.getStorageSync('userInfo');
-		rankListParams.user_id = userInfo.value.id || ''; // 优先用最新存储值
-		const result = await selectAllWallpaperByType(rankListParams);
-		result.map((item) => {
-			// 安全解析 labels，避免格式错误导致崩溃
-			try {
-				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
-			} catch (err) {
-				console.error('解析 labels 失败:', err);
-				item.labels = []; // 解析失败时用空数组兜底
+	// 防止重复请求和无效请求
+	if (!isEnd.value && !isLoading.value) {
+		isLoading.value = true; // 锁定加载状态
+
+		try {
+			// 从本地存储重新读取一次，避免依赖onShow的时机
+			userInfo.value = uni.getStorageSync('userInfo');
+			rankListParams.user_id = userInfo.value.id || ''; // 优先用最新存储值
+			const result = await selectAllWallpaperByType(rankListParams);
+			result.map((item) => {
+				// 安全解析 labels，避免格式错误导致崩溃
+				try {
+					item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+				} catch (err) {
+					console.error('解析 labels 失败:', err);
+					item.labels = []; // 解析失败时用空数组兜底
+				}
+				return item;
+			});
+			// 存入数据
+			rankList.value = [...rankList.value, ...result];
+			uni.setStorageSync('home-wallpapers', JSON.stringify(rankList.value));
+			// 是否到底
+			if (result.length === 0) {
+				isEnd.value = true;
 			}
-			return item;
-		});
-		// 存入数据
-		rankList.value = [...rankList.value, ...result];
-		uni.setStorageSync('wallpapers', JSON.stringify(rankList.value));
-		// 是否到底
-		if (result.length === 0) {
-			isEnd.value = true;
+		} catch (error) {
+			console.error('获取数据失败:', error);
+			// 失败时回退页码，方便重试
+			shareListParams.page--;
+		} finally {
+			isLoading.value = false; // 解锁加载状态
 		}
 	}
 };
 
 // 触底加载更加排序数据
 onReachBottom(() => {
-	rankListParams.page++;
-	getRankList();
+	// 只有不在加载中且未到底时才加载更多
+	if (!isLoading.value && !isEnd.value) {
+		rankListParams.page++;
+		getRankList();
+	}
 });
 
 // 跳转到排行榜页面
-const toRank = (type)=>{
+const toRank = (type) => {
 	uni.navigateTo({
 		url: `/pages/rank/rank?type=${type}`
 	});
-}
+};
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
+	const from = 'home-wallpapers';
 	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}`
+		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
 	});
 };
 
@@ -218,11 +234,6 @@ onLoad(() => {
 	getSort();
 	// 获取排序列表数据
 	getRankList();
-
-	// 延迟标记非首次，确保在 onShow 之后执行
-	nextTick(() => {
-		isFirstLoad.value = false;
-	});
 });
 </script>
 
@@ -476,5 +487,19 @@ onLoad(() => {
 			}
 		}
 	}
+}
+/* 加载提示样式 */
+.loading {
+	color: #fff;
+	text-align: center;
+	padding: 20rpx 0;
+	font-size: 14px;
+}
+/* 到底提示样式 */
+.end-tip {
+	color: #888;
+	text-align: center;
+	padding: 30rpx 0;
+	font-size: 14px;
 }
 </style>

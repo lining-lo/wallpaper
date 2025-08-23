@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selectWallpaperBySort } from '../../api/api';
 
@@ -35,21 +35,10 @@ const goBack = () => {
 const userInfo = ref({});
 // token信息
 const token = ref();
-// 定义首次加载标记
-const isFirstLoad = ref(true);
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
-
-	// 仅在非首次显示时执行逻辑
-	if (!isFirstLoad.value) {
-		// 如果需要每次显示都刷新列表（比如更新点赞/收藏状态），可重新调用接口
-		rankListParams.page = 1;
-		rankList.value = []; // 清空原有列表
-		isEnd.value = false; // 重置到底状态
-		getRankList(); // 重新请求数据
-	}
 });
 
 // 排序列表
@@ -83,7 +72,7 @@ const getRankList = async () => {
 		});
 		// 存入数据
 		rankList.value = [...rankList.value, ...result];
-		uni.setStorageSync('wallpapers', JSON.stringify(rankList.value));
+		uni.setStorageSync('rank-wallpapers', JSON.stringify(rankList.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
@@ -96,11 +85,10 @@ onLoad((options) => {
 	rankListParams.type = Number.parseInt(options.type);
 	// 获取排序列表数据
 	getRankList();
-
-	// 延迟标记非首次，确保在 onShow 之后执行
-	nextTick(() => {
-		isFirstLoad.value = false;
-	});
+});
+// 销毁页面时
+onUnload(() => {
+	uni.removeStorageSync('rank-wallpapers');
 });
 
 // 切换榜单
@@ -127,8 +115,9 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
+	const from = 'rank-wallpapers';
 	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}`
+		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
 	});
 };
 </script>

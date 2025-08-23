@@ -13,7 +13,7 @@
 		<!-- 当前图片信息 -->
 		<view class="preview-info" v-if="isShow">
 			<view class="info-current">
-				<text v-if="wallpapers">预览图 {{ currentWallpaperIndex + 1 }}/{{ wallpapers.length }}</text>
+				<text v-if="wallpapers">{{ currentWallpaperIndex + 1 }}&nbsp;/&nbsp;{{ wallpapers.length }}</text>
 			</view>
 			<view class="info-user">
 				<view class="inner">
@@ -46,7 +46,7 @@
 			</view>
 		</view>
 		<!-- 详情弹窗 -->
-		<uni-popup type="bottom" ref="popupInfo" :safe-area="false" borderRadius="20rpx 20rpx 0 0" background-color="#353962">
+		<uni-popup type="bottom" ref="popupInfo" :is-mask-click="false" :safe-area="false" borderRadius="20rpx 20rpx 0 0" background-color="#141414">
 			<view class="inner" @click.stop="">
 				<view class="popup-title">
 					<view class="fill"></view>
@@ -66,10 +66,6 @@
 						<view class="row">
 							<view class="label">发布者：</view>
 							<text selectable class="value">{{ currentWallpaper.user_name }}</text>
-						</view>
-						<view class="row">
-							<view class="label">摘要：</view>
-							<text selectable class="value">{{ currentWallpaper.description }}</text>
 						</view>
 						<view class="row">
 							<view class="label">标签：</view>
@@ -96,8 +92,11 @@ import { reactive, ref } from 'vue';
 
 // 详情弹窗dom
 const popupInfo = ref();
+// 弹窗的状态（0关闭，1打开）
+const popupStatus = ref(0);
 // 打开|关闭弹窗(0关闭，1打开)
 const changePopup = (option) => {
+	popupStatus.value = option;
 	if (option === 1) {
 		popupInfo.value.open();
 	} else {
@@ -108,6 +107,7 @@ const changePopup = (option) => {
 const isShow = ref(true);
 // 切换信息状态
 const changeShow = () => {
+	if (popupStatus.value === 1) return;
 	isShow.value = !isShow.value;
 };
 // 返回上一页
@@ -125,10 +125,12 @@ const currentWallpaperIndex = ref();
 const currentWallpaper = ref({});
 // 看过的壁纸索引
 const readWallpaperIndexList = ref([]);
+const from = ref();
 // 挂载
 onLoad((options) => {
-	// 获取封面信息
-	wallpapers.value = JSON.parse(uni.getStorageSync('wallpapers'));
+	// 获取当前壁纸来源
+	from.value = decodeURIComponent(options.from);
+	wallpapers.value = JSON.parse(uni.getStorageSync(`${from.value}`));
 	// 获取当前壁纸id
 	currentWallpaperId.value = options.id;
 	// 获取当前的索引
@@ -264,7 +266,7 @@ const updateWallpaperCache = () => {
 		};
 	}
 	// 重新保存到缓存
-	uni.setStorageSync('wallpapers', JSON.stringify(wallpapers.value));
+	uni.setStorageSync(from.value, JSON.stringify(wallpapers.value));
 };
 // 下载图片的方法
 const handleDownload = async () => {

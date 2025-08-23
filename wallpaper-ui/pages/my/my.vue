@@ -31,7 +31,7 @@
 				<text class="separate">|</text>
 				<view class="energy integration">
 					<text class="title">我的积分</text>
-					<text class="count">1</text>
+					<text class="count">0</text>
 				</view>
 			</view>
 		</view>

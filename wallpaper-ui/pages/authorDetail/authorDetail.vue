@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { getGender } from '../../utils/customize';
 import { selecWallpaperPageByUserId } from '../../api/api';
 import { reactive, ref } from 'vue';
@@ -143,7 +143,7 @@ const getWorks = async (type) => {
 			return item;
 		});
 		works.value = [...works.value, ...result];
-		uni.setStorageSync('wallpapers', JSON.stringify(works.value));
+		uni.setStorageSync('authordetail-wallpapers', JSON.stringify(works.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
@@ -155,10 +155,14 @@ onLoad((options) => {
 	// 获取作者信息
 	const author_item = JSON.parse(decodeURIComponent(options.item));
 	authorInfo.value = author_item;
-	console.log(authorInfo.value);
 	// 获取作者作品
 	getWorks();
 });
+// 销毁页面时
+onUnload(() => {
+	uni.removeStorageSync('authordetail-wallpapers');
+});
+
 // 触底加载更多
 onReachBottom(() => {
 	worksParams.page++;
@@ -166,20 +170,21 @@ onReachBottom(() => {
 });
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
+	const from = 'authordetail-wallpapers';
 	switch (item.type) {
 		case 3:
 			uni.navigateTo({
-				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}`
+				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
 			});
 			break;
 		case 4:
 			uni.navigateTo({
-				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}`
+				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
 			});
 			break;
 		default:
 			uni.navigateTo({
-				url: `/pages/preview/preview?id=${item.id}&index=${index}`
+				url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
 			});
 	}
 };

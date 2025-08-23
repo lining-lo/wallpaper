@@ -10,7 +10,7 @@
 			:src="live.video_url"
 			autoplay="true"
 			loop="ture"
-			:muted="isMuted"
+			:muted="true"
 			:controls="false"
 			:show-fullscreen-btn="false"
 			:show-center-play-btn="false"
@@ -25,15 +25,18 @@
 		</view>
 		<!-- 功能按钮 -->
 		<view class="livedetail-btn">
-			<view class="btn-sound" @click="isMuted = !isMuted">
-				<uni-icons v-if="isMuted" type="sound" color="#fff" size="36"></uni-icons>
-				<uni-icons v-else type="sound-filled" color="#fff" size="36"></uni-icons>
+			<view class="btn-sound" @click="toHandleFeedback(0)">
+				<uni-icons v-if="live.is_liked >= 1" type="heart-filled" size="30" color="#d4381d"></uni-icons>
+				<uni-icons v-else type="heart-filled" size="30" color="#e8e8e8"></uni-icons>
 			</view>
-			<view class="btn-download" @click="handleDownload">
+			<view class="btn-download" :style="{backgroundColor: live.is_collected ? '#03A9F4' : 'rgba(255, 255, 255, 0.6)'}" @click="toHandleFeedback(2)">
 				<uni-icons type="cloud-download" size="30"></uni-icons>
 				<text>壁纸下载</text>
 			</view>
-			<uni-icons type="redo-filled" color="#fff" size="36"></uni-icons>
+			<view class="btn-sound" @click="toHandleFeedback(1)">
+				<uni-icons v-if="live.is_collected >= 1" type="star-filled" size="30" color="#e1ea25"></uni-icons>
+				<uni-icons v-else type="star-filled" size="30" color="#e8e8e8"></uni-icons>
+			</view>
 		</view>
 	</view>
 </template>
@@ -41,24 +44,35 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
-import { updateWallpaperViewCount,handleFeedback } from '../../api/api';
-
-// 是否静音
-const isMuted = ref(true);
+import { updateWallpaperViewCount, handleFeedback } from '../../api/api';
 
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
 };
-// 视频数据
+
+// 壁纸列表
+const wallpapers = ref([]);
+// 当前壁纸id
+const currentWallpaperId = ref();
+// 当前壁纸的索引
+const currentWallpaperIndex = ref();
+// 当前的壁纸信息
 const live = ref({});
+// 看过的壁纸索引
+const readWallpaperIndexList = ref([]);
+const from = ref();
 // 挂载
 onLoad((options) => {
-	// 获取封面信息
-	const preview_item = JSON.parse(decodeURIComponent(options.item));
-	live.value = preview_item;
-	// 更新壁纸查看次数
-	updateWallpaperViewCount({ wallpaper_id: preview_item.id });
+	// 获取当前壁纸来源
+	from.value = decodeURIComponent(options.from);
+	wallpapers.value = JSON.parse(uni.getStorageSync(`${from.value}`));
+	// 获取当前壁纸id
+	currentWallpaperId.value = options.id;
+	// 获取当前的索引
+	currentWallpaperIndex.value = Number(options.index);
+	// 获取当前壁纸信息
+	live.value = wallpapers.value[currentWallpaperIndex.value];
 });
 
 // 用户信息
@@ -79,9 +93,8 @@ const feedbackParams = reactive({
 	type: 1,
 	status: 1
 });
-
-// 下载视频的方法
-const handleDownload = async () => {
+// 点赞|收藏|下载的方法
+const toHandleFeedback = async (type) => {
 	if (!token.value) {
 		return uni.navigateTo({
 			url: `/pages/login/login`
@@ -92,7 +105,80 @@ const handleDownload = async () => {
 	feedbackParams.user_id = userInfo.value.id;
 	feedbackParams.wallpaper_id = live.value.id;
 	feedbackParams.category_id = live.value.category_id;
+	feedbackParams.type = type;
+	feedbackParams.status = 1;
 
+	// 根据反馈类型做出不同处理
+	// 点赞
+	if (type === 0) {
+		if (live.value.is_liked >= 1) {
+			return uni.showToast({
+				title: '您已点过赞了',
+				icon: 'none',
+				duration: 2000
+			});
+		} else {
+			const result = await handleFeedback(feedbackParams);
+			console.log(result);
+			live.value.is_liked += 1;
+			live.value.like_count += 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '点赞成功',
+					icon: 'success',
+					duration: 2000
+				});
+			}, 500);
+		}
+	}
+	// 收藏
+	if (type === 1) {
+		if (live.value.is_collected >= 1) {
+			await handleFeedback(feedbackParams);
+			live.value.is_collected -= 1;
+			live.value.collect_count -= 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '已取消收藏',
+					icon: 'none',
+					duration: 2000
+				});
+			}, 1000);
+		} else {
+			await handleFeedback(feedbackParams);
+			live.value.is_collected += 1;
+			live.value.collect_count += 1;
+			setTimeout(() => {
+				uni.showToast({
+					title: '收藏成功',
+					icon: 'success',
+					duration: 2000
+				});
+			}, 1000);
+		}
+	}
+	// 下载
+	if (type === 2) {
+		handleDownload();
+	}
+	// 同步更新缓存
+	updateWallpaperCache();
+	console.log('current', live.value);
+};
+// 同步更新壁纸列表缓存
+const updateWallpaperCache = () => {
+	if (wallpapers.value && wallpapers.value.length > currentWallpaperIndex.value) {
+		// 直接用当前最新的 live 覆盖数组中的旧数据
+		wallpapers.value[currentWallpaperIndex.value] = {
+			...wallpapers.value[currentWallpaperIndex.value], // 保留原始数据结构（避免丢失未修改的字段）
+			...live.value // 用最新的 live 覆盖所有字段
+		};
+	}
+	// 重新保存到缓存
+	uni.setStorageSync(from.value, JSON.stringify(wallpapers.value));
+};
+// 下载视频的方法
+const handleDownload = async () => {
 	// 1. 下载视频到本地临时路径
 	uni.downloadFile({
 		url: live.value.video_url, // 视频 URL

@@ -56,7 +56,7 @@
 
 <script setup>
 import { selectWallpaperBySearch } from '../../api/api';
-import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
 const styleData = ref({ backgroundColor: '#141414' });
@@ -70,28 +70,10 @@ const goBack = () => {
 const userInfo = ref({});
 // token信息
 const token = ref();
-// 定义首次加载标记
-const isFirstLoad = ref(true);
-
 onShow(() => {
-	// 每次页面显示时，将滚动位置重置到顶部
-	uni.pageScrollTo({
-		scrollTop: 0,
-		duration: 0
-	});
-
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
-
-	// 仅在非首次显示时执行逻辑
-	if (!isFirstLoad.value) {
-		// 重置并重新请求数据
-		searchListParams.page = 1;
-		searchList.value = [];
-		isEnd.value = false;
-		getSearchList();
-	}
 });
 
 // 排序列表
@@ -145,8 +127,7 @@ const getSearchList = async () => {
 
 			// 合并新数据
 			searchList.value = [...searchList.value, ...newItems];
-			console.log(searchList.value);
-			uni.setStorageSync('wallpapers', JSON.stringify(searchList.value));
+			uni.setStorageSync('searchdetail-wallpapers', JSON.stringify(searchList.value));
 
 			// 判断是否到底（基于过滤后的新数据）
 			if (newItems.length === 0) {
@@ -163,7 +144,6 @@ const getSearchList = async () => {
 };
 // 切换榜单
 const changeType = (type) => {
-	console.log(countInfo.value);
 	if (searchListParams.type === type) return; // 类型未变化则直接返回
 	// 重置状态
 	searchList.value = [];
@@ -203,8 +183,9 @@ onReachBottom(() => {
 
 // 跳转到壁纸查看界面
 const toSearchList = (item) => {
+	const from = 'searchdetail-wallpapers';
 	uni.navigateTo({
-		url: `/pages/shareList/shareList?id=${item.id}`
+		url: `/pages/shareList/shareList?id=${item.id}&from=${encodeURIComponent(from)}`
 	});
 };
 
@@ -212,11 +193,10 @@ const toSearchList = (item) => {
 onLoad((options) => {
 	searchListParams.keyword = decodeURIComponent(options.keyword);
 	getSearchList();
-
-	// 延迟标记非首次加载
-	nextTick(() => {
-		isFirstLoad.value = false;
-	});
+});
+// 销毁页面时
+onUnload(() => {
+	uni.removeStorageSync('searchdetail-wallpapers');
 });
 </script>
 
@@ -246,7 +226,7 @@ onLoad((options) => {
 	/* 榜单类型 */
 	.rank-type {
 		position: fixed;
-		top: 92px;
+		top: 80px;
 		z-index: 2;
 		left: 0;
 		width: 100%;
