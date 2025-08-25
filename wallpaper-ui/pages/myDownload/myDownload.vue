@@ -1,80 +1,169 @@
 <template>
-	<view class="mydownload">
+	<view class="share">
 		<!-- 头部导航 -->
-		<view class="mydownload-navbar">
+		<view class="mycollection-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
-			<text>下载记录</text>
-			<view style="width: 100rpx"></view>
+			<text>我的下载</text>
+			<view style="width: 20px"></view>
 		</view>
-		<!-- 瀑布流列表 -->
-		<view class="mydownload-waterfall">
-			<!-- 循环渲染列表项 -->
-			<navigator url="/pages/mydownloadList/mydownloadList" class="waterfall-item" v-for="(item, index) in downloadWallpapers" :key="index">
-				<!-- 主图片（宽度固定，高度自适应） -->
-				<image :src="item.url" mode="widthFix" lazy-load class="item-img"></image>
-				<!-- 图片类型 -->
-				<view class="item-type">
-					<text>手机壁纸</text>
-				</view>
-			</navigator>
+		<!-- 加载提示 -->
+		<view class="loading" v-if="isLoading">加载中...</view>
+		<view class="waterfall-container">
+			<up-waterfall v-model="shareList" ref="uWaterfallRef" columns="2">
+				<template v-slot:column="{ colList, colIndex }">
+					<view @click="toShareList(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
+						<image :src="item.url" class="main-img" mode="widthFix" lazy-load></image>
+						<!-- 标题（单行省略） -->
+						<view class="item-title">{{ item.title }}</view>
+						<!-- 底部信息（用户+点赞） -->
+						<view class="item-footer">
+							<view class="user-info">
+								<image :src="item.user_avatar" mode="aspectFill" class="avatar"></image>
+								<text class="username">{{ item.user_name }}</text>
+							</view>
+							<view class="like-info">
+								<text class="like-icon">❤</text>
+								<text class="like-count">{{ item.like_count }}</text>
+							</view>
+						</view>
+					</view>
+				</template>
+			</up-waterfall>
+
+			<!-- 到底提示 -->
+			<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
+import { getRandomID } from '../../utils/customize';
+import navbar from '../../components/navbar.vue';
 import { selectUserWallpapers } from '../../api/api';
-import { onLoad, onShow } from '@dcloudio/uni-app';
-import { reactive, ref } from 'vue';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
+import { nextTick, reactive, ref } from 'vue';
 
+const styleData = ref({ backgroundColor: '#141414' });
 // 返回上一页
 const goBack = () => {
 	uni.navigateBack();
 };
 
-// 下载壁纸数据
-const downloadWallpapers = ref([]);
-// 下载壁纸参数
-const downloadParams = reactive({
-	user_id: '',
-	type: 2,
-	page: 1,
-	pagesize: 20
-});
-// 获取下载壁纸数据
-const getDownloadWallpapers = async()=>{
-	downloadParams.user_id = userInfo.value.id
-	const result = await selectUserWallpapers(downloadParams)
-	downloadWallpapers.value = result
-}
-
 // 用户信息
-const userInfo = ref();
+const userInfo = ref({});
 // token信息
 const token = ref();
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
-	
-	// 获取下载的壁纸数据
-	getDownloadWallpapers()
 });
 
+// 排序列表
+const shareList = ref([]);
+// 是否加载全部
+const isEnd = ref(false);
+// 加载状态控制
+const isLoading = ref(false);
 
+// 获取排序列表参数
+const shareListParams = reactive({
+	user_id: '',
+	type: 2,
+	page: 1,
+	pagesize: 20
+});
+
+// 获取排序列表方法
+const getShareList = async () => {
+	// 防止重复请求和无效请求
+	if (!isEnd.value && !isLoading.value) {
+		isLoading.value = true; // 锁定加载状态
+
+		try {
+			// 从本地存储重新读取一次，确保使用最新值
+			userInfo.value = uni.getStorageSync('userInfo');
+			shareListParams.user_id = userInfo.value.id || '';
+
+			const result = await selectUserWallpapers(shareListParams);
+
+			// 处理数据
+			const processedResult = result.map((item) => {
+				// 安全解析 labels
+				try {
+					const labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+					item.labels = labels;
+					item.title = labels.join('·');
+				} catch (err) {
+					console.error('解析 labels 失败:', err);
+					item.labels = [];
+				}
+				return item;
+			});
+
+			// 核心：数据去重 - 过滤掉已存在的项目
+			const newItems = processedResult.filter((newItem) => !shareList.value.some((existItem) => existItem.id === newItem.id));
+
+			// 合并新数据
+			shareList.value = [...shareList.value, ...newItems];
+			uni.setStorageSync(fromPage.value, JSON.stringify(shareList.value));
+
+			// 判断是否到底（基于过滤后的新数据）
+			if (newItems.length === 0) {
+				isEnd.value = true;
+			}
+		} catch (error) {
+			console.error('获取数据失败:', error);
+			// 失败时回退页码，方便重试
+			shareListParams.page--;
+		} finally {
+			isLoading.value = false; // 解锁加载状态
+		}
+	}
+};
+
+// 触底加载更多数据
+onReachBottom(() => {
+	// 只有不在加载中且未到底时才加载更多
+	if (!isLoading.value && !isEnd.value) {
+		shareListParams.page++;
+		getShareList();
+	}
+});
+
+// 跳转到壁纸查看界面
+const toShareList = (item) => {
+	uni.navigateTo({
+		url: `/pages/shareList/shareList?id=${item.id}&from=${encodeURIComponent(fromPage.value)}`
+	});
+};
+
+// 页面唯一标识
+const fromPage = ref('')
+// 挂载
+onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'mydownload-' + getRandomID()
+	
+	getShareList();
+});
+// 销毁页面时
+onUnload(() => {
+	uni.removeStorageSync(fromPage.value);
+});
 </script>
 
 <style lang="scss">
-.mydownload {
-	margin-top: 180rpx; /* 适配navbar高度 */
+.share {
+	margin-top: 192rpx;
 	width: 100%;
 	min-height: 100vh;
 	background-color: #141414;
 	padding: 10rpx;
-	box-sizing: border-box; /* 防止padding导致宽度溢出 */
-	overflow-x: hidden; /* 隐藏横向滚动条 */
-
+	box-sizing: border-box;
+	overflow-x: hidden;
 	/* 头部导航栏 */
-	.mydownload-navbar {
+	.mycollection-navbar {
 		width: 100%;
 		height: 180rpx;
 		background-color: #141414;
@@ -87,42 +176,85 @@ onShow(() => {
 		align-items: flex-end;
 		justify-content: space-between;
 	}
-
-	/* 瀑布流容器：核心样式 */
-	.mydownload-waterfall {
-		column-count: 2; /* 固定2列 */
-		column-gap: 10rpx; /* 列间距 */
+	/* 加载提示样式 */
+	.loading {
+		color: #fff;
+		text-align: center;
+		padding: 20rpx 0;
+		font-size: 14px;
+	}
+	/* 瀑布流容器 */
+	.waterfall-container {
+		width: 100%;
 		/* 瀑布流子项 */
 		.waterfall-item {
-			position: relative;
-			break-inside: avoid; /* 防止内容被分割 */
-			-webkit-break-inside: avoid; /* 兼容小程序 */
-			margin-bottom: 10rpx; /* 子项底部间距 */
-			border-radius: 20rpx;
-			background-color: #262a50;
+			break-inside: avoid;
+			-webkit-break-inside: avoid;
+			margin-bottom: 10rpx;
+			border-radius: 10rpx;
+			background-color: #23232b;
 			box-shadow: 0 1px 20px -6px rgba(0, 0, 0, 0.5);
-			overflow: hidden; /* 裁剪超出圆角的内容 */
-			/* 主图片样式 */
-			.item-img {
+			overflow: hidden;
+			.main-img {
 				width: 100%;
-				max-height: 620rpx;
-				display: block; /* 消除图片底部默认间距 */
 			}
-			/* 图片类型 */
-			.item-type {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 170rpx;
-				height: 50rpx;
-				background-color: #03a9f4;
+			/* 标题样式 */
+			.item-title {
+				font-size: 13px;
+				color: #fff;
+				padding: 20rpx;
+				font-weight: 600;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			/* 底部信息区 */
+			.item-footer {
+				width: 100%;
 				display: flex;
+				justify-content: space-between;
 				align-items: center;
-				justify-content: center;
-				border-radius: 20rpx 0 20rpx 0;
-				font-size: 14px;
+				padding: 0 20rpx 20rpx;
+				box-sizing: border-box;
+				/* 用户信息 */
+				.user-info {
+					display: flex;
+					align-items: center;
+					.avatar {
+						width: 40rpx;
+						height: 40rpx;
+						border-radius: 50%;
+						display: block;
+					}
+					.username {
+						color: #fff;
+						font-size: 12px;
+						margin-left: 8rpx;
+					}
+				}
+				/* 点赞信息 */
+				.like-info {
+					display: flex;
+					align-items: center;
+					.like-icon {
+						color: #ff4d4f;
+						font-size: 14px;
+					}
+					.like-count {
+						color: #fff;
+						font-size: 12px;
+						margin-left: 8rpx;
+					}
+				}
 			}
 		}
+	}
+	/* 到底提示样式 */
+	.end-tip {
+		color: #888;
+		text-align: center;
+		padding: 30rpx 0;
+		font-size: 14px;
 	}
 }
 </style>

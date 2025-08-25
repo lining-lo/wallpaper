@@ -4,7 +4,7 @@
 		<view class="searchdetail-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>{{ searchListParams.keyword }}</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 榜单类型 -->
 		<view class="rank-type">
@@ -55,8 +55,9 @@
 </template>
 
 <script setup>
+import { getRandomID } from '../../utils/customize';
 import { selectWallpaperBySearch } from '../../api/api';
-import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
 const styleData = ref({ backgroundColor: '#141414' });
@@ -127,7 +128,7 @@ const getSearchList = async () => {
 
 			// 合并新数据
 			searchList.value = [...searchList.value, ...newItems];
-			uni.setStorageSync('searchdetail-wallpapers', JSON.stringify(searchList.value));
+			uni.setStorageSync(fromPage.value, JSON.stringify(searchList.value));
 
 			// 判断是否到底（基于过滤后的新数据）
 			if (newItems.length === 0) {
@@ -183,20 +184,24 @@ onReachBottom(() => {
 
 // 跳转到壁纸查看界面
 const toSearchList = (item) => {
-	const from = 'searchdetail-wallpapers';
 	uni.navigateTo({
-		url: `/pages/shareList/shareList?id=${item.id}&from=${encodeURIComponent(from)}`
+		url: `/pages/shareList/shareList?id=${item.id}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
 
-// 页面加载时初始化
+// 页面唯一标识
+const fromPage = ref('');
+// 挂载
 onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'searchdetail-' + getRandomID();
+
 	searchListParams.keyword = decodeURIComponent(options.keyword);
 	getSearchList();
 });
 // 销毁页面时
 onUnload(() => {
-	uni.removeStorageSync('searchdetail-wallpapers');
+	uni.removeStorageSync(fromPage.value);
 });
 </script>
 
@@ -206,7 +211,7 @@ onUnload(() => {
 	min-height: 100vh;
 	background-color: #141414;
 	padding: 10rpx;
-	padding-top: 310rpx;
+	padding-top: 280rpx;
 	box-sizing: border-box;
 	overflow-x: hidden;
 	/* 头部导航栏 */
@@ -215,7 +220,7 @@ onUnload(() => {
 		height: 180rpx;
 		background-color: #141414;
 		position: fixed;
-		z-index: 1;
+		z-index: 4;
 		top: 0;
 		left: 0;
 		padding: 30rpx;

@@ -4,7 +4,7 @@
 		<view class="albumdetail-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>壁纸专辑</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 专辑封面 -->
 		<view class="albumdetail-cover">
@@ -30,6 +30,7 @@
 </template>
 
 <script setup>
+	import { getRandomID } from '../../utils/customize';
 import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId } from '../../api/api';
@@ -86,15 +87,20 @@ const getAlbumList = async () => {
 		});
 		// 存入数据
 		albumList.value = [...albumList.value, ...result];
-		uni.setStorageSync('albumdetail-wallpapers', JSON.stringify(albumList.value));
+		uni.setStorageSync(fromPage.value, JSON.stringify(albumList.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
 		}
 	}
 };
+// 页面唯一标识
+const fromPage = ref('')
 // 挂载
 onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'albumdetail-' + getRandomID()
+	
 	// 获取封面信息
 	const category_item = JSON.parse(decodeURIComponent(options.item));
 	coverInfo.value = category_item;
@@ -103,7 +109,7 @@ onLoad((options) => {
 });
 // 销毁页面时
 onUnload(() => {
-	uni.removeStorageSync('albumdetail-wallpapers');
+	uni.removeStorageSync(fromPage.value);
 });
 // 触底加载更加专辑数据
 onReachBottom(() => {
@@ -113,9 +119,8 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
-	const from = 'albumdetail-wallpapers';
 	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
 </script>

@@ -19,14 +19,14 @@
 				<image src="/static/images/logo.png" mode="aspectFill"></image>
 			</view>
 			<view class="logo-integration">
-				<view class="works integration">
+				<view class="works integration" @click="toUserDetail">
 					<text class="title">我的作品</text>
-					<text class="count">12</text>
+					<text class="count">{{ myInfo ? myInfo.total_works : 0 }}</text>
 				</view>
 				<text class="separate">|</text>
 				<navigator url="/pages/myCollection/myCollection" class="collection integration">
 					<text class="title">我的收藏</text>
-					<text class="count">4</text>
+					<text class="count">{{ myInfo ? myInfo.total_collections : 0 }}</text>
 				</navigator>
 				<text class="separate">|</text>
 				<view class="energy integration">
@@ -84,6 +84,7 @@
 </template>
 
 <script setup>
+import { selectUserByUserId } from '../../api/api';
 import { getGender } from '../../utils/customize';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
@@ -109,7 +110,35 @@ onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+	if (!myInfo.value) {
+		getMyInfo();
+	}
 });
+
+// 当前信息
+const myInfo = ref();
+// 获取用户信息
+const getMyInfo = async () => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	if (!userInfo.value || userInfo.value.id === '') return;
+	const result = await selectUserByUserId({ user_id: userInfo.value.id });
+	myInfo.value = result[0];
+	console.log(myInfo.value);
+};
+// 跳转到用户详情
+const toUserDetail = () => {
+	if (token.value) {
+		const author_item = JSON.stringify(myInfo.value);
+		uni.navigateTo({
+			url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=0`
+		});
+	} else {
+		uni.navigateTo({
+			url: `/pages/login/login`
+		});
+	}
+};
 </script>
 
 <style lang="scss">

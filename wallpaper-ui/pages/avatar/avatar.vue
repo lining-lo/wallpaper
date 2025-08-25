@@ -4,7 +4,7 @@
 		<view class="avatar-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>头像</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 头像类型 -->
 		<view class="avatar-type">
@@ -40,6 +40,7 @@
 </template>
 
 <script setup>
+import { getRandomID } from '../../utils/customize';
 import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId, selecCategoryPage, selectAllWallpaperByType } from '../../api/api';
@@ -131,15 +132,20 @@ const getAvatarList = async () => {
 		});
 		// 存入数据
 		avatarList.value = [...avatarList.value, ...result];
-		uni.setStorageSync('avatar-wallpapers', JSON.stringify(avatarList.value));
+		uni.setStorageSync(fromPage.value, JSON.stringify(avatarList.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
 		}
 	}
 };
+// 页面唯一标识
+const fromPage = ref('');
 // 挂载
 onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'avatar-' + getRandomID();
+
 	// 获取头像分类
 	getSort();
 	// 获取专辑列表数据
@@ -147,7 +153,7 @@ onLoad((options) => {
 });
 // 销毁页面时
 onUnload(() => {
-	uni.removeStorageSync('avatar-wallpapers');
+	uni.removeStorageSync(fromPage.value);
 });
 
 // 触底加载更加专辑数据
@@ -158,9 +164,8 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toAvatarDetail = (item, index) => {
-	const from = 'avatar-wallpapers';
 	uni.navigateTo({
-		url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+		url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
 </script>
@@ -171,7 +176,7 @@ const toAvatarDetail = (item, index) => {
 	height: 100%;
 	background-color: #141414;
 	padding: 30rpx;
-	padding-top: 320rpx;
+	padding-top: 280rpx;
 	overflow: auto;
 	/* 头部导航栏 */
 	.avatar-navbar {
@@ -179,7 +184,7 @@ const toAvatarDetail = (item, index) => {
 		height: 180rpx;
 		background-color: #141414;
 		position: fixed;
-		z-index: 1;
+		z-index: 4;
 		top: 0;
 		left: 0;
 		padding: 30rpx;

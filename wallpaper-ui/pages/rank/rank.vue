@@ -4,13 +4,13 @@
 		<view class="sortlist-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>排行榜</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 榜单类型 -->
 		<view class="rank-type">
-			<view @click="changeRank(2)" class="title" :class="{selected:rankListParams.type === 2}">热门榜</view>
-			<view @click="changeRank(0)" class="title" :class="{selected:rankListParams.type === 0}">点赞榜</view>
-			<view @click="changeRank(1)" class="title" :class="{selected:rankListParams.type === 1}">收藏榜</view>
+			<view @click="changeRank(2)" class="title" :class="{ selected: rankListParams.type === 2 }">热门榜</view>
+			<view @click="changeRank(0)" class="title" :class="{ selected: rankListParams.type === 0 }">点赞榜</view>
+			<view @click="changeRank(1)" class="title" :class="{ selected: rankListParams.type === 1 }">收藏榜</view>
 		</view>
 		<!-- 榜单列表 -->
 		<view class="recommend-list">
@@ -22,7 +22,8 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
+	import { getRandomID } from '../../utils/customize';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selectWallpaperBySort } from '../../api/api';
 
@@ -72,15 +73,20 @@ const getRankList = async () => {
 		});
 		// 存入数据
 		rankList.value = [...rankList.value, ...result];
-		uni.setStorageSync('rank-wallpapers', JSON.stringify(rankList.value));
+		uni.setStorageSync(fromPage.value, JSON.stringify(rankList.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
 		}
 	}
 };
+// 页面唯一标识
+const fromPage = ref('')
 // 挂载
 onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'rank-' + getRandomID()
+	
 	// 获取封面信息
 	rankListParams.type = Number.parseInt(options.type);
 	// 获取排序列表数据
@@ -88,23 +94,23 @@ onLoad((options) => {
 });
 // 销毁页面时
 onUnload(() => {
-	uni.removeStorageSync('rank-wallpapers');
+	uni.removeStorageSync(fromPage.value);
 });
 
 // 切换榜单
 const changeRank = (type) => {
-  if (rankListParams.type !== type) {
-    // 1. 重置列表数据（清空旧榜单数据）
-    rankList.value = [];
-    // 2. 重置分页参数（从第1页开始加载新榜单）
-    rankListParams.page = 1;
-    // 3. 重置到底状态（允许加载新数据）
-    isEnd.value = false;
-    // 4. 更新排序类型
-    rankListParams.type = type;
-    // 5. 重新请求新榜单数据
-    getRankList();
-  }
+	if (rankListParams.type !== type) {
+		// 1. 重置列表数据（清空旧榜单数据）
+		rankList.value = [];
+		// 2. 重置分页参数（从第1页开始加载新榜单）
+		rankListParams.page = 1;
+		// 3. 重置到底状态（允许加载新数据）
+		isEnd.value = false;
+		// 4. 更新排序类型
+		rankListParams.type = type;
+		// 5. 重新请求新榜单数据
+		getRankList();
+	}
 };
 
 // 触底加载更加排序数据
@@ -115,9 +121,8 @@ onReachBottom(() => {
 
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
-	const from = 'rank-wallpapers';
 	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
 </script>
@@ -127,7 +132,7 @@ const toPreview = (item, index) => {
 	width: 100%;
 	min-height: 100vh;
 	padding: 30rpx;
-	padding-top: 320rpx;
+	padding-top: 280rpx;
 	position: relative;
 	background-color: #141414;
 	overflow: auto;
@@ -137,7 +142,7 @@ const toPreview = (item, index) => {
 		height: 180rpx;
 		background-color: #141414;
 		position: fixed;
-		z-index: 1;
+		z-index: 4;
 		top: 0;
 		left: 0;
 		padding: 30rpx;
@@ -148,7 +153,7 @@ const toPreview = (item, index) => {
 	/* 榜单类型 */
 	.rank-type {
 		position: fixed;
-		top: 92px;
+		top: 80px;
 		z-index: 2;
 		left: 0;
 		width: 100%;

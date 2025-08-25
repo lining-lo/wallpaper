@@ -4,11 +4,11 @@
 		<view class="live-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>动态壁纸</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 分享列表 -->
 		<view class="live-list">
-			<view @click="toLiveDetail(item,index)" class="list-item" v-for="(item, index) in liveList" :key="index">
+			<view @click="toLiveDetail(item, index)" class="list-item" v-for="(item, index) in liveList" :key="index">
 				<view class="item-img">
 					<image :src="item.url" mode="aspectFill"></image>
 				</view>
@@ -21,7 +21,7 @@
 							<text style="margin-left: 10rpx; color: #fff">{{ item.download_count }}</text>
 						</view>
 						<view class="row">
-							<uni-icons  v-if="item.is_liked >= 1"  type="heart-filled" color="#ed1c24" size="16"></uni-icons>
+							<uni-icons v-if="item.is_liked >= 1" type="heart-filled" color="#ed1c24" size="16"></uni-icons>
 							<uni-icons v-else type="heart" color="#ed1c24" size="16"></uni-icons>
 							<text style="margin-left: 10rpx; color: #fff">{{ item.like_count }}</text>
 						</view>
@@ -38,7 +38,8 @@
 </template>
 
 <script setup>
-import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
+import { getRandomID } from '../../utils/customize';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId } from '../../api/api';
 
@@ -51,10 +52,16 @@ const goBack = () => {
 const userInfo = ref({});
 // token信息
 const token = ref();
+// 定义首次加载标记
+const isFirstLoad = ref(true);
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	if (!isFirstLoad.value) {
+		liveList.value = JSON.parse(uni.getStorageSync(fromPage.value));
+	}
 });
 
 // 专辑列表
@@ -93,21 +100,30 @@ const getliveList = async () => {
 		});
 		// 存入数据
 		liveList.value = [...liveList.value, ...result];
-		uni.setStorageSync('live-wallpapers', JSON.stringify(liveList.value));
+		uni.setStorageSync(fromPage.value, JSON.stringify(liveList.value));
 		// 是否到底
 		if (result.length === 0) {
 			isEnd.value = true;
 		}
 	}
 };
+// 页面唯一标识
+const fromPage = ref('');
 // 挂载
 onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'live-' + getRandomID();
+
 	// 获取专辑列表数据
 	getliveList();
+	// 延迟标记非首次，确保在 onShow 之后执行
+	nextTick(() => {
+		isFirstLoad.value = false;
+	});
 });
 // 销毁页面时
 onUnload(() => {
-	uni.removeStorageSync('live-wallpapers');
+	uni.removeStorageSync(fromPage.value);
 });
 // 触底加载更加专辑数据
 onReachBottom(() => {
@@ -117,10 +133,9 @@ onReachBottom(() => {
 
 // 跳转到详情页
 const toLiveDetail = (item, index) => {
-	const from = 'live-wallpapers';
 	const preview_item = JSON.stringify(item);
 	uni.navigateTo({
-		url: `/pages/liveDetail/liveDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+		url: `/pages/liveDetail/liveDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
 </script>

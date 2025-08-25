@@ -29,7 +29,7 @@
 				<uni-icons v-if="live.is_liked >= 1" type="heart-filled" size="30" color="#d4381d"></uni-icons>
 				<uni-icons v-else type="heart-filled" size="30" color="#e8e8e8"></uni-icons>
 			</view>
-			<view class="btn-download" :style="{backgroundColor: live.is_collected ? '#03A9F4' : 'rgba(255, 255, 255, 0.6)'}" @click="toHandleFeedback(2)">
+			<view class="btn-download" :style="{backgroundColor: live.is_downloaded ? '#03A9F4' : 'rgba(255, 255, 255, 0.6)'}" @click="toHandleFeedback(2)">
 				<uni-icons type="cloud-download" size="30"></uni-icons>
 				<text>壁纸下载</text>
 			</view>

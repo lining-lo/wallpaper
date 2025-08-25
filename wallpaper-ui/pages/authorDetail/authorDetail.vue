@@ -4,7 +4,7 @@
 		<view class="authordetail-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>用户详情</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 账号信息 -->
 		<view class="authordetail-info">
@@ -63,9 +63,10 @@
 </template>
 
 <script setup>
+import { getRandomID } from '../../utils/customize';
 import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { getGender } from '../../utils/customize';
-import { selecWallpaperPageByUserId } from '../../api/api';
+import { selecWallpaperPageByUserId, selectUserByUserId } from '../../api/api';
 import { reactive, ref } from 'vue';
 
 // 返回上一页
@@ -94,7 +95,8 @@ const worksParams = reactive({
 	user_id: '',
 	status: 1,
 	page: 1,
-	pagesize: 9
+	pagesize: 9,
+	need: 0
 });
 // 是否加载全部
 const isEnd = ref(false);
@@ -106,6 +108,7 @@ const changeWorks = (type) => {
 	worksParams.page = 1;
 	isEnd.value = false;
 	worksParams.type = type;
+	worksParams.need = 0;
 	// 根据类型判断是否需要请求数据
 	let workCount = 0;
 	switch (type) {
@@ -131,9 +134,14 @@ const getWorks = async (type) => {
 		// 从本地存储重新读取一次，避免依赖onShow的时机
 		userInfo.value = uni.getStorageSync('userInfo');
 		worksParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
-		// console.log(worksParams);
 		const result = await selecWallpaperPageByUserId(worksParams);
-		result.map((item) => {
+		const myInfo = result.myInfo;
+		if (myInfo !== null && myInfo !== undefined) {
+			authorInfo.value = myInfo;
+			console.log('我查了两次', myInfo);
+		}
+		const wallpapersResult = result.result;
+		wallpapersResult.map((item) => {
 			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
 			if (item.is_collected >= 1) {
 				item.isFristCollection = false; // 初始化是否首次收藏标记
@@ -142,25 +150,33 @@ const getWorks = async (type) => {
 			}
 			return item;
 		});
-		works.value = [...works.value, ...result];
-		uni.setStorageSync('authordetail-wallpapers', JSON.stringify(works.value));
+		works.value = [...works.value, ...wallpapersResult];
+		uni.setStorageSync(fromPage.value, JSON.stringify(works.value));
 		// 是否到底
-		if (result.length === 0) {
+		if (wallpapersResult.length === 0) {
 			isEnd.value = true;
 		}
 	}
 };
+// 页面唯一标识
+const fromPage = ref('')
 // 挂载
 onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'authordetail-' + getRandomID()
+	
 	// 获取作者信息
 	const author_item = JSON.parse(decodeURIComponent(options.item));
 	authorInfo.value = author_item;
+	const need = parseInt(options.need);
+	worksParams.need = need;
+
 	// 获取作者作品
 	getWorks();
 });
 // 销毁页面时
 onUnload(() => {
-	uni.removeStorageSync('authordetail-wallpapers');
+	uni.removeStorageSync(fromPage.value);
 });
 
 // 触底加载更多
@@ -170,21 +186,20 @@ onReachBottom(() => {
 });
 // 跳转到壁纸预览界面
 const toPreview = (item, index) => {
-	const from = 'authordetail-wallpapers';
 	switch (item.type) {
 		case 3:
 			uni.navigateTo({
-				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 			});
 			break;
 		case 4:
 			uni.navigateTo({
-				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 			});
 			break;
 		default:
 			uni.navigateTo({
-				url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+				url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
 			});
 	}
 };

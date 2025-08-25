@@ -61,6 +61,12 @@ export const login = (data) => {
 export const updateUser = (data) => {
 	return http('/updateUser', data)
 }
+// 根据用户id查找用户信息
+export const selectUserByUserId = (data) => {
+	return http('/selectUserByUserId', data)
+}
+
+
 
 /**
  * 文件上传相关

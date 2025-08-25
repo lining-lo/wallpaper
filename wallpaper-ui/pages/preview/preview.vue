@@ -15,15 +15,15 @@
 			<view class="info-current">
 				<text v-if="wallpapers">{{ currentWallpaperIndex + 1 }}&nbsp;/&nbsp;{{ wallpapers.length }}</text>
 			</view>
-			<view class="info-user">
+			<view class="info-user" @click.stop="toUserDetail">
 				<view class="inner">
 					<text>{{ currentWallpaper.user_name }}</text>
 					<image :src="currentWallpaper.user_avatar" mode="aspectFill"></image>
 				</view>
 			</view>
 			<view class="info-time">
-				<text class="time">18:23</text>
-				<text class="date">7月20日</text>
+				<text class="time">{{ time.time }}</text>
+				<text class="date">{{ time.date }}</text>
 			</view>
 		</view>
 		<!-- 底部功能按钮 -->
@@ -86,7 +86,8 @@
 </template>
 
 <script setup>
-import { handleFeedback } from '../../api/api';
+import { getDateTime } from '../../utils/customize';
+import { handleFeedback, selectUserByUserId } from '../../api/api';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
@@ -169,10 +170,15 @@ const changeWallpaper = (event) => {
 const userInfo = ref();
 // token信息
 const token = ref();
+// 当前时间
+const time = ref({});
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	// 获取当前时间
+	time.value = getDateTime();
 });
 
 // 点赞|收藏|下载的参数
@@ -317,6 +323,14 @@ const handleDownload = async () => {
 				icon: 'none'
 			});
 		}
+	});
+};
+
+// 跳转到用户详情
+const toUserDetail = async () => {
+	const author_item = JSON.stringify({ id: currentWallpaper.value.user_id });
+	uni.navigateTo({
+		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=1`
 	});
 };
 </script>
@@ -475,7 +489,7 @@ const handleDownload = async () => {
 							flex-wrap: wrap;
 							.tag {
 								border: 1px solid #fff;
-								font-size: 22rpx;
+								font-size: 24rpx;
 								padding: 10rpx 30rpx;
 								border-radius: 40rpx;
 								line-height: 1em;

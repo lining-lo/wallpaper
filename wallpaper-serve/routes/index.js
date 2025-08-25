@@ -62,6 +62,10 @@ module.exports = function (app) {
     app.post('/updateUser', (request, response) => {
         controller.updateUser(request, response)
     })
+    // 根据用户id查找用户信息
+    app.post('/selectUserByUserId', (request, response) => {
+        controller.seletUserByUserId(request, response)
+    })
 
 
     /**

@@ -722,6 +722,46 @@ module.exports = {
         const sql = `UPDATE user SET name = ?, avatar_url = ?, gender = ?, motto = ? WHERE id = ?;`
         return query(sql, values)
     },
+    // 根据用户id查找用户信息
+    selectUserByUserId: async (values) => {
+        const sql = `
+            SELECT 
+            u.id,
+            u.name,
+            u.avatar_url,
+            u.gender,
+            u.motto,
+            u.createdate,
+            -- 作品总数（仅有效作品）
+            COUNT(DISTINCT CASE WHEN w.is_delete = 0 AND w.status = 1 THEN w.id END) AS total_works,
+            -- 专辑+普通作品数量（type=0或1，有效）
+            COUNT(DISTINCT CASE WHEN w.type IN (0,1) AND w.is_delete = 0 AND w.status = 1 THEN w.id END) AS normal_album_works,
+            -- 头像作品数量（type=4，有效）
+            COUNT(DISTINCT CASE WHEN w.type = 4 AND w.is_delete = 0 AND w.status = 1 THEN w.id END) AS avatar_works,
+            -- 平板作品数量（type=3，有效）
+            COUNT(DISTINCT CASE WHEN w.type = 3 AND w.is_delete = 0 AND w.status = 1 THEN w.id END) AS tablet_works,
+            -- 总获赞/下载数（包含已删除作品）
+            (SELECT COUNT(f.id) FROM feedback f JOIN wallpaper w ON f.wallpaper_id = w.id 
+            WHERE w.user_id = u.id AND f.type = 0 AND f.status = 1) AS total_likes,
+            (SELECT COUNT(f.id) FROM feedback f JOIN wallpaper w ON f.wallpaper_id = w.id 
+            WHERE w.user_id = u.id AND f.type = 2 AND f.status = 1) AS total_downloads,
+            -- 用户收藏的壁纸数量（用户作为收藏者）
+            COUNT(DISTINCT CASE WHEN f_collect.type = 1 AND f_collect.status = 1 THEN f_collect.wallpaper_id END) AS total_collections
+            FROM 
+            user u
+            -- 左连接用户的作品表（统计作品相关数据）
+            LEFT JOIN wallpaper w ON u.id = w.user_id
+            -- 左连接用户作品的反馈表（统计获赞/下载）
+            LEFT JOIN feedback f ON w.id = f.wallpaper_id
+            -- 额外左连接反馈表（统计用户的收藏行为，别名f_collect区分）
+            LEFT JOIN feedback f_collect ON u.id = f_collect.user_id  -- 这里用户是收藏者（feedback.user_id）
+            WHERE 
+            u.id = ?  -- 际用户ID
+            GROUP BY 
+            u.id, u.name, u.avatar_url, u.gender, u.motto, u.createdate;
+        `
+        return query(sql, values)
+    },
 
     /**
      * 反馈相关（点赞|收藏|下载）

@@ -4,7 +4,7 @@
 		<view class="avatar-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>壁纸分类</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 头像类型 -->
 		<view class="avatar-type">
@@ -88,7 +88,7 @@ const getSort = async () => {
 };
 
 // 当前类型下标
-const currentIndex = ref(0);
+const currentIndex = ref(-1);
 // 切换类型
 const changeType = (item, index) => {
 	if (currentIndex.value === index) return; // 类型未变化则直接返回
@@ -176,7 +176,7 @@ const toAvatarDetail = (item, index) => {
 	height: 100%;
 	background-color: #141414;
 	padding: 30rpx;
-	padding-top: 320rpx;
+	padding-top: 280rpx;
 	overflow: auto;
 	/* 头部导航栏 */
 	.avatar-navbar {
@@ -184,7 +184,7 @@ const toAvatarDetail = (item, index) => {
 		height: 180rpx;
 		background-color: #141414;
 		position: fixed;
-		z-index: 1;
+		z-index: 4;
 		top: 0;
 		left: 0;
 		padding: 30rpx;

@@ -14,7 +14,7 @@
 				<view class="item-info">
 					<view class="info-left">
 						<view class="avator">
-							<image :src="item.avatar_url" mode="aspectFill"></image>
+							<image :src="item.avatar_url" lazy-load mode="aspectFill"></image>
 						</view>
 						<view class="name">{{ item.name }}</view>
 					</view>
@@ -22,13 +22,13 @@
 				</view>
 				<view class="item-works">
 					<view class="works-item">
-						<image :src="item.work_url_1" mode="aspectFill"></image>
+						<image :src="item.work_url_1" lazy-load mode="aspectFill"></image>
 					</view>
 					<view class="works-item">
-						<image :src="item.work_url_2" mode="aspectFill"></image>
+						<image :src="item.work_url_2" lazy-load mode="aspectFill"></image>
 					</view>
 					<view class="works-item">
-						<image :src="item.work_url_3" mode="aspectFill"></image>
+						<image :src="item.work_url_3" lazy-load mode="aspectFill"></image>
 					</view>
 				</view>
 			</view>

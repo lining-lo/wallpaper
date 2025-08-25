@@ -20,34 +20,34 @@
 		<view class="sort-title">🪁壁纸分类</view>
 		<!-- 类型分类 -->
 		<view class="sort-tyoe">
-			<view class="type-live type" style="background-color: #203440">
-				<navigator url="/pages/live/live" class="content">
+			<navigator url="/pages/live/live" class="type-live type" style="background-color: #203440">
+				<view class="content">
 					<view class="title">动态壁纸</view>
 					<view class="english">Live wallpaper</view>
-				</navigator>
+				</view>
 				<image src="/static/images/sort_live.png" mode="aspectFill"></image>
-			</view>
-			<view class="type-live type" style="background-color: #27274c">
-				<navigator url="/pages/album/album" class="content">
+			</navigator>
+			<navigator url="/pages/album/album" class="type-live type" style="background-color: #27274c">
+				<view class="content">
 					<view class="title">专辑</view>
 					<view class="english">Special subject</view>
-				</navigator>
+				</view>
 				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
-			</view>
-			<view class="type-live type" style="background-color: #655636">
-				<navigator url="/pages/tablet/tablet" class="content">
+			</navigator>
+			<navigator url="/pages/tablet/tablet"  class="type-live type" style="background-color: #655636">
+				<view class="content">
 					<view class="title">平板</view>
 					<view class="english">Tablet computer</view>
-				</navigator>
+				</view >
 				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
-			</view>
-			<view class="type-live type" style="background-color: #88383a">
-				<navigator url="/pages/avatar/avatar" class="content">
+			</navigator>
+			<navigator url="/pages/avatar/avatar" class="type-live type" style="background-color: #88383a">
+				<view class="content">
 					<view class="title">头像</view>
 					<view class="english">Head sculpture</view>
-				</navigator>
+				</view>
 				<image src="/static/images/sort_avator.png" mode="aspectFill"></image>
-			</view>
+			</navigator>
 		</view>
 		<!-- 标题 -->
 		<view class="sort-title">🎖️分类精选</view>

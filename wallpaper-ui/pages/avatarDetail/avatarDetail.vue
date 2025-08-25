@@ -22,11 +22,11 @@
 		<!-- 壁纸信息 -->
 		<view class="sharelist-info">
 			<view class="info-labels">
-				<text class="label">{{ ['壁纸', '专辑', '动态', '平板', '头像'][currentWallpaper.type] }}</text>
-				<text class="label" v-for="(label, index2) in currentWallpaper.labels" :key="index2">{{ label }}</text>
+				<text @click="toSort" class="label">{{ ['壁纸', '专辑', '动态', '平板', '头像'][currentWallpaper.type] }}</text>
+				<text @click="toSearch(label)" class="label" v-for="(label, index2) in currentWallpaper.labels" :key="index2">{{ label }}</text>
 			</view>
 			<view class="info-base">
-				<view class="base-avatar base">
+				<view class="base-avatar base" @click="toUserDetail">
 					<image :src="currentWallpaper.user_avatar" mode="aspectFill"></image>
 					<text>{{ currentWallpaper.user_name }}</text>
 				</view>
@@ -279,6 +279,43 @@ const handleDownload = async () => {
 		}
 	});
 };
+
+// 跳转到用户详情
+const toUserDetail = async () => {
+	const author_item = JSON.stringify({ id: currentWallpaper.value.user_id });
+	uni.navigateTo({
+		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=1`
+	});
+};
+
+// 跳转到分类
+const toSort = (type) => {
+	uni.showToast({
+		title: '当前已在该分类',
+		icon: 'none'
+	});
+};
+
+// 前往搜索
+const toSearch = (keyword = '') => {
+	// 1. 获取搜索记录
+	let keywords = uni.getStorageSync('keywords') || [];
+	// 2. 过滤空值（避免存入空字符串）
+	if (!keyword.trim()) return;
+	// 3. 去重并保持数组类型（使用Set去重后转回数组）
+	const newKeywords = [...new Set([keyword, ...keywords])];
+	// 4. 限制历史记录数量（可选，避免无限增长）
+	if (newKeywords.length > 10) {
+		newKeywords.pop(); // 超过10条时删除最后一条
+	}
+	// 5. 更新响应式数据并同步到本地存储
+	keywords = newKeywords;
+	uni.setStorageSync('keywords', newKeywords);
+	// 6. 跳转到搜索详情页
+	uni.navigateTo({
+		url: `/pages/searchDetail/searchDetail?keyword=${encodeURIComponent(keyword)}`
+	});
+};
 </script>
 
 <style lang="scss">
@@ -308,6 +345,7 @@ const handleDownload = async () => {
 		width: 100%;
 		height: 836rpx;
 		background-color: #141414;
+		overflow: hidden;
 		.currenindx {
 			width: 100%;
 			text-align: center;
@@ -359,22 +397,34 @@ const handleDownload = async () => {
 				border: 1px solid;
 			}
 
-			.label:nth-child(1) {
+			.label:nth-child(6n + 1) {
 				color: #109be8;
 				border-color: #109be8;
 			}
-
-			.label:nth-child(2) {
+			/* nth-child(6n+2) 表示第2、8、14...个标签 */
+			.label:nth-child(6n + 2) {
 				color: #9d4d64;
 				border-color: #9d4d64;
 			}
-			.label:nth-child(3) {
+			/* nth-child(6n+3) 表示第3、9、15...个标签 */
+			.label:nth-child(6n + 3) {
 				color: #af8933;
 				border-color: #af8933;
 			}
-			.label:nth-child(4) {
+			/* nth-child(6n+4) 表示第4、10、16...个标签 */
+			.label:nth-child(6n + 4) {
 				color: #8b8bef;
 				border-color: #8b8bef;
+			}
+			/* nth-child(6n+5) 表示第5、11、17...个标签 */
+			.label:nth-child(6n + 5) {
+				color: #33a4af;
+				border-color: #33a4af;
+			}
+			/* nth-child(6n+6) 表示第6、12、18...个标签 */
+			.label:nth-child(6n + 6) {
+				color: #0a7521;
+				border-color: #0a7521;
 			}
 		}
 		.info-base {

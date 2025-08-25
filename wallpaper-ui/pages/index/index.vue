@@ -54,7 +54,7 @@
 		<view class="home-recommend">
 			<view class="recommend-title">
 				<view class="title">优选推荐</view>
-				<view @click="toRank(2)" class="more">More+</view>
+				<view @click="toSortList({ id: '' }, -1)" class="more">More+</view>
 			</view>
 			<!-- 加载提示 -->
 			<view class="loading" v-if="isLoading">加载中...</view>
@@ -114,7 +114,7 @@ const getUserList = async () => {
 const toUserDetail = (item) => {
 	const author_item = JSON.stringify(item);
 	uni.navigateTo({
-		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}`
+		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=0`
 	});
 };
 
