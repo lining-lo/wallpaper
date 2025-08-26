@@ -10,21 +10,21 @@
 	</view>
 </template>
 
-<script setup>
-	
-</script>
+<script setup></script>
 
 <style lang="scss">
 .navbar {
 	width: 100%;
 	height: 192rpx;
-	background-color: #141414;
 	position: fixed;
 	z-index: 10;
 	top: 0;
 	padding: 30rpx 20rpx;
 	display: flex;
 	align-items: flex-end;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(30px);
+	-webkit-backdrop-filter: blur(30px);
 	.navbar-logo {
 		height: 60rpx;
 		width: 240rpx;

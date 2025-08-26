@@ -239,7 +239,7 @@ exports.login = async (request, response) => {
         if (user.length < 1) {
             // 新用户：插入数据库
             const newUser = {
-                id: nanoid(10),
+                id: nanoid(14),
                 openid,
                 name: null,
                 avatar_url: null,

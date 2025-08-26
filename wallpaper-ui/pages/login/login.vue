@@ -108,6 +108,9 @@ onLoad(() => {});
 	padding-top: 200rpx;
 	overflow: auto;
 	position: relative;
+	background-image: url('https://img1.baidu.com/it/u=164719841,4001633826&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084');
+	background-size: cover;
+	background-position: center; 
 	.login-inner {
 		width: 100%;
 		height: 50%;

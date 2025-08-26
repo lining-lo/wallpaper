@@ -5,7 +5,7 @@
 		"custom": {
 			"^u--(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
 			"^up-(.*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue",
-	    "^u-([^-].*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue"
+			"^u-([^-].*)": "@/uni_modules/uview-plus/components/u-$1/u-$1.vue"
 		}
 	},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
@@ -178,58 +178,50 @@
 			}
 		},
 		{
-			"path" : "pages/searchDetail/searchDetail",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/searchDetail/searchDetail",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/subscribe/subscribe",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/subscribe/subscribe",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/agreement/agreement",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/agreement/agreement",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/help/help",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/help/help",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/problem/problem",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/problem/problem",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		},
 		{
-			"path" : "pages/poster/poster",
-			"style" : 
-			{
-				"navigationBarTitleText" : "",
+			"path": "pages/poster/poster",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
 		}
 	],
 	"tabBar": {
-		"color": "#7b7b7f",
-		"selectedColor": "#007aff",
-		"backgroundColor": "#141414",
+		"custom": true,
 		"list": [{
 				"text": "首页",
 				"pagePath": "pages/index/index",

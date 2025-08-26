@@ -64,10 +64,12 @@
 			</view>
 		</view>
 	</view>
+		<tabbar />
 </template>
 
 <script setup>
 import navbar from '../../components/navbar.vue';
+import tabbar from '../../components/tabbar.vue';
 import { selecCategoryPage } from '../../api/api';
 import { onLoad } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';

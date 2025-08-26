@@ -30,12 +30,14 @@
 			<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
 		</view>
 	</view>
+	<tabbar />
 </template>
 
 <script setup>
 import navbar from '../../components/navbar.vue';
+import tabbar from '../../components/tabbar.vue';
 import { selectAllWallpaperByRand } from '../../api/api';
-import { onLoad, onShow, onReachBottom,onUnload } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
 const styleData = ref({ backgroundColor: '#141414' });
@@ -226,6 +228,7 @@ onUnload(() => {
 		color: #888;
 		text-align: center;
 		padding: 30rpx 0;
+		padding-bottom: 200rpx;
 		font-size: 14px;
 	}
 }

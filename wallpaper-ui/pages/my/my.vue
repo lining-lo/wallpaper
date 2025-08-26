@@ -7,11 +7,10 @@
 					<image :src="userInfo ? userInfo.avatar_url : '/static/images/avatar.png'" mode="aspectFill"></image>
 				</view>
 				<view class="avatar-right">
-					<view class="name">{{ userInfo ? userInfo.name || '分享室用户' : '分享室用户' }}</view>
-					<view class="userid">id：{{ userInfo ? userInfo.id : '615615154' }}</view>
+					<view class="name">{{ userInfo ? userInfo.name || '未登录用户' : '未登录用户' }}</view>
+					<view class="userid">ID：{{ userInfo ? userInfo.id : '未知' }}</view>
 				</view>
 			</view>
-			<uni-icons type="gear-filled" size="36" color="#7d6cdd"></uni-icons>
 		</view>
 		<!-- logo信息 -->
 		<view class="my-logo">
@@ -30,7 +29,7 @@
 				</navigator>
 				<text class="separate">|</text>
 				<view class="energy integration">
-					<text class="title">我的积分</text>
+					<text class="title">我的能量</text>
 					<text class="count">0</text>
 				</view>
 			</view>
@@ -81,10 +80,12 @@
 			</navigator>
 		</view>
 	</view>
+	<tabbar />
 </template>
 
 <script setup>
 import { selectUserByUserId } from '../../api/api';
+import tabbar from '../../components/tabbar.vue';
 import { getGender } from '../../utils/customize';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
@@ -145,18 +146,20 @@ const toUserDetail = () => {
 .my {
 	width: 100%;
 	min-height: 100vh;
-	background-color: #141414;
-	padding: 30rpx;
-	padding-top: 200rpx;
+	background-color: #111111;
 	overflow: auto;
 	/* 账号信息 */
 	.my-info {
 		width: 100%;
-		padding: 0 50rpx;
+		height: 400rpx;
+		padding: 0 80rpx;
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-end;
 		margin-bottom: 60rpx;
+		background-image: url('https://img0.baidu.com/it/u=1844358284,619757854&fm=253&fmt=auto&app=138&f=JPEG?w=888&h=500');
+		background-size: cover;
+		background-position: center; 
 		.info-avatar {
 			width: 100%;
 			display: flex;
@@ -200,6 +203,7 @@ const toUserDetail = () => {
 	/* logo信息 */
 	.my-logo {
 		width: 100%;
+		padding: 0 30rpx;
 		margin-bottom: 40rpx;
 		.logo-img {
 			width: 90%;
@@ -243,7 +247,9 @@ const toUserDetail = () => {
 	}
 	/* 底部功能 */
 	.my-footer {
-		width: 100%;
+		    width: 100%;
+		    padding: 0 30rpx;
+		    padding-bottom: 150rpx;
 		.row {
 			width: 100%;
 			height: 101rpx;
