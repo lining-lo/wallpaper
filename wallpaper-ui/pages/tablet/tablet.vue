@@ -36,12 +36,20 @@
 				<image :src="item.url" mode="aspectFill"></image>
 			</view>
 		</view>
+		<!-- 加载提示 -->
+		<view class="loading" v-if="isLoading">加载中...</view>
+		<!-- 到底提示 -->
+		<view class="end-tip" v-if="isEnd && tabletList.length > 0">已经到底啦~</view>
+		<!-- 前往顶部 -->
+		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
+			<image src="/static/images/top.png" mode="aspectFill"></image>
+		</view>
 	</view>
 </template>
 
 <script setup>
 import { getRandomID } from '../../utils/customize';
-import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom, onUnload, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId, selecCategoryPage, selectAllWallpaperByType } from '../../api/api';
 
@@ -103,7 +111,8 @@ const getSort = async () => {
 const tabletList = ref([]);
 // 是否加载全部
 const isEnd = ref(false);
-
+// 加载状态控制
+const isLoading = ref(false);
 // 获取专辑列表参数
 const tabletListParams = reactive({
 	current_userId: userInfo.value.id || '',
@@ -115,37 +124,48 @@ const tabletListParams = reactive({
 });
 // 获取专辑列表方法
 const gettabletList = async () => {
-	if (!isEnd.value) {
-		// 从本地存储重新读取一次，避免依赖onShow的时机
-		userInfo.value = uni.getStorageSync('userInfo');
-		tabletListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
-		const result = currentIndex.value === 0 ? await selectAllWallpaperByType(tabletListParams) : await selecWallpaperPageByCategoryId(tabletListParams);
-		result.map((item) => {
-			// 安全解析 labels，避免格式错误导致崩溃
-			try {
-				item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
-			} catch (err) {
-				console.error('解析 labels 失败:', err);
-				item.labels = []; // 解析失败时用空数组兜底
+	// 防止重复请求和无效请求
+	if (!isEnd.value && !isLoading.value) {
+		isLoading.value = true; // 锁定加载状态
+
+		try {
+			// 从本地存储重新读取一次，避免依赖onShow的时机
+			userInfo.value = uni.getStorageSync('userInfo');
+			tabletListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+			const result = currentIndex.value === 0 ? await selectAllWallpaperByType(tabletListParams) : await selecWallpaperPageByCategoryId(tabletListParams);
+			result.map((item) => {
+				// 安全解析 labels，避免格式错误导致崩溃
+				try {
+					item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
+				} catch (err) {
+					console.error('解析 labels 失败:', err);
+					item.labels = []; // 解析失败时用空数组兜底
+				}
+				return item;
+			});
+			// 存入数据
+			tabletList.value = [...tabletList.value, ...result];
+			uni.setStorageSync(fromPage.value, JSON.stringify(tabletList.value));
+			// 是否到底
+			if (result.length === 0) {
+				isEnd.value = true;
 			}
-			return item;
-		});
-		// 存入数据
-		tabletList.value = [...tabletList.value, ...result];
-		uni.setStorageSync(fromPage.value, JSON.stringify(tabletList.value));
-		// 是否到底
-		if (result.length === 0) {
-			isEnd.value = true;
+		} catch (error) {
+			console.error('获取数据失败:', error);
+			// 失败时回退页码，方便重试
+			tabletListParams.page--;
+		} finally {
+			isLoading.value = false; // 解锁加载状态
 		}
 	}
 };
 // 页面唯一标识
-const fromPage = ref('')
+const fromPage = ref('');
 // 挂载
 onLoad((options) => {
 	// 获取唯一标识
-	fromPage.value = 'tablet-' + getRandomID()
-	
+	fromPage.value = 'tablet-' + getRandomID();
+
 	// 获取头像分类
 	getSort();
 	// 获取专辑列表数据
@@ -158,8 +178,11 @@ onUnload(() => {
 
 // 触底加载更加专辑数据
 onReachBottom(() => {
-	tabletListParams.page++;
-	gettabletList();
+	// 只有不在加载中且未到底时才加载更多
+	if (!isLoading.value && !isEnd.value) {
+		tabletListParams.page++;
+		gettabletList();
+	}
 });
 
 // 跳转到壁纸预览界面
@@ -167,6 +190,28 @@ const toTabletDetail = (item, index) => {
 	const from = 'tablet-wallpapers';
 	uni.navigateTo({
 		url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
+	});
+};
+
+// 存储当前滚动高度（px 单位）
+const currentScrollTop = ref(0);
+// 显示与隐藏图标
+const isShow = ref(false);
+// 实时监听页面滚动，获取滚动高度
+onPageScroll((e) => {
+	// e.scrollTop 即为当前页面滚动高度（px 单位）
+	currentScrollTop.value = e.scrollTop;
+	if (e.scrollTop >= 20) {
+		isShow.value = true;
+	} else {
+		isShow.value = false;
+	}
+});
+// 回到顶部核心方法
+const toTop = () => {
+	uni.pageScrollTo({
+		scrollTop: 0, // 滚动到顶部的距离（必须为 0，代表最顶部）
+		duration: 300 // 滚动动画时长（单位 ms，可选，0 表示无动画）
 	});
 };
 </script>
@@ -225,6 +270,63 @@ const toTabletDetail = (item, index) => {
 				height: 100%;
 				border-radius: 30rpx;
 			}
+		}
+	}
+	/* 加载提示样式 */
+	.loading {
+		color: #fff;
+		text-align: center;
+		padding: 20rpx 0;
+		font-size: 14px;
+	}
+	/* 到底提示样式 */
+	.end-tip {
+		color: #888;
+		text-align: center;
+		padding: 30rpx 0;
+		padding-bottom: 100rpx;
+		font-size: 14px;
+	}
+	/* 前往顶部 */
+	.tools-top {
+		/* 基础定位 */
+		position: fixed;
+		bottom: 260rpx;
+		right: 30rpx; // 最终停靠位置
+		z-index: 999;
+		width: 82rpx;
+		height: 82rpx;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.5);
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		/* 隐藏状态（右侧外部） */
+		transform: translateX(150rpx); // 向右偏移150rpx（超出屏幕）
+		opacity: 0;
+		visibility: hidden; // 不响应点击
+
+		/* 动画过渡 */
+		transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1s ease, visibility 1s ease;
+
+		/* 图标样式 */
+		image {
+			width: 60%;
+			height: 60%;
+		}
+
+		/* 显示状态（从右侧滑入） */
+		&.is-visible {
+			transform: translateX(0); // 回到正常位置
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* 点击反馈 */
+		&:active {
+			transform: translateX(0) scale(0.95);
 		}
 	}
 }

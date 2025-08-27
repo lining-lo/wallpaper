@@ -92,9 +92,9 @@ exports.selecWallpaperPageByUserId = async (request, response) => {
     const data = request.body
     let myInfo = null
     if (data.need === 1) {
-        const result =  await db.selectUserByUserId([data.user_id])
+        const result = await db.selectUserByUserId([data.user_id])
         myInfo = result[0]
-        
+
     }
     if (data.type === 0 || data.type === 1) {
         await db.selecWallpaperPageByUserId([data.current_userId, 0, 1, data.user_id, data.status, (data.page - 1) * data.pagesize, data.pagesize]).then(async result => {
@@ -187,6 +187,43 @@ exports.selectAllWallpaperByType = async (request, response) => {
             code: 200,
             message: result
         })
+    })
+}
+// 获取首页数据
+exports.getHomeData = async (request, response) => {
+    const data = request.body
+    // 获取专辑数据
+    const albumList = await db.selecCategoryPage([1, 1, 0, 5])
+    // 获取创作者数据
+    const authorList = await db.selecUserPage([0, 5])
+    // 获取推荐壁纸数据
+    themesListParams = {
+        current_userId: data.current_userId,
+        type: 0,
+        page: 1,
+        pagesize: 24
+    }
+    const themesList = await db.selectAllWallpaperByType(themesListParams)
+    // 获取头像数据
+    avatarListParams = {
+        current_userId: data.current_userId,
+        type: 4,
+        page: 1,
+        pagesize: 12
+    }
+    const avatarList = await db.selectAllWallpaperByType(avatarListParams)
+    // 获取平板数据
+    tabletListParams = {
+        current_userId: data.current_userId,
+        type: 3,
+        page: 1,
+        pagesize: 12
+    }
+    const tabletList = await db.selectAllWallpaperByType(tabletListParams)
+    // 返回结果
+    response.send({
+        code: 200,
+        message: { albumList, authorList, themesList, avatarList, tabletList }
     })
 }
 
@@ -299,16 +336,6 @@ exports.updateUser = async (request, response) => {
             return response.send({
                 code: 400,
                 message: '名称包含违规内容'
-            });
-        }
-    }
-    // 验证介绍（格言）
-    if (data.motto && data.motto.trim() !== '') {
-        const mottoCheckResult = await checkTextSecurity(access_token, data.motto);
-        if (mottoCheckResult.errcode !== 0 || mottoCheckResult.result.suggest !== 'pass') {
-            return response.send({
-                code: 400,
-                message: '介绍包含违规内容'
             });
         }
     }

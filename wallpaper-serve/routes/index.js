@@ -45,6 +45,10 @@ module.exports = function (app) {
     app.post('/selectAllWallpaperByType', (request, response) => {
         controller.selectAllWallpaperByType(request, response)
     })
+    // 获取首页数据
+    app.post('/getHomeData', (request, response) => {
+        controller.getHomeData(request, response)
+    })
 
 
     /**

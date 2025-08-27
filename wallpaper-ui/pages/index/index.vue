@@ -25,7 +25,7 @@
 				<navigator url="/pages/author/author" open-type="reLaunch" class="more">More+</navigator>
 			</view>
 			<view class="author-list">
-				<view @click="toUserDetail(item)" v-for="(item, index) in userList" :key="index" class="list-item">
+				<view @click="toAuthorDetail(item)" v-for="(item, index) in authorList" :key="index" class="list-item">
 					<image :src="item.avatar_url" mode="aspectFill"></image>
 				</view>
 			</view>
@@ -33,13 +33,13 @@
 		<!-- 今日主题 -->
 		<view class="home-sort">
 			<view class="sort-title">
-				<view class="title">今日主题</view>
+				<view class="title">每日主题</view>
 				<navigator url="/pages/sort/sort" open-type="reLaunch" class="more">More+</navigator>
 			</view>
 			<view class="sort-list">
 				<scroll-view scroll-x>
-					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in today" :key="index">
-						<image :src="item" lazy-load mode="aspectFill"></image>
+					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in themesList" :key="index">
+						<image :src="item.url" lazy-load mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -52,8 +52,8 @@
 			</view>
 			<view class="avatar-list">
 				<scroll-view scroll-x>
-					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in avatar" :key="index">
-						<image :src="item" lazy-load mode="aspectFill"></image>
+					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
+						<image :src="item.url" lazy-load mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -66,8 +66,8 @@
 			</view>
 			<view class="tablet-list">
 				<scroll-view scroll-x>
-					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in tablet" :key="index">
-						<image :src="item" lazy-load mode="aspectFill"></image>
+					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in tabletList" :key="index">
+						<image :src="item.url" lazy-load mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -78,15 +78,19 @@
 				<view class="title">优选推荐</view>
 				<view @click="toSortList({ id: '' }, -1)" class="more">More+</view>
 			</view>
-			<!-- 加载提示 -->
-			<view class="loading" v-if="isLoading">加载中...</view>
 			<view class="recommend-list">
 				<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in rankList" :key="index">
 					<image :src="item.url" lazy-load mode="aspectFill"></image>
 				</view>
 			</view>
+			<!-- 加载提示 -->
+			<view class="loading" v-if="isLoading">加载中...</view>
 			<!-- 到底提示 -->
 			<view class="end-tip" v-if="isEnd && rankList.length > 0">已经到底啦~</view>
+		</view>
+		<!-- 前往顶部 -->
+		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
+			<image src="/static/images/top.png" mode="aspectFill"></image>
 		</view>
 	</view>
 	<tabbar />
@@ -95,50 +99,12 @@
 <script setup>
 import navbar from '../../components/navbar.vue';
 import tabbar from '../../components/tabbar.vue';
-import { selecCategoryPage, selecUserPage, login, selectAllWallpaperByType } from '../../api/api';
-import { onLoad, onShow, onReachBottom } from '@dcloudio/uni-app';
+import { selecCategoryPage, selecUserPage, login, selectAllWallpaperByType, getHomeData } from '../../api/api';
+import { onLoad, onShow, onReachBottom, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
-
-const avatar = ref([
-	'https://img0.baidu.com/it/u=2730920252,125676569&fm=253&app=53&size=w500&n=0&g=0n&f=jpeg?sec=1758718245&t=b86853a1c81ca12c675226451de3a33c',
-	'https://img0.baidu.com/it/u=559900546,2995137416&fm=253&app=53&size=w500&n=0&g=0n&f=jpeg?sec=1758718245&t=d347f65adbf6a272a07e7636c3b19cc1',
-	'https://img2.baidu.com/it/u=1795647913,2590992694&fm=253&app=53&size=w500&n=0&g=0n&f=jpeg?sec=1758718245&t=c41c1d750ddb15207f40e11bd0b99c6a',
-	'https://img2.baidu.com/it/u=2936530100,1316476798&fm=253&app=53&size=w500&n=0&g=0n&f=jpeg?sec=1758718245&t=5a1c7d52aa4d798d75d1ef59af94a817',
-	'https://img2.baidu.com/it/u=1581320883,910100018&fm=253&app=53&size=w500&n=0&g=0n&f=jpeg?sec=1758717994&t=ac1e238f233c3525ec9b6d04886cc8a0',
-	'https://img0.baidu.com/it/u=3997048646,1811313428&fm=253&app=53&size=w500&n=0&g=0n&f=jpeg?sec=1758717994&t=ae83d02a0ad821ebe96d9271660f78e2'
-]);
-const tablet = ref([
-	'https://img0.baidu.com/it/u=251746119,4081491608&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
-	'https://img2.baidu.com/it/u=854359417,2647739631&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
-	'https://img0.baidu.com/it/u=3359623666,43704731&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500',
-	'https://img0.baidu.com/it/u=991997669,3955028944&fm=253&fmt=auto&app=138&f=JPEG?w=890&h=500',
-	'https://img2.baidu.com/it/u=1757959266,2876662344&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
-	'https://img0.baidu.com/it/u=17320500,827558150&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500'
-]);
-const today = ref([
-	'https://img0.baidu.com/it/u=4240484205,4161142490&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1084',
-	'https://img2.baidu.com/it/u=1592387971,3334934767&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1112',
-	'https://img1.baidu.com/it/u=2578948944,3084781980&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=889',
-	'https://img0.baidu.com/it/u=861660600,1038167782&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1088',
-	'https://img0.baidu.com/it/u=3804574816,3718204157&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=1081',
-	'https://img1.baidu.com/it/u=3371360631,4284967255&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=1111'
-]);
 
 // 专辑数据
 const album = ref();
-// 分页获取专辑的参数
-const albumParams = reactive({
-	type: 1,
-	status: 1,
-	page: 1,
-	pagesize: 6
-});
-//  分页获取专辑方法
-const getAlbum = async () => {
-	const result = await selecCategoryPage(albumParams);
-	album.value = result;
-	// console.log('首页轮播图数据',album.value);
-};
 // 跳转到专辑详情
 const toAlbumDetail = (item) => {
 	const album_item = JSON.stringify(item);
@@ -147,25 +113,88 @@ const toAlbumDetail = (item) => {
 	});
 };
 
-// 用户数据
-const userList = ref();
-// 分页获取用户参数
-const userParams = reactive({
-	page: 1,
-	pagesize: 5
-});
-// 分页获取用户方法
-const getUserList = async () => {
-	const result = await selecUserPage(userParams);
-	userList.value = result;
-};
+// 推荐创作者
+const authorList = ref()
 // 跳转到用户详情
-const toUserDetail = (item) => {
+const toAuthorDetail = (item) => {
 	const author_item = JSON.stringify(item);
 	uni.navigateTo({
 		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=0`
 	});
 };
+
+// 每日主题
+const themesList = ref()
+
+
+// 热门头像
+const avatarList = ref()
+
+// 电脑平板
+const tabletList = ref()
+
+// 优选推荐
+
+
+// 获取首页数据
+const getData = async () => {
+	const current_userId = userInfo.value.id || '';
+	const result = await getHomeData({ current_userId });
+	console.log(result)
+	// 获取专辑数据
+	album.value = result.albumList;
+	// 获取推荐创作者数据
+	authorList.value = result.authorList;
+	// 获取每日主题数据
+	themesList.value = result.themesList;
+	// 获取热门头像数据
+	avatarList.value = result.avatarList;
+	// 获取电脑平板数据
+	tabletList.value = result.tabletList;
+};
+
+// // 专辑数据
+// const album = ref();
+// // 分页获取专辑的参数
+// const albumParams = reactive({
+// 	type: 1,
+// 	status: 1,
+// 	page: 1,
+// 	pagesize: 6
+// });
+// //  分页获取专辑方法
+// const getAlbum = async () => {
+// 	const result = await selecCategoryPage(albumParams);
+// 	album.value = result;
+// 	// console.log('首页轮播图数据',album.value);
+// };
+// // 跳转到专辑详情
+// const toAlbumDetail = (item) => {
+// 	const album_item = JSON.stringify(item);
+// 	uni.navigateTo({
+// 		url: `/pages/albumDetail/albumDetail?item=${encodeURIComponent(album_item)}`
+// 	});
+// };
+
+// // 用户数据
+// const userList = ref();
+// // 分页获取用户参数
+// const userParams = reactive({
+// 	page: 1,
+// 	pagesize: 5
+// });
+// // 分页获取用户方法
+// const getUserList = async () => {
+// 	const result = await selecUserPage(userParams);
+// 	userList.value = result;
+// };
+// // 跳转到用户详情
+// const toUserDetail = (item) => {
+// 	const author_item = JSON.stringify(item);
+// 	uni.navigateTo({
+// 		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=0`
+// 	});
+// };
 
 // 分类数据
 const sort = ref();
@@ -209,7 +238,7 @@ const isLoading = ref(false);
 const rankListParams = reactive({
 	current_userId: userInfo.value.id || '',
 	type: 0,
-	page: 1,
+	page: 2,
 	pagesize: 24
 });
 // 获取排序列表方法
@@ -275,15 +304,34 @@ const toPreview = (item, index) => {
 
 // 挂载
 onLoad(() => {
-	// 获取专辑
-	getAlbum();
-	// 获取用户
-	getUserList();
 	// 获取分类
 	getSort();
 	// 获取排序列表数据
 	getRankList();
+	getData();
 });
+
+// 存储当前滚动高度（px 单位）
+const currentScrollTop = ref(0);
+// 显示与隐藏图标
+const isShow = ref(false);
+// 实时监听页面滚动，获取滚动高度
+onPageScroll((e) => {
+	// e.scrollTop 即为当前页面滚动高度（px 单位）
+	currentScrollTop.value = e.scrollTop;
+	if (e.scrollTop >= 20) {
+		isShow.value = true;
+	} else {
+		isShow.value = false;
+	}
+});
+// 回到顶部核心方法
+const toTop = () => {
+	uni.pageScrollTo({
+		scrollTop: 0, // 滚动到顶部的距离（必须为 0，代表最顶部）
+		duration: 300 // 滚动动画时长（单位 ms，可选，0 表示无动画）
+	});
+};
 </script>
 
 <style lang="scss">
@@ -420,7 +468,6 @@ onLoad(() => {
 			}
 		}
 	}
-
 	/* 推荐创作者 */
 	.home-author {
 		width: 100%;
@@ -605,6 +652,48 @@ onLoad(() => {
 					border-radius: 20rpx;
 				}
 			}
+		}
+	}
+	/* 前往顶部 */
+	.tools-top {
+		/* 基础定位 */
+		position: fixed;
+		bottom: 260rpx;
+		right: 30rpx; // 最终停靠位置
+		z-index: 999;
+		width: 82rpx;
+		height: 82rpx;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.5);
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		/* 隐藏状态（右侧外部） */
+		transform: translateX(150rpx); // 向右偏移150rpx（超出屏幕）
+		opacity: 0;
+		visibility: hidden; // 不响应点击
+
+		/* 动画过渡 */
+		transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1s ease, visibility 1s ease;
+
+		/* 图标样式 */
+		image {
+			width: 60%;
+			height: 60%;
+		}
+
+		/* 显示状态（从右侧滑入） */
+		&.is-visible {
+			transform: translateX(0); // 回到正常位置
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* 点击反馈 */
+		&:active {
+			transform: translateX(0) scale(0.95);
 		}
 	}
 }

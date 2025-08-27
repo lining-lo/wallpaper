@@ -33,6 +33,10 @@
 			<!-- 到底提示 -->
 			<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
 		</view>
+		<!-- 前往顶部 -->
+		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
+			<image src="/static/images/top.png" mode="aspectFill"></image>
+		</view>
 	</view>
 </template>
 
@@ -40,7 +44,7 @@
 import { getRandomID } from '../../utils/customize';
 import navbar from '../../components/navbar.vue';
 import { selectUserWallpapers } from '../../api/api';
-import { onLoad, onShow, onReachBottom, onUnload } from '@dcloudio/uni-app';
+import { onLoad, onShow, onReachBottom, onUnload, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
 const styleData = ref({ backgroundColor: '#141414' });
@@ -151,6 +155,28 @@ onLoad((options) => {
 onUnload(() => {
 	uni.removeStorageSync(fromPage.value);
 });
+
+// 存储当前滚动高度（px 单位）
+const currentScrollTop = ref(0);
+// 显示与隐藏图标
+const isShow = ref(false);
+// 实时监听页面滚动，获取滚动高度
+onPageScroll((e) => {
+	// e.scrollTop 即为当前页面滚动高度（px 单位）
+	currentScrollTop.value = e.scrollTop;
+	if (e.scrollTop >= 20) {
+		isShow.value = true;
+	} else {
+		isShow.value = false;
+	}
+});
+// 回到顶部核心方法
+const toTop = () => {
+	uni.pageScrollTo({
+		scrollTop: 0, // 滚动到顶部的距离（必须为 0，代表最顶部）
+		duration: 300 // 滚动动画时长（单位 ms，可选，0 表示无动画）
+	});
+};
 </script>
 
 <style lang="scss">
@@ -255,6 +281,48 @@ onUnload(() => {
 		text-align: center;
 		padding: 30rpx 0;
 		font-size: 14px;
+	}
+	/* 前往顶部 */
+	.tools-top {
+		/* 基础定位 */
+		position: fixed;
+		bottom: 260rpx;
+		right: 30rpx; // 最终停靠位置
+		z-index: 999;
+		width: 82rpx;
+		height: 82rpx;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.5);
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		/* 隐藏状态（右侧外部） */
+		transform: translateX(150rpx); // 向右偏移150rpx（超出屏幕）
+		opacity: 0;
+		visibility: hidden; // 不响应点击
+
+		/* 动画过渡 */
+		transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 1s ease, visibility 1s ease;
+
+		/* 图标样式 */
+		image {
+			width: 60%;
+			height: 60%;
+		}
+
+		/* 显示状态（从右侧滑入） */
+		&.is-visible {
+			transform: translateX(0); // 回到正常位置
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* 点击反馈 */
+		&:active {
+			transform: translateX(0) scale(0.95);
+		}
 	}
 }
 </style>

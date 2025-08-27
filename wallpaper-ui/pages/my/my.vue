@@ -4,7 +4,7 @@
 		<view class="my-info" @click="toEditUser">
 			<view class="info-avatar">
 				<view class="avatar-left">
-					<image :src="userInfo ? userInfo.avatar_url : '/static/images/avatar.png'" mode="aspectFill"></image>
+					<image v-if="userInfo" :src="userInfo.avatar_url ? userInfo.avatar_url : '/static/images/avatar.png'" mode="aspectFill"></image>
 				</view>
 				<view class="avatar-right">
 					<view class="name">{{ userInfo ? userInfo.name || '未登录用户' : '未登录用户' }}</view>
@@ -78,6 +78,13 @@
 				</view>
 				<uni-icons type="right" size="16" color="#fff"></uni-icons>
 			</navigator>
+			<view @click="logout" class="row">
+				<view class="label">
+					<uni-icons type="info-filled" size="32" color="#b43aff"></uni-icons>
+					<text class="title">退出登录</text>
+				</view>
+				<uni-icons type="right" size="16" color="#fff"></uni-icons>
+			</view>
 		</view>
 	</view>
 	<tabbar />
@@ -89,6 +96,10 @@ import tabbar from '../../components/tabbar.vue';
 import { getGender } from '../../utils/customize';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
+
+const logout = ()=>{
+	uni.clearStorageSync()
+}
 
 // 用户信息
 const userInfo = ref();

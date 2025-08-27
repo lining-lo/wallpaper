@@ -198,6 +198,7 @@ const toSortList = (item, index) => {
 		display: flex;
 		justify-content: space-between;
 		flex-wrap: wrap;
+		padding-bottom: 140rpx;
 		.list-item {
 			width: 28vw;
 			height: 44vw;

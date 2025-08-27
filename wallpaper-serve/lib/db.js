@@ -573,7 +573,9 @@ module.exports = {
     },
     // 根据壁纸类型分页获取所有壁纸
     selectAllWallpaperByType: async (data) => {
-        const { user_id, type, page, pagesize } = data;
+        const { current_userId, type, page, pagesize } = data;
+        console.log(data);
+
         const offset = (page - 1) * pagesize; // 计算偏移量，单独提取更清晰
         let typeCondition = '';
         let values = [];
@@ -582,11 +584,11 @@ module.exports = {
         if (type === 0 || type === 1) {
             // 合并查询普通(0)和专辑(1)
             typeCondition = 'w.type IN (0, 1)';
-            values = [user_id, offset, pagesize];
+            values = [current_userId, offset, pagesize];
         } else {
             // 单独查询其他类型（2-动态、3-平板、4-头像等）
             typeCondition = 'w.type = ?';
-            values = [user_id, type, offset, pagesize];
+            values = [current_userId, type, offset, pagesize];
         }
 
         const sql = `

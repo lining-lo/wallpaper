@@ -43,7 +43,10 @@ export const selectWallpaperBySearch = (data) => {
 export const selectAllWallpaperByType = (data) => {
 	return http('/selectAllWallpaperByType', data)
 }
-
+// 获取首页数据
+export const getHomeData = (data) => {
+	return http('/getHomeData', data)
+}
 
 
 /**
