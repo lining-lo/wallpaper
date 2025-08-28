@@ -574,7 +574,6 @@ module.exports = {
     // 根据壁纸类型分页获取所有壁纸
     selectAllWallpaperByType: async (data) => {
         const { current_userId, type, page, pagesize } = data;
-        console.log(data);
 
         const offset = (page - 1) * pagesize; // 计算偏移量，单独提取更清晰
         let typeCondition = '';

@@ -32,13 +32,13 @@
 					</view>
 				</view>
 			</view>
-			<!-- 加载提示 -->
-			<view class="loading" v-if="isLoading">加载中...</view>
 			<view class="recommend-list">
 				<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in rankList" :key="index">
 					<image :src="item.url" lazy-load mode="aspectFill"></image>
 				</view>
 			</view>
+			<!-- 加载提示 -->
+			<view class="loading" v-if="isLoading">加载中...</view>
 			<!-- 到底提示 -->
 			<view class="end-tip" v-if="isEnd && userList.length > 0">已经到底啦~</view>
 		</view>
@@ -59,16 +59,16 @@ import { nextTick, reactive, ref } from 'vue';
 
 // 是否加载全部
 const isEnd = ref(false);
-// 用户数据
+// 创作者数据
 const userList = ref([]);
 // 加载状态控制
 const isLoading = ref(false);
-// 分页获取用户参数
+// 分页获取创作者参数
 const userParams = reactive({
 	page: 1,
-	pagesize: 8
+	pagesize: 12
 });
-// 获取排序列表方法
+// 获取创作者列表方法
 const getUserList = async () => {
 	// 防止重复请求和无效请求
 	if (!isEnd.value && !isLoading.value) {
@@ -91,7 +91,7 @@ const getUserList = async () => {
 		}
 	}
 };
-// 跳转到用户详情
+// 跳转到创作者详情
 const toUserDetail = (item) => {
 	const author_item = JSON.stringify(item);
 	uni.navigateTo({
@@ -100,7 +100,7 @@ const toUserDetail = (item) => {
 };
 // 挂载
 onLoad(() => {
-	// 获取用户
+	// 获取创作者
 	getUserList();
 });
 // 触底加载更加排序数据

@@ -1,13 +1,10 @@
 <template>
 	<navbar />
 	<view class="share">
-		<!-- 加载提示 -->
-		<view class="loading" v-if="isLoading">加载中...</view>
-
 		<view class="waterfall-container">
 			<up-waterfall v-model="shareList" ref="uWaterfallRef" columns="2">
 				<template v-slot:column="{ colList, colIndex }">
-					<view @click="toShareList(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
+					<view @click="toShareListPreview(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
 						<image :src="item.url" class="main-img" mode="widthFix" lazy-load></image>
 						<!-- 标题（单行省略） -->
 						<view class="item-title">{{ item.title }}</view>
@@ -29,6 +26,8 @@
 			<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
 				<image src="/static/images/top.png" mode="aspectFill"></image>
 			</view>
+			<!-- 加载提示 -->
+			<view class="loading" v-if="isLoading">加载中...</view>
 			<!-- 到底提示 -->
 			<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
 		</view>
@@ -43,8 +42,6 @@ import { selectAllWallpaperByRand } from '../../api/api';
 import { onLoad, onShow, onReachBottom, onUnload, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 
-const styleData = ref({ backgroundColor: '#141414' });
-
 // 用户信息
 const userInfo = ref({});
 // token信息
@@ -53,35 +50,33 @@ onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	// 清除缓存并保持广场列表数据一致性
+	// handleshareList();
 });
 
-// 排序列表
+// 广场列表
 const shareList = ref([]);
 // 是否加载全部
 const isEnd = ref(false);
 // 加载状态控制
 const isLoading = ref(false);
-
-// 获取排序列表参数
+// 获取广场列表参数
 const shareListParams = reactive({
 	user_id: userInfo.value.id || '',
 	page: 1,
 	pagesize: 24
 });
-
-// 获取排序列表方法
+// 获取广场列表方法
 const getShareList = async () => {
 	// 防止重复请求和无效请求
 	if (!isEnd.value && !isLoading.value) {
 		isLoading.value = true; // 锁定加载状态
-
 		try {
 			// 从本地存储重新读取一次，确保使用最新值
 			userInfo.value = uni.getStorageSync('userInfo');
 			shareListParams.user_id = userInfo.value.id || '';
-
 			const result = await selectAllWallpaperByRand(shareListParams);
-
 			// 处理数据
 			const processedResult = result.map((item) => {
 				// 安全解析 labels
@@ -101,8 +96,6 @@ const getShareList = async () => {
 
 			// 合并新数据
 			shareList.value = [...shareList.value, ...newItems];
-			uni.setStorageSync('share-wallpapers', JSON.stringify(shareList.value));
-
 			// 判断是否到底（基于过滤后的新数据）
 			if (newItems.length === 0) {
 				isEnd.value = true;
@@ -116,7 +109,6 @@ const getShareList = async () => {
 		}
 	}
 };
-
 // 触底加载更多数据
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
@@ -126,21 +118,52 @@ onReachBottom(() => {
 	}
 });
 
-// 跳转到壁纸查看界面
-const toShareList = (item) => {
+// 选取广场列表的预览范围的起始下标
+const startIndex = ref(0);
+// 选取广场列表的预览范围的终止下标
+const endIndex = ref(0);
+// 跳转到广场列表预览界面
+const toShareListPreview = (item) => {
+	const index =  shareList.value.findIndex((shareListItem) => item.id === shareListItem.id)
+	// 计算当前分组（从0开始）
+	const group = Math.floor(index / 24);
+	// 计算起始下标
+	startIndex.value = group * 24;
+	// 计算终止下标（用于边界校验，实际截取时用不到）
+	endIndex.value = Math.min(startIndex.value + 23, shareList.value.length - 1);
+	// 计算当前在分组内的下标（1-24）
+	const currentIndex = Math.ceil(index % 24);
+
 	const from = 'share-wallpapers';
+	// // 直接截取从startIndex开始的24条数据（slice自动处理边界，不足24条时取到末尾）
+	const previewData = shareList.value.slice(startIndex.value, startIndex.value + 24);
+
+	uni.setStorageSync('share-wallpapers', JSON.stringify(shareList));
 	uni.navigateTo({
-		url: `/pages/shareList/shareList?id=${item.id}&from=${encodeURIComponent(from)}`
+		url: `/pages/shareList/shareList?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(from)}`
 	});
+};
+// 清除缓存并保持广场列表数据一致性
+const handleshareList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync('share-wallpapers');
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		shareList.value = [
+			...shareList.value.slice(0, startIndex.value), // 前半段：从开头到 startIndex 前
+			...cacheData, // 修改段：新数据
+			...shareList.value.slice(endIndex.value + 1) // 后半段：从 endIndex 后到末尾
+		];
+		// 清理缓存
+		uni.removeStorageSync('share-wallpapers');
+	}
 };
 
 // 页面加载时初始化
 onLoad(() => {
 	getShareList();
-});
-// 销毁页面时
-onUnload(() => {
-	uni.removeStorageSync('share-wallpapers');
 });
 
 // 存储当前滚动高度（px 单位）

@@ -22,7 +22,7 @@
 		<view class="home-author">
 			<view class="author-title">
 				<view class="title">推荐创作者</view>
-				<navigator url="/pages/author/author" open-type="reLaunch" class="more">More+</navigator>
+				<view @click="toMoreAuthor" class="more">More+</view>
 			</view>
 			<view class="author-list">
 				<view @click="toAuthorDetail(item)" v-for="(item, index) in authorList" :key="index" class="list-item">
@@ -34,11 +34,11 @@
 		<view class="home-sort">
 			<view class="sort-title">
 				<view class="title">每日主题</view>
-				<navigator url="/pages/sort/sort" open-type="reLaunch" class="more">More+</navigator>
+				<view @click="toMoreSortList({ id: '' }, -1)" class="more">More+</view>
 			</view>
 			<view class="sort-list">
 				<scroll-view scroll-x>
-					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in themesList" :key="index">
+					<view @click="toThemesPreview(item, index)" class="list-item" v-for="(item, index) in themesList" :key="index">
 						<image :src="item.url" lazy-load mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -48,11 +48,11 @@
 		<view class="home-avatar">
 			<view class="avatar-title">
 				<view class="title">热门头像</view>
-				<navigator url="/pages/sort/sort" open-type="reLaunch" class="more">More+</navigator>
+				<navigator url="/pages/avatar/avatar" class="more">More+</navigator>
 			</view>
 			<view class="avatar-list">
 				<scroll-view scroll-x>
-					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
+					<view @click="toAvatarPreview(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
 						<image :src="item.url" lazy-load mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -62,11 +62,25 @@
 		<view class="home-tablet">
 			<view class="tablet-title">
 				<view class="title">电脑平板</view>
-				<navigator url="/pages/sort/sort" open-type="reLaunch" class="more">More+</navigator>
+				<navigator url="/pages/tablet/tablet" class="more">More+</navigator>
 			</view>
 			<view class="tablet-list">
 				<scroll-view scroll-x>
-					<view @click="toSortList(item, index)" class="list-item" v-for="(item, index) in tabletList" :key="index">
+					<view @click="toTabletPreview(item, index)" class="list-item" v-for="(item, index) in tabletList" :key="index">
+						<image :src="item.url" lazy-load mode="aspectFill"></image>
+					</view>
+				</scroll-view>
+			</view>
+		</view>
+		<!-- 动态壁纸 -->
+		<view class="home-live">
+			<view class="live-title">
+				<view class="title">动态壁纸</view>
+				<navigator url="/pages/live/live" class="more">More+</navigator>
+			</view>
+			<view class="live-list">
+				<scroll-view scroll-x>
+					<view @click="toLivePreview(item, index)" class="list-item" v-for="(item, index) in liveList" :key="index">
 						<image :src="item.url" lazy-load mode="aspectFill"></image>
 					</view>
 				</scroll-view>
@@ -76,17 +90,17 @@
 		<view class="home-recommend">
 			<view class="recommend-title">
 				<view class="title">优选推荐</view>
-				<view @click="toSortList({ id: '' }, -1)" class="more">More+</view>
+				<view @click="toMoreSortList({ id: '' }, -1)" class="more">More+</view>
 			</view>
 			<view class="recommend-list">
-				<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in rankList" :key="index">
+				<view @click="toRecommendListPreview(item, index)" class="list-item" v-for="(item, index) in recommendList" :key="index">
 					<image :src="item.url" lazy-load mode="aspectFill"></image>
 				</view>
 			</view>
 			<!-- 加载提示 -->
 			<view class="loading" v-if="isLoading">加载中...</view>
 			<!-- 到底提示 -->
-			<view class="end-tip" v-if="isEnd && rankList.length > 0">已经到底啦~</view>
+			<view class="end-tip" v-if="isEnd && recommendList.length > 0">已经到底啦~</view>
 		</view>
 		<!-- 前往顶部 -->
 		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
@@ -99,9 +113,31 @@
 <script setup>
 import navbar from '../../components/navbar.vue';
 import tabbar from '../../components/tabbar.vue';
+import { parseLabels } from '../../utils/customize';
 import { selecCategoryPage, selecUserPage, login, selectAllWallpaperByType, getHomeData } from '../../api/api';
 import { onLoad, onShow, onReachBottom, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
+
+// 用户信息
+const userInfo = ref({});
+// token信息
+const token = ref();
+onShow(() => {
+	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
+	userInfo.value = uni.getStorageSync('userInfo');
+	token.value = uni.getStorageSync('token');
+
+	// 清除缓存并保持每日主题数据一致性
+	handleThemesList();
+	// 清除缓存并保持热门头像数据一致性
+	handleAvatarList();
+	// 清除缓存并保持电脑平板数据一致性
+	handleTabletList();
+	// 清除缓存并保持动态壁纸数据一致性
+	handleLiveList();
+	// 清除缓存并保持优选推荐数据一致性
+	handleRecommendList();
+});
 
 // 专辑数据
 const album = ref();
@@ -114,7 +150,13 @@ const toAlbumDetail = (item) => {
 };
 
 // 推荐创作者
-const authorList = ref()
+const authorList = ref();
+// 前往更多创作者
+const toMoreAuthor = () => {
+	uni.switchTab({
+		url: '/pages/author/author'
+	});
+};
 // 跳转到用户详情
 const toAuthorDetail = (item) => {
 	const author_item = JSON.stringify(item);
@@ -124,23 +166,124 @@ const toAuthorDetail = (item) => {
 };
 
 // 每日主题
-const themesList = ref()
-
+const themesList = ref();
+// 前往更多手机壁纸
+const toMoreSortList = (item, index) => {
+	const sort_item = JSON.stringify(item);
+	uni.navigateTo({
+		url: `/pages/sortList/sortList?item=${encodeURIComponent(sort_item)}&index=${index + 1}`
+	});
+};
+// 跳转到壁纸预览界面
+const toThemesPreview = (item, index) => {
+	const from = 'home-themeList';
+	uni.setStorageSync(from, JSON.stringify(themesList.value));
+	uni.navigateTo({
+		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+	});
+};
+// 清除缓存并保持每日主题数据一致性
+const handleThemesList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync('home-themeList');
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		themesList.value = cacheData;
+		// 清理缓存
+		uni.removeStorageSync('home-themeList');
+	}
+};
 
 // 热门头像
-const avatarList = ref()
+const avatarList = ref();
+// 跳转到头像预览界面
+const toAvatarPreview = (item, index) => {
+	const from = 'home-avatarList';
+	uni.setStorageSync(from, JSON.stringify(avatarList.value));
+	uni.navigateTo({
+		url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+	});
+};
+// 清除缓存并保持热门头像数据一致性
+const handleAvatarList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync('home-avatarList');
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		avatarList.value = cacheData;
+		// 清理缓存
+		uni.removeStorageSync('home-avatarList');
+	}
+};
 
 // 电脑平板
-const tabletList = ref()
+const tabletList = ref();
+// 跳转到电脑平板预览界面
+const toTabletPreview = (item, index) => {
+	const from = 'home-tabletList';
+	uni.setStorageSync(from, JSON.stringify(tabletList.value));
+	uni.navigateTo({
+		url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+	});
+};
+// 清除缓存并保持电脑平板数据一致性
+const handleTabletList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync('home-tabletList');
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		tabletList.value = cacheData;
+		// 清理缓存
+		uni.removeStorageSync('home-tabletList');
+	}
+};
 
-// 优选推荐
-
+// 动态壁纸
+const liveList = ref();
+// 跳转到动态壁纸预览页
+const toLivePreview = (item, index) => {
+	const from = 'home-liveList';
+	uni.setStorageSync(from, JSON.stringify(liveList.value));
+	uni.navigateTo({
+		url: `/pages/liveDetail/liveDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+	});
+};
+// 清除缓存并保持动态壁纸数据一致性
+const handleLiveList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync('home-liveList');
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		liveList.value = cacheData;
+		// 清理缓存
+		uni.removeStorageSync('home-liveList');
+	}
+};
 
 // 获取首页数据
 const getData = async () => {
+	// 从本地存储重新读取一次，避免依赖onShow的时机
+	userInfo.value = uni.getStorageSync('userInfo');
 	const current_userId = userInfo.value.id || '';
 	const result = await getHomeData({ current_userId });
-	console.log(result)
+	console.log(result);
+
+	// 处理labels字段
+	Object.keys(result).forEach((key) => {
+		result[key] = result[key].map((item) => {
+			item.labels = parseLabels(item.labels);
+			return item;
+		});
+	});
+
 	// 获取专辑数据
 	album.value = result.albumList;
 	// 获取推荐创作者数据
@@ -151,98 +294,25 @@ const getData = async () => {
 	avatarList.value = result.avatarList;
 	// 获取电脑平板数据
 	tabletList.value = result.tabletList;
+	// 获取动态壁纸数据
+	liveList.value = result.liveList;
 };
 
-// // 专辑数据
-// const album = ref();
-// // 分页获取专辑的参数
-// const albumParams = reactive({
-// 	type: 1,
-// 	status: 1,
-// 	page: 1,
-// 	pagesize: 6
-// });
-// //  分页获取专辑方法
-// const getAlbum = async () => {
-// 	const result = await selecCategoryPage(albumParams);
-// 	album.value = result;
-// 	// console.log('首页轮播图数据',album.value);
-// };
-// // 跳转到专辑详情
-// const toAlbumDetail = (item) => {
-// 	const album_item = JSON.stringify(item);
-// 	uni.navigateTo({
-// 		url: `/pages/albumDetail/albumDetail?item=${encodeURIComponent(album_item)}`
-// 	});
-// };
-
-// // 用户数据
-// const userList = ref();
-// // 分页获取用户参数
-// const userParams = reactive({
-// 	page: 1,
-// 	pagesize: 5
-// });
-// // 分页获取用户方法
-// const getUserList = async () => {
-// 	const result = await selecUserPage(userParams);
-// 	userList.value = result;
-// };
-// // 跳转到用户详情
-// const toUserDetail = (item) => {
-// 	const author_item = JSON.stringify(item);
-// 	uni.navigateTo({
-// 		url: `/pages/authorDetail/authorDetail?item=${encodeURIComponent(author_item)}&need=0`
-// 	});
-// };
-
-// 分类数据
-const sort = ref();
-// 分页获取分类的参数
-const sortParams = reactive({
-	type: 0,
-	status: 1,
-	page: 1,
-	pagesize: 5
-});
-//  分页获取分类方法
-const getSort = async () => {
-	const result = await selecCategoryPage(sortParams);
-	sort.value = result;
-};
-// 跳转到壁纸分类页
-const toSortList = (item, index) => {
-	const sort_item = JSON.stringify(item);
-	uni.navigateTo({
-		url: `/pages/sortList/sortList?item=${encodeURIComponent(sort_item)}&index=${index + 1}`
-	});
-};
-
-// 用户信息
-const userInfo = ref({});
-// token信息
-const token = ref();
-onShow(() => {
-	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
-	userInfo.value = uni.getStorageSync('userInfo');
-	token.value = uni.getStorageSync('token');
-});
-
-// 排序列表
-const rankList = ref([]);
+// 优选推荐
+const recommendList = ref([]);
 // 是否加载全部
 const isEnd = ref(false);
 // 加载状态控制
 const isLoading = ref(false);
-// 获取排序列表参数
-const rankListParams = reactive({
+// 获取优选推荐参数
+const recommendListParams = reactive({
 	current_userId: userInfo.value.id || '',
 	type: 0,
 	page: 2,
 	pagesize: 24
 });
-// 获取排序列表方法
-const getRankList = async () => {
+// 获取优选推荐方法
+const getRecommendList = async () => {
 	// 防止重复请求和无效请求
 	if (!isEnd.value && !isLoading.value) {
 		isLoading.value = true; // 锁定加载状态
@@ -250,21 +320,14 @@ const getRankList = async () => {
 		try {
 			// 从本地存储重新读取一次，避免依赖onShow的时机
 			userInfo.value = uni.getStorageSync('userInfo');
-			rankListParams.user_id = userInfo.value.id || ''; // 优先用最新存储值
-			const result = await selectAllWallpaperByType(rankListParams);
+			recommendListParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+			const result = await selectAllWallpaperByType(recommendListParams);
 			result.map((item) => {
-				// 安全解析 labels，避免格式错误导致崩溃
-				try {
-					item.labels = typeof item.labels === 'string' && item.labels ? JSON.parse(item.labels) : [];
-				} catch (err) {
-					console.error('解析 labels 失败:', err);
-					item.labels = []; // 解析失败时用空数组兜底
-				}
+				item.labels = parseLabels(item.labels);
 				return item;
 			});
 			// 存入数据
-			rankList.value = [...rankList.value, ...result];
-			uni.setStorageSync('home-wallpapers', JSON.stringify(rankList.value));
+			recommendList.value = [...recommendList.value, ...result];
 			// 是否到底
 			if (result.length === 0) {
 				isEnd.value = true;
@@ -278,37 +341,62 @@ const getRankList = async () => {
 		}
 	}
 };
-
 // 触底加载更加排序数据
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
 	if (!isLoading.value && !isEnd.value) {
-		rankListParams.page++;
-		getRankList();
+		recommendListParams.page++;
+		getRecommendList();
 	}
 });
+// 选取优选推荐的预览范围的起始下标
+const startIndex = ref(0);
+// 选取优选推荐的预览范围的终止下标
+const endIndex = ref(0);
+// 跳转到优选推荐预览界面
+const toRecommendListPreview = (item, index) => {
+	// 计算当前分组（从0开始）
+	const group = Math.floor(index / 24);
+	// 计算起始下标
+	startIndex.value = group * 24;
+	// 计算终止下标（用于边界校验，实际截取时用不到）
+	endIndex.value = Math.min(startIndex.value + 23, recommendList.value.length - 1);
+	// 计算当前在分组内的下标（1-24）
+	const currentIndex = Math.ceil(index % 24);
 
-// 跳转到排行榜页面
-const toRank = (type) => {
+	const from = 'home-recommendList';
+	// 直接截取从startIndex开始的24条数据（slice自动处理边界，不足24条时取到末尾）
+	const previewData = recommendList.value.slice(startIndex.value, startIndex.value + 24);
+
+	uni.setStorageSync('home-recommendList', JSON.stringify(previewData));
 	uni.navigateTo({
-		url: `/pages/rank/rank?type=${type}`
+		url: `/pages/preview/preview?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(from)}`
 	});
 };
-// 跳转到壁纸预览界面
-const toPreview = (item, index) => {
-	const from = 'home-wallpapers';
-	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
-	});
+// 清除缓存并保持优选推荐数据一致性
+const handleRecommendList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync('home-recommendList');
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		recommendList.value = [
+			...recommendList.value.slice(0, startIndex.value), // 前半段：从开头到 startIndex 前
+			...cacheData, // 修改段：新数据
+			...recommendList.value.slice(endIndex.value + 1) // 后半段：从 endIndex 后到末尾
+		];
+		// 清理缓存
+		uni.removeStorageSync('home-recommendList');
+	}
 };
 
 // 挂载
 onLoad(() => {
-	// 获取分类
-	getSort();
-	// 获取排序列表数据
-	getRankList();
+	// 获取首页数据
 	getData();
+	// 获取优选推荐数据
+	getRecommendList();
 });
 
 // 存储当前滚动高度（px 单位）
@@ -591,6 +679,55 @@ const toTop = () => {
 				height: 100%;
 				.list-item {
 					width: 330rpx;
+					height: 100%;
+					margin-right: 20rpx;
+					display: inline-block;
+					border-radius: 20rpx;
+					position: relative;
+					&:last-child {
+						margin-right: 0;
+					}
+					image {
+						width: 100%;
+						height: 100%;
+						border-radius: 20rpx;
+					}
+				}
+			}
+		}
+	}
+	/* 动态壁纸 */
+	.home-live {
+		width: 100%;
+		margin: 60rpx 0;
+		.live-title {
+			width: 100%;
+			position: relative;
+			padding-bottom: 36rpx;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			font-family: fantasy;
+			.title {
+				font-size: 20px;
+				font-weight: 700;
+			}
+			.more {
+				font-size: 16px;
+				color: gray;
+				border-radius: 0.625rem;
+				padding: 0.14rem 0.4rem;
+				background-color: #2f2a24;
+			}
+		}
+		.live-list {
+			height: 450rpx;
+			scroll-view {
+				height: 100%;
+				white-space: nowrap;
+				height: 100%;
+				.list-item {
+					width: 216rpx;
 					height: 100%;
 					margin-right: 20rpx;
 					display: inline-block;

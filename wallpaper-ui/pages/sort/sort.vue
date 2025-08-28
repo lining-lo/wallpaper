@@ -34,11 +34,11 @@
 				</view>
 				<image src="/static/images/sort_album.png" mode="aspectFill"></image>
 			</navigator>
-			<navigator url="/pages/tablet/tablet"  class="type-live type" style="background-color: #655636">
+			<navigator url="/pages/tablet/tablet" class="type-live type" style="background-color: #655636">
 				<view class="content">
 					<view class="title">平板</view>
 					<view class="english">Tablet computer</view>
-				</view >
+				</view>
 				<image src="/static/images/sort_phone.png" mode="aspectFill"></image>
 			</navigator>
 			<navigator url="/pages/avatar/avatar" class="type-live type" style="background-color: #88383a">
@@ -64,7 +64,7 @@
 			</view>
 		</view>
 	</view>
-		<tabbar />
+	<tabbar />
 </template>
 
 <script setup>
@@ -74,6 +74,13 @@ import { selecCategoryPage } from '../../api/api';
 import { onLoad } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
+// 跳转到排行榜页面
+const toRank = (type) => {
+	uni.navigateTo({
+		url: `/pages/rank/rank?type=${type}`
+	});
+};
+
 // 分类数据
 const sort = ref();
 // 分页获取分类的参数
@@ -81,25 +88,17 @@ const sortParams = reactive({
 	type: 0,
 	status: 1,
 	page: 1,
-	pagesize: 100
+	pagesize: 200
 });
 //  分页获取分类方法
 const getSort = async () => {
 	const result = await selecCategoryPage(sortParams);
 	sort.value = result;
-	// console.log('sort',sort.value)
 };
 // 挂载
 onLoad(() => {
 	getSort();
 });
-
-// 跳转到排行榜页面
-const toRank = (type) => {
-	uni.navigateTo({
-		url: `/pages/rank/rank?type=${type}`
-	});
-};
 // 跳转到壁纸分类页
 const toSortList = (item, index) => {
 	const sort_item = JSON.stringify(item);

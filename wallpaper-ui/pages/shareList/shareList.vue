@@ -182,14 +182,14 @@ onLoad((options) => {
 	} else if (platform === 'devtools' || platform === 'windows' || platform === 'mac') {
 		plat.value = 1;
 	}
-
+	
 	// 获取当前壁纸来源
 	from.value = decodeURIComponent(options.from);
 	wallpapers.value = JSON.parse(uni.getStorageSync(`${from.value}`));
 	// 获取当前壁纸id
 	currentWallpaperId.value = options.id;
 	// 获取当前的索引
-	currentWallpaperIndex.value = wallpapers.value.findIndex((item) => item.id === options.id);
+	currentWallpaperIndex.value = Number(options.index);;
 	// 获取当前壁纸信息
 	currentWallpaper.value = wallpapers.value[currentWallpaperIndex.value];
 

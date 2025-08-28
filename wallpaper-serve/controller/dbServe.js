@@ -196,6 +196,8 @@ exports.getHomeData = async (request, response) => {
     const albumList = await db.selecCategoryPage([1, 1, 0, 5])
     // 获取创作者数据
     const authorList = await db.selecUserPage([0, 5])
+    // 获取动态壁纸数据
+    const liveList = await db.selecWallpaperPageByCategoryId([data.current_userId, 2, 'Q5wE2rT7yU', 1, 0, 12])
     // 获取推荐壁纸数据
     themesListParams = {
         current_userId: data.current_userId,
@@ -223,7 +225,7 @@ exports.getHomeData = async (request, response) => {
     // 返回结果
     response.send({
         code: 200,
-        message: { albumList, authorList, themesList, avatarList, tabletList }
+        message: { albumList, authorList, liveList, themesList, avatarList, tabletList }
     })
 }
 
