@@ -8,7 +8,7 @@
 		</view>
 		<!-- 分享列表 -->
 		<view class="live-list">
-			<view @click="toLiveDetail(item, index)" class="list-item" v-for="(item, index) in liveList" :key="index">
+			<view @click="toLiveListPreview(item, index)" class="list-item" v-for="(item, index) in liveList" :key="index">
 				<view class="item-img">
 					<image :src="item.url" mode="aspectFill"></image>
 				</view>
@@ -35,9 +35,9 @@
 			</view>
 		</view>
 		<!-- 加载提示 -->
-		<view class="loading" v-if="isLoading">加载中...</view>
+		<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
 		<!-- 到底提示 -->
-		<view class="end-tip" v-if="isEnd && liveList.length > 0">已经到底啦~</view>
+		<view class="end-tip" :style="{ opacity: isEnd && liveList.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
 		<!-- 前往顶部 -->
 		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
 			<image src="/static/images/top.png" mode="aspectFill"></image>
@@ -60,16 +60,13 @@ const goBack = () => {
 const userInfo = ref({});
 // token信息
 const token = ref();
-// 定义首次加载标记
-const isFirstLoad = ref(true);
 onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
 
-	if (!isFirstLoad.value) {
-		liveList.value = JSON.parse(uni.getStorageSync(fromPage.value));
-	}
+	// 清除缓存并保持动态壁纸数据一致性
+	handleLiveList();
 });
 
 // 专辑列表
@@ -113,7 +110,6 @@ const getliveList = async () => {
 			});
 			// 存入数据
 			liveList.value = [...liveList.value, ...result];
-			uni.setStorageSync(fromPage.value, JSON.stringify(liveList.value));
 			// 是否到底
 			if (result.length === 0) {
 				isEnd.value = true;
@@ -127,24 +123,6 @@ const getliveList = async () => {
 		}
 	}
 };
-// 页面唯一标识
-const fromPage = ref('');
-// 挂载
-onLoad((options) => {
-	// 获取唯一标识
-	fromPage.value = 'live-' + getRandomID();
-
-	// 获取专辑列表数据
-	getliveList();
-	// 延迟标记非首次，确保在 onShow 之后执行
-	nextTick(() => {
-		isFirstLoad.value = false;
-	});
-});
-// 销毁页面时
-onUnload(() => {
-	uni.removeStorageSync(fromPage.value);
-});
 // 触底加载更加专辑数据
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
@@ -154,13 +132,57 @@ onReachBottom(() => {
 	}
 });
 
-// 跳转到详情页
-const toLiveDetail = (item, index) => {
-	const preview_item = JSON.stringify(item);
+// 页面唯一标识
+const fromPage = ref('');
+// 选取动态壁纸的预览范围的起始下标
+const startIndex = ref(0);
+// 选取动态壁纸的预览范围的终止下标
+const endIndex = ref(0);
+// 跳转到动态壁纸预览界面
+const toLiveListPreview = (item, index) => {
+	// 计算当前分组（从0开始）
+	const group = Math.floor(index / 5);
+	// 计算起始下标
+	startIndex.value = group * 5;
+	// 计算终止下标（用于边界校验，实际截取时用不到）
+	endIndex.value = Math.min(startIndex.value + 4, liveList.value.length - 1);
+	// 计算当前在分组内的下标（1-5）
+	const currentIndex = Math.ceil(index % 5);
+
+	// 直接截取从startIndex开始的5条数据（slice自动处理边界，不足5条时取到末尾）
+	const previewData = liveList.value.slice(startIndex.value, startIndex.value + 5);
+
+	uni.setStorageSync(fromPage.value, JSON.stringify(previewData));
+
 	uni.navigateTo({
-		url: `/pages/liveDetail/liveDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
+		url: `/pages/liveDetail/liveDetail?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
+// 清除缓存并保持动态壁纸数据一致性
+const handleLiveList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync(fromPage.value);
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		liveList.value = [
+			...liveList.value.slice(0, startIndex.value), // 前半段：从开头到 startIndex 前
+			...cacheData, // 修改段：新数据
+			...liveList.value.slice(endIndex.value + 1) // 后半段：从 endIndex 后到末尾
+		];
+		// 清理缓存
+		uni.removeStorageSync(fromPage.value);
+	}
+};
+
+// 挂载
+onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'live-' + getRandomID();
+	// 获取专辑列表数据
+	getliveList();
+});
 
 // 存储当前滚动高度（px 单位）
 const currentScrollTop = ref(0);
@@ -257,20 +279,15 @@ const toTop = () => {
 			}
 		}
 	}
-	/* 加载提示样式 */
-	.loading {
-		color: #fff;
-		text-align: center;
-		padding: 20rpx 0;
-		font-size: 14px;
-	}
 	/* 到底提示样式 */
+	.loading,
 	.end-tip {
 		color: #888;
 		text-align: center;
 		padding: 30rpx 0;
-		padding-bottom: 100rpx;
+		padding-bottom: 52rpx;
 		font-size: 14px;
+		width: 100%;
 	}
 	/* 前往顶部 */
 	.tools-top {

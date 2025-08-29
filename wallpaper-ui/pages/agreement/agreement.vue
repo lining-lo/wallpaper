@@ -4,7 +4,7 @@
 		<view class="agreement-navbar">
 			<uni-icons type="left" size="20" color="#fff" @click="goBack"></uni-icons>
 			<text>用户协议</text>
-			<view style="width: 100rpx"></view>
+			<view style="width: 20px"></view>
 		</view>
 		<!-- 协议内容 -->
 		<view class="agreement-content">

@@ -13,12 +13,10 @@
 			<view class="title" @click="changeType(3)" :class="{ selected: searchListParams.type === 3 }">平板</view>
 			<view class="title" @click="changeType(4)" :class="{ selected: searchListParams.type === 4 }">头像</view>
 		</view>
-		<!-- 加载提示 -->
-		<view class="loading" v-if="isLoading">加载中...</view>
 		<view class="waterfall-container">
 			<up-waterfall v-model="searchList" ref="uWaterfallRef" columns="2">
 				<template v-slot:column="{ colList, colIndex }">
-					<view @click="toSearchList(item)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
+					<view @click="toSearchListPreview(item, index)" class="waterfall-item" v-for="(item, index) in colList" :key="item.id">
 						<image :src="item.url" class="main-img" mode="widthFix" lazy-load></image>
 						<!-- 标题（单行省略） -->
 						<view class="item-title">{{ item.title }}</view>
@@ -37,8 +35,6 @@
 				</template>
 			</up-waterfall>
 		</view>
-		<!-- 到底提示 -->
-		<view class="end-tip" v-if="isEnd && searchList.length > 0">已经到底啦~</view>
 		<!-- 空数据提示 -->
 		<view
 			class="authordetail-nonetip"
@@ -51,6 +47,10 @@
 		>
 			<image src="/static/images/none_tip.png" mode="widthFix"></image>
 		</view>
+		<!-- 加载提示 -->
+		<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
+		<!-- 到底提示 -->
+		<view class="end-tip" :style="{ opacity: isEnd && searchList.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
 		<!-- 前往顶部 -->
 		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
 			<image src="/static/images/top.png" mode="aspectFill"></image>
@@ -79,7 +79,40 @@ onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	// 清除缓存并保持广场列表数据一致性
+	handleShareList();
 });
+
+// 切换榜单
+const changeType = (type) => {
+	if (searchListParams.type === type) return; // 类型未变化则直接返回
+	// 重置状态
+	searchList.value = [];
+	searchListParams.page = 1;
+	isEnd.value = false;
+	searchListParams.type = type;
+	// 根据类型判断是否需要请求数据
+	let workCount = 0;
+	switch (type) {
+		case -1:
+			workCount = countInfo.value.total_count;
+			break;
+		case 3:
+			workCount = countInfo.value.tablet_count;
+			break;
+		case 4:
+			workCount = countInfo.value.avatar_count;
+			break;
+		default:
+			workCount = countInfo.value.normal_album_count;
+	}
+
+	// 只有当作品数量 > 0 时才请求数据
+	if (workCount > 0) {
+		getSearchList();
+	}
+};
 
 // 排序列表
 const searchList = ref([]);
@@ -88,7 +121,6 @@ const countInfo = ref({});
 const isEnd = ref(false);
 // 加载状态控制
 const isLoading = ref(false);
-
 // 获取排序列表参数
 const searchListParams = reactive({
 	user_id: userInfo.value.id || '',
@@ -97,7 +129,6 @@ const searchListParams = reactive({
 	page: 1,
 	pagesize: 24
 });
-
 // 获取排序列表方法
 const getSearchList = async () => {
 	// 防止重复请求和无效请求
@@ -132,7 +163,6 @@ const getSearchList = async () => {
 
 			// 合并新数据
 			searchList.value = [...searchList.value, ...newItems];
-			uni.setStorageSync(fromPage.value, JSON.stringify(searchList.value));
 
 			// 判断是否到底（基于过滤后的新数据）
 			if (newItems.length === 0) {
@@ -147,36 +177,6 @@ const getSearchList = async () => {
 		}
 	}
 };
-// 切换榜单
-const changeType = (type) => {
-	if (searchListParams.type === type) return; // 类型未变化则直接返回
-	// 重置状态
-	searchList.value = [];
-	searchListParams.page = 1;
-	isEnd.value = false;
-	searchListParams.type = type;
-	// 根据类型判断是否需要请求数据
-	let workCount = 0;
-	switch (type) {
-		case -1:
-			workCount = countInfo.value.total_count;
-			break;
-		case 3:
-			workCount = countInfo.value.tablet_count;
-			break;
-		case 4:
-			workCount = countInfo.value.avatar_count;
-			break;
-		default:
-			workCount = countInfo.value.normal_album_count;
-	}
-
-	// 只有当作品数量 > 0 时才请求数据
-	if (workCount > 0) {
-		getSearchList();
-	}
-};
-
 // 触底加载更多数据
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
@@ -186,11 +186,46 @@ onReachBottom(() => {
 	}
 });
 
+// 选取广场列表的预览范围的起始下标
+const startIndex = ref(0);
+// 选取广场列表的预览范围的终止下标
+const endIndex = ref(0);
 // 跳转到壁纸查看界面
-const toSearchList = (item) => {
+const toSearchListPreview = (item) => {
+	const index = searchList.value.findIndex((searchListItem) => item.id === searchListItem.id);
+	// 计算当前分组（从0开始）
+	const group = Math.floor(index / 48);
+	// 计算起始下标
+	startIndex.value = group * 48;
+	// 计算终止下标（用于边界校验，实际截取时用不到）
+	endIndex.value = Math.min(startIndex.value + 47, searchList.value.length - 1);
+	// 计算当前在分组内的下标（1-48）
+	const currentIndex = Math.ceil(index % 48);
+
+	// 直接截取从startIndex开始的48条数据（slice自动处理边界，不足48条时取到末尾）
+	const previewData = searchList.value.slice(startIndex.value, startIndex.value + 48);
+
+	uni.setStorageSync(fromPage.value, JSON.stringify(previewData));
 	uni.navigateTo({
-		url: `/pages/shareList/shareList?id=${item.id}&from=${encodeURIComponent(fromPage.value)}`
+		url: `/pages/shareList/shareList?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(fromPage.value)}`
 	});
+};
+// 清除缓存并保持广场列表数据一致性
+const handleShareList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync(fromPage.value);
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		searchList.value = [
+			...searchList.value.slice(0, startIndex.value), // 前半段：从开头到 startIndex 前
+			...cacheData, // 修改段：新数据
+			...searchList.value.slice(endIndex.value + 1) // 后半段：从 endIndex 后到末尾
+		];
+		// 清理缓存
+		uni.removeStorageSync(fromPage.value);
+	}
 };
 
 // 页面唯一标识
@@ -202,10 +237,6 @@ onLoad((options) => {
 
 	searchListParams.keyword = decodeURIComponent(options.keyword);
 	getSearchList();
-});
-// 销毁页面时
-onUnload(() => {
-	uni.removeStorageSync(fromPage.value);
 });
 
 // 存储当前滚动高度（px 单位）
@@ -278,13 +309,6 @@ const toTop = () => {
 			}
 		}
 	}
-	/* 加载提示样式 */
-	.loading {
-		color: #fff;
-		text-align: center;
-		padding: 20rpx 0;
-		font-size: 14px;
-	}
 	/* 瀑布流容器 */
 	.waterfall-container {
 		width: 100%;
@@ -352,11 +376,14 @@ const toTop = () => {
 		}
 	}
 	/* 到底提示样式 */
+	.loading,
 	.end-tip {
 		color: #888;
 		text-align: center;
-		padding: 30rpx 0;
+		padding: 60rpx 0;
+		padding-bottom: 80rpx;
 		font-size: 14px;
+		width: 100%;
 	}
 	/* 空数据提示 */
 	.authordetail-nonetip {

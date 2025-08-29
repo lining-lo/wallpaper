@@ -218,6 +218,14 @@
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path" : "pages/clause/clause",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"tabBar": {

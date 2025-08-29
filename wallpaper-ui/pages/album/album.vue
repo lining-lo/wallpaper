@@ -22,9 +22,9 @@
 			</view>
 		</view>
 		<!-- 加载提示 -->
-		<view class="loading" v-if="isLoading">加载中...</view>
+		<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
 		<!-- 到底提示 -->
-		<view class="end-tip" v-if="isEnd && album.length > 0">已经到底啦~</view>
+		<view class="end-tip" :style="{ opacity: isEnd && album.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
 		<!-- 前往顶部 -->
 		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
 			<image src="/static/images/top.png" mode="aspectFill"></image>
@@ -34,7 +34,7 @@
 
 <script setup>
 import { selecCategoryPage } from '../../api/api';
-import { onLoad, onPageScroll,onReachBottom } from '@dcloudio/uni-app';
+import { onLoad, onPageScroll, onReachBottom } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 
 // 返回上一页
@@ -205,19 +205,13 @@ const toTop = () => {
 			}
 		}
 	}
-	/* 加载提示样式 */
-	.loading {
-		color: #fff;
-		text-align: center;
-		padding: 20rpx 0;
-		font-size: 14px;
-	}
 	/* 到底提示样式 */
+	.loading,
 	.end-tip {
 		color: #888;
 		text-align: center;
 		padding: 30rpx 0;
-		padding-bottom: 100rpx;
+		padding-bottom: 20rpx;
 		font-size: 14px;
 	}
 	/* 前往顶部 */

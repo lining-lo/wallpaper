@@ -98,9 +98,9 @@
 				</view>
 			</view>
 			<!-- 加载提示 -->
-			<view class="loading" v-if="isLoading">加载中...</view>
+			<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
 			<!-- 到底提示 -->
-			<view class="end-tip" v-if="isEnd && recommendList.length > 0">已经到底啦~</view>
+			<view class="end-tip" :style="{ opacity: isEnd && recommendList.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
 		</view>
 		<!-- 前往顶部 -->
 		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
@@ -368,7 +368,7 @@ const toRecommendListPreview = (item, index) => {
 	// 直接截取从startIndex开始的24条数据（slice自动处理边界，不足24条时取到末尾）
 	const previewData = recommendList.value.slice(startIndex.value, startIndex.value + 24);
 
-	uni.setStorageSync('home-recommendList', JSON.stringify(previewData));
+	uni.setStorageSync(from, JSON.stringify(previewData));
 	uni.navigateTo({
 		url: `/pages/preview/preview?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(from)}`
 	});
@@ -834,14 +834,9 @@ const toTop = () => {
 		}
 	}
 }
-/* 加载提示样式 */
-.loading {
-	color: #fff;
-	text-align: center;
-	padding: 20rpx 0;
-	font-size: 14px;
-}
+
 /* 到底提示样式 */
+.loading,
 .end-tip {
 	color: #888;
 	text-align: center;

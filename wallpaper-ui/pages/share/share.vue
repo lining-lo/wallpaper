@@ -22,14 +22,14 @@
 					</view>
 				</template>
 			</up-waterfall>
-			<!-- 前往顶部 -->
-			<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
-				<image src="/static/images/top.png" mode="aspectFill"></image>
-			</view>
-			<!-- 加载提示 -->
-			<view class="loading" v-if="isLoading">加载中...</view>
-			<!-- 到底提示 -->
-			<view class="end-tip" v-if="isEnd && shareList.length > 0">已经到底啦~</view>
+		</view>
+		<!-- 加载提示 -->
+		<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
+		<!-- 到底提示 -->
+		<view class="end-tip" :style="{ opacity: isEnd && shareList.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
+		<!-- 前往顶部 -->
+		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
+			<image src="/static/images/top.png" mode="aspectFill"></image>
 		</view>
 	</view>
 	<tabbar />
@@ -41,6 +41,7 @@ import tabbar from '../../components/tabbar.vue';
 import { selectAllWallpaperByRand } from '../../api/api';
 import { onLoad, onShow, onReachBottom, onUnload, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
+import index from '../../uni_modules/uview-plus';
 
 // 用户信息
 const userInfo = ref({});
@@ -52,7 +53,7 @@ onShow(() => {
 	token.value = uni.getStorageSync('token');
 
 	// 清除缓存并保持广场列表数据一致性
-	// handleshareList();
+	handleShareList();
 });
 
 // 广场列表
@@ -72,11 +73,14 @@ const getShareList = async () => {
 	// 防止重复请求和无效请求
 	if (!isEnd.value && !isLoading.value) {
 		isLoading.value = true; // 锁定加载状态
+
 		try {
 			// 从本地存储重新读取一次，确保使用最新值
 			userInfo.value = uni.getStorageSync('userInfo');
 			shareListParams.user_id = userInfo.value.id || '';
+
 			const result = await selectAllWallpaperByRand(shareListParams);
+
 			// 处理数据
 			const processedResult = result.map((item) => {
 				// 安全解析 labels
@@ -96,6 +100,7 @@ const getShareList = async () => {
 
 			// 合并新数据
 			shareList.value = [...shareList.value, ...newItems];
+
 			// 判断是否到底（基于过滤后的新数据）
 			if (newItems.length === 0) {
 				isEnd.value = true;
@@ -109,6 +114,10 @@ const getShareList = async () => {
 		}
 	}
 };
+// 页面加载时初始化
+onLoad(() => {
+	getShareList();
+});
 // 触底加载更多数据
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
@@ -122,29 +131,28 @@ onReachBottom(() => {
 const startIndex = ref(0);
 // 选取广场列表的预览范围的终止下标
 const endIndex = ref(0);
-// 跳转到广场列表预览界面
+// 跳转到壁纸查看界面
 const toShareListPreview = (item) => {
-	const index =  shareList.value.findIndex((shareListItem) => item.id === shareListItem.id)
+	const index = shareList.value.findIndex((shareListItem) => item.id === shareListItem.id);
 	// 计算当前分组（从0开始）
-	const group = Math.floor(index / 24);
+	const group = Math.floor(index / 48);
 	// 计算起始下标
-	startIndex.value = group * 24;
+	startIndex.value = group * 48;
 	// 计算终止下标（用于边界校验，实际截取时用不到）
-	endIndex.value = Math.min(startIndex.value + 23, shareList.value.length - 1);
-	// 计算当前在分组内的下标（1-24）
-	const currentIndex = Math.ceil(index % 24);
+	endIndex.value = Math.min(startIndex.value + 47, shareList.value.length - 1);
+	// 计算当前在分组内的下标（1-48）
+	const currentIndex = Math.ceil(index % 48);
 
+	// 直接截取从startIndex开始的48条数据（slice自动处理边界，不足48条时取到末尾）
+	const previewData = shareList.value.slice(startIndex.value, startIndex.value + 48);
 	const from = 'share-wallpapers';
-	// // 直接截取从startIndex开始的24条数据（slice自动处理边界，不足24条时取到末尾）
-	const previewData = shareList.value.slice(startIndex.value, startIndex.value + 24);
-
-	uni.setStorageSync('share-wallpapers', JSON.stringify(shareList));
+	uni.setStorageSync(from, JSON.stringify(previewData));
 	uni.navigateTo({
 		url: `/pages/shareList/shareList?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(from)}`
 	});
 };
 // 清除缓存并保持广场列表数据一致性
-const handleshareList = () => {
+const handleShareList = () => {
 	// 获取缓存数据
 	const storageStr = uni.getStorageSync('share-wallpapers');
 	// 先判断缓存是否存在且不是空字符串
@@ -160,11 +168,6 @@ const handleshareList = () => {
 		uni.removeStorageSync('share-wallpapers');
 	}
 };
-
-// 页面加载时初始化
-onLoad(() => {
-	getShareList();
-});
 
 // 存储当前滚动高度（px 单位）
 const currentScrollTop = ref(0);
@@ -198,13 +201,6 @@ const toTop = () => {
 	padding: 10rpx;
 	box-sizing: border-box;
 	overflow-x: hidden;
-	/* 加载提示样式 */
-	.loading {
-		color: #fff;
-		text-align: center;
-		padding: 20rpx 0;
-		font-size: 14px;
-	}
 	/* 瀑布流容器 */
 	.waterfall-container {
 		width: 100%;
@@ -271,6 +267,16 @@ const toTop = () => {
 			}
 		}
 	}
+	/* 到底提示样式 */
+	.loading,
+	.end-tip {
+		color: #888;
+		text-align: center;
+		padding: 60rpx 0;
+		padding-bottom: 200rpx;
+		font-size: 14px;
+		width: 100%;
+	}
 	/* 前往顶部 */
 	.tools-top {
 		/* 基础定位 */
@@ -312,14 +318,6 @@ const toTop = () => {
 		&:active {
 			transform: translateX(0) scale(0.95);
 		}
-	}
-	/* 到底提示样式 */
-	.end-tip {
-		color: #888;
-		text-align: center;
-		padding: 30rpx 0;
-		padding-bottom: 200rpx;
-		font-size: 14px;
 	}
 }
 </style>

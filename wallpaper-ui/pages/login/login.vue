@@ -21,9 +21,9 @@
 					</checkbox-group>
 					<view class="text">
 						同意
-						<navigator style="color: #547894; padding: 0 6rpx" url="/pages/live/live">用户协议</navigator>
+						<navigator style="color: #547894; padding: 0 6rpx" url="/pages/agreement/agreement">用户协议</navigator>
 						和
-						<navigator style="color: #547894; padding: 0 6rpx" url="/pages/live/live">隐私政策</navigator>
+						<navigator style="color: #547894; padding: 0 6rpx" url="/pages/clause/clause">隐私政策</navigator>
 						条款
 					</view>
 				</view>
@@ -163,6 +163,7 @@ onLoad(() => {});
 			.text {
 				color: #797979;
 				display: flex;
+				font-weight: 600;
 			}
 		}
 	}

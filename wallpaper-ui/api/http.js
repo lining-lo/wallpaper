@@ -4,8 +4,8 @@
  */
 
 // 接口基础路径（服务器地址）
-// const baseUrl = 'http://47.98.237.197:3001';
-const baseUrl = 'http://localhost:3001';
+const baseUrl = 'http://47.98.237.197:3001';
+// const baseUrl = 'http://localhost:3001';
 // 默认请求超时时间（毫秒）
 const DEFAULT_TIMEOUT = 8000;
 // 存储正在进行的请求（用于拦截重复请求）

@@ -44,7 +44,7 @@
 				avatarlist: worksParams.type === 4
 			}"
 		>
-			<view @click="toPreview(item, index)" class="list-item" v-for="(item, index) in works" :key="index">
+			<view @click="toWorksPreview(item, index)" class="list-item" v-for="(item, index) in works" :key="index">
 				<image :src="item.url" lazy-load mode="aspectFill"></image>
 			</view>
 			<!-- 空数据提示 -->
@@ -58,6 +58,10 @@
 			>
 				<image src="/static/images/none_tip.png" mode="widthFix"></image>
 			</view>
+			<!-- 加载提示 -->
+			<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
+			<!-- 到底提示 -->
+			<view class="end-tip" :style="{ opacity: isEnd && works.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
 		</view>
 	</view>
 </template>
@@ -82,6 +86,9 @@ onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	// 清除缓存并保持作品数据一致性
+	handleWorks();
 });
 
 // 作者信息
@@ -100,6 +107,58 @@ const worksParams = reactive({
 });
 // 是否加载全部
 const isEnd = ref(false);
+// 加载状态控制
+const isLoading = ref(false);
+// 获取作者作品的方法
+const getWorks = async (type) => {
+	// 防止重复请求和无效请求
+	if (!isEnd.value && !isLoading.value) {
+		isLoading.value = true; // 锁定加载状态
+
+		try {
+			worksParams.user_id = authorInfo.value.id;
+			// 从本地存储重新读取一次，避免依赖onShow的时机
+			userInfo.value = uni.getStorageSync('userInfo');
+			worksParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
+			const result = await selecWallpaperPageByUserId(worksParams);
+			const myInfo = result.myInfo;
+			if (myInfo !== null && myInfo !== undefined) {
+				authorInfo.value = myInfo;
+				console.log('我查了两次', myInfo);
+			}
+			const wallpapersResult = result.result;
+			wallpapersResult.map((item) => {
+				item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
+				if (item.is_collected >= 1) {
+					item.isFristCollection = false; // 初始化是否首次收藏标记
+				} else {
+					item.isFristCollection = true; // 初始化是否首次收藏标记
+				}
+				return item;
+			});
+			works.value = [...works.value, ...wallpapersResult];
+			// 是否到底
+			if (wallpapersResult.length === 0) {
+				isEnd.value = true;
+			}
+		} catch (error) {
+			console.error('获取数据失败:', error);
+			// 失败时回退页码，方便重试
+			shareListParams.page--;
+		} finally {
+			isLoading.value = false; // 解锁加载状态
+		}
+	}
+};
+// 触底加载更多
+onReachBottom(() => {
+	// 只有不在加载中且未到底时才加载更多
+	if (!isLoading.value && !isEnd.value) {
+		worksParams.page++;
+		getWorks();
+	}
+});
+
 // 切换作品
 const changeWorks = (type) => {
 	if (worksParams.type === type) return; // 类型未变化则直接返回
@@ -127,44 +186,68 @@ const changeWorks = (type) => {
 		getWorks();
 	}
 };
-// 获取作者作品的方法
-const getWorks = async (type) => {
-	if (!isEnd.value) {
-		worksParams.user_id = authorInfo.value.id;
-		// 从本地存储重新读取一次，避免依赖onShow的时机
-		userInfo.value = uni.getStorageSync('userInfo');
-		worksParams.current_userId = userInfo.value.id || ''; // 优先用最新存储值
-		const result = await selecWallpaperPageByUserId(worksParams);
-		const myInfo = result.myInfo;
-		if (myInfo !== null && myInfo !== undefined) {
-			authorInfo.value = myInfo;
-			console.log('我查了两次', myInfo);
-		}
-		const wallpapersResult = result.result;
-		wallpapersResult.map((item) => {
-			item.labels = JSON.parse(item.labels); // 解析labels为数组（假设存的是JSON字符串）
-			if (item.is_collected >= 1) {
-				item.isFristCollection = false; // 初始化是否首次收藏标记
-			} else {
-				item.isFristCollection = true; // 初始化是否首次收藏标记
-			}
-			return item;
-		});
-		works.value = [...works.value, ...wallpapersResult];
-		uni.setStorageSync(fromPage.value, JSON.stringify(works.value));
-		// 是否到底
-		if (wallpapersResult.length === 0) {
-			isEnd.value = true;
-		}
+
+// 页面唯一标识
+const fromPage = ref('');
+// 选取作品的预览范围的起始下标
+const startIndex = ref(0);
+// 选取作品的预览范围的终止下标
+const endIndex = ref(0);
+// 跳转到作品预览界面
+const toWorksPreview = (item, index) => {
+	// 计算当前分组（从0开始）
+	const group = Math.floor(index / 24);
+	// 计算起始下标
+	startIndex.value = group * 24;
+	// 计算终止下标（用于边界校验，实际截取时用不到）
+	endIndex.value = Math.min(startIndex.value + 23, works.value.length - 1);
+	// 计算当前在分组内的下标（1-24）
+	const currentIndex = Math.ceil(index % 24);
+
+	// 直接截取从startIndex开始的24条数据（slice自动处理边界，不足24条时取到末尾）
+	const previewData = works.value.slice(startIndex.value, startIndex.value + 24);
+
+	uni.setStorageSync(fromPage.value, JSON.stringify(previewData));
+	switch (item.type) {
+		case 3:
+			uni.navigateTo({
+				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(fromPage.value)}`
+			});
+			break;
+		case 4:
+			uni.navigateTo({
+				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(fromPage.value)}`
+			});
+			break;
+		default:
+			uni.navigateTo({
+				url: `/pages/preview/preview?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(fromPage.value)}`
+			});
 	}
 };
-// 页面唯一标识
-const fromPage = ref('')
+// 清除缓存并保持作品数据一致性
+const handleWorks = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync(fromPage.value);
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		works.value = [
+			...works.value.slice(0, startIndex.value), // 前半段：从开头到 startIndex 前
+			...cacheData, // 修改段：新数据
+			...works.value.slice(endIndex.value + 1) // 后半段：从 endIndex 后到末尾
+		];
+		// 清理缓存
+		uni.removeStorageSync(fromPage.value);
+	}
+};
+
 // 挂载
 onLoad((options) => {
 	// 获取唯一标识
-	fromPage.value = 'authordetail-' + getRandomID()
-	
+	fromPage.value = 'authordetail-' + getRandomID();
+
 	// 获取作者信息
 	const author_item = JSON.parse(decodeURIComponent(options.item));
 	authorInfo.value = author_item;
@@ -174,35 +257,6 @@ onLoad((options) => {
 	// 获取作者作品
 	getWorks();
 });
-// 销毁页面时
-onUnload(() => {
-	uni.removeStorageSync(fromPage.value);
-});
-
-// 触底加载更多
-onReachBottom(() => {
-	worksParams.page++;
-	getWorks();
-});
-// 跳转到壁纸预览界面
-const toPreview = (item, index) => {
-	switch (item.type) {
-		case 3:
-			uni.navigateTo({
-				url: `/pages/tabletDetail/tabletDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
-			});
-			break;
-		case 4:
-			uni.navigateTo({
-				url: `/pages/avatarDetail/avatarDetail?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
-			});
-			break;
-		default:
-			uni.navigateTo({
-				url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(fromPage.value)}`
-			});
-	}
-};
 </script>
 
 <style lang="scss">
@@ -384,5 +438,15 @@ const toPreview = (item, index) => {
 			width: 340rpx;
 		}
 	}
+}
+/* 到底提示样式 */
+.loading,
+.end-tip {
+	color: #888;
+	text-align: center;
+	padding: 30rpx 0;
+	padding-bottom: 52rpx;
+	font-size: 14px;
+	width: 100%;
 }
 </style>

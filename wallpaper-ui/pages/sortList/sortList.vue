@@ -33,14 +33,14 @@
 		</view>
 		<!-- 分享列表 -->
 		<view class="avatar-list">
-			<view @click="toAvatarDetail(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
+			<view @click="toAvatarListPreview(item, index)" class="list-item" v-for="(item, index) in avatarList" :key="index">
 				<image :src="item.url" mode="aspectFill"></image>
 			</view>
 		</view>
 		<!-- 加载提示 -->
-		<view class="loading" v-if="isLoading">加载中...</view>
+		<view class="loading" v-if="isLoading">——————&nbsp;&nbsp;加载中...&nbsp;&nbsp;——————</view>
 		<!-- 到底提示 -->
-		<view class="end-tip" v-if="isEnd && avatarList.length > 0">已经到底啦~</view>
+		<view class="end-tip" :style="{ opacity: isEnd && avatarList.length > 0 ? '1' : '0' }">——————&nbsp;&nbsp;已经到底啦~&nbsp;&nbsp;——————</view>
 		<!-- 前往顶部 -->
 		<view class="tools-top" :class="{ 'is-visible': isShow }" @click="toTop">
 			<image src="/static/images/top.png" mode="aspectFill"></image>
@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+import { getRandomID } from '../../utils/customize';
 import { onLoad, onShow, onReachBottom, onUnload, onPageScroll } from '@dcloudio/uni-app';
 import { nextTick, reactive, ref } from 'vue';
 import { selecWallpaperPageByCategoryId, selecCategoryPage, selectAllWallpaperByType } from '../../api/api';
@@ -68,6 +69,9 @@ onShow(() => {
 	// 每次页面显示时，重新读取本地存储的 userInfo 和 token
 	userInfo.value = uni.getStorageSync('userInfo');
 	token.value = uni.getStorageSync('token');
+
+	// 清除缓存并保持平板壁纸数据一致性
+	handleAvatarList();
 });
 
 // 头像类型
@@ -94,7 +98,6 @@ const getSort = async () => {
 	sort.value = result;
 	// console.log('sort', sort.value);
 };
-
 // 当前类型下标
 const currentIndex = ref(-1);
 // 切换类型
@@ -147,7 +150,6 @@ const getAvatarList = async () => {
 			});
 			// 存入数据
 			avatarList.value = [...avatarList.value, ...result];
-			uni.setStorageSync('sortlist-wallpapers', JSON.stringify(avatarList.value));
 			// 是否到底
 			if (result.length === 0) {
 				isEnd.value = true;
@@ -161,20 +163,6 @@ const getAvatarList = async () => {
 		}
 	}
 };
-// 挂载
-onLoad((options) => {
-	// 获取参数
-	const item = JSON.parse(decodeURIComponent(options.item));
-	const index = parseInt(options.index, 10);
-	changeType(item, index);
-
-	// 获取头像分类
-	getSort();
-});
-// 销毁页面时
-onUnload(() => {
-	uni.removeStorageSync('sortlist-wallpapers');
-});
 // 触底加载更加专辑数据
 onReachBottom(() => {
 	// 只有不在加载中且未到底时才加载更多
@@ -184,13 +172,61 @@ onReachBottom(() => {
 	}
 });
 
-// 跳转到壁纸预览界面
-const toAvatarDetail = (item, index) => {
-	const from = 'sortlist-wallpapers';
+// 页面唯一标识
+const fromPage = ref('');
+// 选取平板壁纸的预览范围的起始下标
+const startIndex = ref(0);
+// 选取平板壁纸的预览范围的终止下标
+const endIndex = ref(0);
+// 跳转到平板壁纸预览界面
+const toAvatarListPreview = (item, index) => {
+	// 计算当前分组（从0开始）
+	const group = Math.floor(index / 24);
+	// 计算起始下标
+	startIndex.value = group * 24;
+	// 计算终止下标（用于边界校验，实际截取时用不到）
+	endIndex.value = Math.min(startIndex.value + 23, avatarList.value.length - 1);
+	// 计算当前在分组内的下标（1-24）
+	const currentIndex = Math.ceil(index % 24);
+
+	// 直接截取从startIndex开始的24条数据（slice自动处理边界，不足24条时取到末尾）
+	const previewData = avatarList.value.slice(startIndex.value, startIndex.value + 24);
+
+	uni.setStorageSync(fromPage.value, JSON.stringify(previewData));
 	uni.navigateTo({
-		url: `/pages/preview/preview?id=${item.id}&index=${index}&from=${encodeURIComponent(from)}`
+		url: `/pages/preview/preview?id=${item.id}&index=${currentIndex}&from=${encodeURIComponent(fromPage.value)}`
 	});
 };
+// 清除缓存并保持平板壁纸数据一致性
+const handleAvatarList = () => {
+	// 获取缓存数据
+	const storageStr = uni.getStorageSync(fromPage.value);
+	// 先判断缓存是否存在且不是空字符串
+	if (storageStr && typeof storageStr === 'string') {
+		// 保持数据一致性
+		const cacheData = JSON.parse(storageStr);
+		avatarList.value = [
+			...avatarList.value.slice(0, startIndex.value), // 前半段：从开头到 startIndex 前
+			...cacheData, // 修改段：新数据
+			...avatarList.value.slice(endIndex.value + 1) // 后半段：从 endIndex 后到末尾
+		];
+		// 清理缓存
+		uni.removeStorageSync(fromPage.value);
+	}
+};
+
+// 挂载
+onLoad((options) => {
+	// 获取唯一标识
+	fromPage.value = 'sortList-' + getRandomID();
+	// 获取参数
+	const item = JSON.parse(decodeURIComponent(options.item));
+	const index = parseInt(options.index, 10);
+	changeType(item, index);
+
+	// 获取头像分类
+	getSort();
+});
 
 // 存储当前滚动高度（px 单位）
 const currentScrollTop = ref(0);
@@ -274,20 +310,15 @@ const toTop = () => {
 			}
 		}
 	}
-	/* 加载提示样式 */
-	.loading {
-		color: #fff;
-		text-align: center;
-		padding: 20rpx 0;
-		font-size: 14px;
-	}
 	/* 到底提示样式 */
+	.loading,
 	.end-tip {
 		color: #888;
 		text-align: center;
 		padding: 30rpx 0;
-		padding-bottom: 100rpx;
+		padding-bottom: 52rpx;
 		font-size: 14px;
+		width: 100%;
 	}
 	/* 前往顶部 */
 	.tools-top {

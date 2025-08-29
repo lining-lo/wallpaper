@@ -46,9 +46,8 @@
 			</view>
 			<swiper circular previous-margin="72px" next-margin="72px" @change="changeWallpaper" :current="currentWallpaperIndex">
 				<swiper-item v-for="(item, index) in wallpapers" :key="index">
-					<view class="img">
+					<view class="img" @click="changePopup(1, item.id)">
 						<image
-							@click="changePopup(1, item.id)"
 							:class="{
 								portrait: item.type === 0 || item.type === 1 || item.type === 2,
 								tablet: item.type === 3,
@@ -182,7 +181,7 @@ onLoad((options) => {
 	} else if (platform === 'devtools' || platform === 'windows' || platform === 'mac') {
 		plat.value = 1;
 	}
-	
+
 	// 获取当前壁纸来源
 	from.value = decodeURIComponent(options.from);
 	wallpapers.value = JSON.parse(uni.getStorageSync(`${from.value}`));
